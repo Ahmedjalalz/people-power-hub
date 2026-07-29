@@ -204,6 +204,7 @@ function HRInsights() {
 
 function InsightCard({
   tint,
+  tintVar,
   icon,
   label,
   headline,
@@ -212,6 +213,7 @@ function InsightCard({
   onClick,
 }: {
   tint: string;
+  tintVar: string;
   icon: React.ReactNode;
   label: string;
   headline: string;
@@ -222,19 +224,27 @@ function InsightCard({
   return (
     <button
       onClick={onClick}
+      style={{ ["--tile" as string]: `var(${tintVar})` }}
       className={cn(
-        "group text-left rounded-2xl border bg-card p-5 h-[280px] flex flex-col transition-all",
-        "hover:shadow-lg hover:-translate-y-0.5 hover:border-primary/40",
+        "group relative text-left rounded-2xl border bg-card p-5 h-[280px] flex flex-col overflow-hidden transition-all",
+        "hover:shadow-[0_20px_40px_-24px_color-mix(in_oklab,var(--tile)_70%,transparent)]",
+        "hover:-translate-y-0.5 hover:border-primary/30",
       )}
     >
-      <div className="flex items-center justify-between mb-3">
-        <div className={cn("w-9 h-9 rounded-xl grid place-items-center text-foreground/70", tint)}>{icon}</div>
-        <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:translate-x-0.5 transition-transform" />
+      <div className="card-glow" />
+      <div
+        aria-hidden
+        className="blob pointer-events-none absolute -top-10 -right-10 w-32 h-32 rounded-full opacity-40 blur-2xl"
+        style={{ background: `var(${tintVar})` }}
+      />
+      <div className="relative flex items-center justify-between mb-3">
+        <div className={cn("icon-tile", tint)}>{icon}</div>
+        <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:translate-x-0.5 group-hover:text-foreground transition-all" />
       </div>
-      <div className="text-xs uppercase tracking-wide text-muted-foreground mb-1">{label}</div>
-      <div className="text-2xl font-semibold">{headline}</div>
-      <div className="text-xs text-muted-foreground mb-4">{sub}</div>
-      <div className="mt-auto">{visual}</div>
+      <div className="relative text-[11px] uppercase tracking-[0.12em] text-muted-foreground mb-1 font-medium">{label}</div>
+      <div className="relative text-2xl font-semibold tracking-tight">{headline}</div>
+      <div className="relative text-xs text-muted-foreground mb-4">{sub}</div>
+      <div className="relative mt-auto">{visual}</div>
     </button>
   );
 }
