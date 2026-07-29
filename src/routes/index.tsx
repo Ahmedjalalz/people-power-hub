@@ -80,7 +80,7 @@ function HRInsights() {
         <InsightCard
           onClick={() => setOpenCard("atrisk")}
           tint="bg-pastel-peach"
-          icon={<AlertTriangle className="w-5 h-5" />}
+          icon={<ShieldAlert className="w-5 h-5" strokeWidth={2.25} />}
           label="People at risk"
           headline={`${attritionOverview.atRiskCount}`}
           sub={`of ${attritionOverview.totalEmployees} employees`}
@@ -99,7 +99,7 @@ function HRInsights() {
         <InsightCard
           onClick={() => setOpenCard("reasons")}
           tint="bg-pastel-mint"
-          icon={<Heart className="w-5 h-5" />}
+          icon={<Compass className="w-5 h-5" strokeWidth={2.25} />}
           label="Top reason people leave"
           headline="Career growth"
           sub="34% of exits last 6 months"
@@ -123,7 +123,7 @@ function HRInsights() {
         <InsightCard
           onClick={() => setOpenCard("trend")}
           tint="bg-pastel-blue"
-          icon={<Users className="w-5 h-5" />}
+          icon={<UserRoundSearch className="w-5 h-5" strokeWidth={2.25} />}
           label="Highest-risk person"
           headline="Usman Ali"
           sub="82% likely to leave in 60–90 days"
@@ -155,7 +155,7 @@ function HRInsights() {
         <InsightCard
           onClick={() => setOpenCard("departments")}
           tint="bg-pastel-lavender"
-          icon={<Building2 className="w-5 h-5" />}
+          icon={<Network className="w-5 h-5" strokeWidth={2.25} />}
           label="Department at risk"
           headline="Operations"
           sub="22 people flagged"
@@ -177,7 +177,7 @@ function HRInsights() {
         <InsightCard
           onClick={() => setOpenCard("tenure")}
           tint="bg-pastel-rose"
-          icon={<Clock className="w-5 h-5" />}
+          icon={<Hourglass className="w-5 h-5" strokeWidth={2.25} />}
           label="When people leave"
           headline="1–3 years"
           sub="most common tenure at exit"
