@@ -1,12 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import {
-  AlertTriangle,
-  TrendingDown,
-  Users,
-  Clock,
-  Heart,
-  Building2,
+  Sparkles,
+  ShieldAlert,
+  Compass,
+  UserRoundSearch,
+  Network,
+  Hourglass,
   ChevronRight,
 } from "lucide-react";
 import {
