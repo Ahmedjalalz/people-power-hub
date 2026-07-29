@@ -58,7 +58,7 @@ function HRInsights() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         <InsightCard
           onClick={() => setOpenCard("overview")}
-          tint="bg-pastel-pink"
+          tint="bg-pastel-pink" tintVar="--pastel-pink"
           icon={<Sparkles className="w-5 h-5" strokeWidth={2.25} />}
           label="Attrition rate"
           headline={`${attritionOverview.overallRate}%`}
@@ -79,7 +79,7 @@ function HRInsights() {
 
         <InsightCard
           onClick={() => setOpenCard("atrisk")}
-          tint="bg-pastel-peach"
+          tint="bg-pastel-peach" tintVar="--pastel-peach"
           icon={<ShieldAlert className="w-5 h-5" strokeWidth={2.25} />}
           label="People at risk"
           headline={`${attritionOverview.atRiskCount}`}
@@ -98,7 +98,7 @@ function HRInsights() {
 
         <InsightCard
           onClick={() => setOpenCard("reasons")}
-          tint="bg-pastel-mint"
+          tint="bg-pastel-mint" tintVar="--pastel-mint"
           icon={<Compass className="w-5 h-5" strokeWidth={2.25} />}
           label="Top reason people leave"
           headline="Career growth"
@@ -122,7 +122,7 @@ function HRInsights() {
 
         <InsightCard
           onClick={() => setOpenCard("trend")}
-          tint="bg-pastel-blue"
+          tint="bg-pastel-blue" tintVar="--pastel-blue"
           icon={<UserRoundSearch className="w-5 h-5" strokeWidth={2.25} />}
           label="Highest-risk person"
           headline="Usman Ali"
@@ -154,7 +154,7 @@ function HRInsights() {
 
         <InsightCard
           onClick={() => setOpenCard("departments")}
-          tint="bg-pastel-lavender"
+          tint="bg-pastel-lavender" tintVar="--pastel-lavender"
           icon={<Network className="w-5 h-5" strokeWidth={2.25} />}
           label="Department at risk"
           headline="Operations"
@@ -176,7 +176,7 @@ function HRInsights() {
 
         <InsightCard
           onClick={() => setOpenCard("tenure")}
-          tint="bg-pastel-rose"
+          tint="bg-pastel-rose" tintVar="--pastel-rose"
           icon={<Hourglass className="w-5 h-5" strokeWidth={2.25} />}
           label="When people leave"
           headline="1–3 years"
