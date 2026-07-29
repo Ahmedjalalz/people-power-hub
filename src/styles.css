@@ -131,8 +131,61 @@
   0%, 100% { opacity: 0.3; }
   50% { opacity: 1; }
 }
-.thinking-dot {
-  animation: pulse-dot 1.2s infinite;
-}
+.thinking-dot { animation: pulse-dot 1.2s infinite; }
 .thinking-dot:nth-child(2) { animation-delay: 0.2s; }
 .thinking-dot:nth-child(3) { animation-delay: 0.4s; }
+
+/* Modern icon tile: soft gradient + inner highlight + subtle ring */
+.icon-tile {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.9rem;
+  color: var(--foreground);
+  background: linear-gradient(135deg,
+    color-mix(in oklab, var(--tile) 95%, white 20%) 0%,
+    color-mix(in oklab, var(--tile) 65%, transparent) 100%);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, white 60%, transparent),
+    inset 0 -6px 12px color-mix(in oklab, var(--tile) 45%, transparent),
+    0 8px 18px -10px color-mix(in oklab, var(--tile) 80%, transparent);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.dark .icon-tile {
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, white 10%, transparent),
+    inset 0 -6px 12px color-mix(in oklab, black 30%, transparent),
+    0 6px 14px -8px color-mix(in oklab, black 50%, transparent);
+}
+.icon-tile::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid color-mix(in oklab, white 45%, transparent);
+  pointer-events: none;
+}
+.dark .icon-tile::after { border-color: color-mix(in oklab, white 8%, transparent); }
+.group:hover .icon-tile { transform: translateY(-1px) rotate(-3deg) scale(1.05); }
+
+/* Decorative card glow */
+.card-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(120% 80% at 100% 0%,
+    color-mix(in oklab, var(--tile) 40%, transparent) 0%,
+    transparent 55%);
+  opacity: 0.35;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.group:hover .card-glow { opacity: 0.9; }
+
+@keyframes float-blob {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(4px, -6px) scale(1.04); }
+}
+.blob { animation: float-blob 7s ease-in-out infinite; }

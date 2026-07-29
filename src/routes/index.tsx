@@ -1,12 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import {
-  AlertTriangle,
-  TrendingDown,
-  Users,
-  Clock,
-  Heart,
-  Building2,
+  Sparkles,
+  ShieldAlert,
+  Compass,
+  UserRoundSearch,
+  Network,
+  Hourglass,
   ChevronRight,
 } from "lucide-react";
 import {
@@ -58,8 +58,8 @@ function HRInsights() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         <InsightCard
           onClick={() => setOpenCard("overview")}
-          tint="bg-pastel-pink"
-          icon={<TrendingDown className="w-5 h-5" />}
+          tint="bg-pastel-pink" tintVar="--pastel-pink"
+          icon={<Sparkles className="w-5 h-5" strokeWidth={2.25} />}
           label="Attrition rate"
           headline={`${attritionOverview.overallRate}%`}
           sub={`Industry avg ${attritionOverview.industryAvg}%`}
@@ -79,8 +79,8 @@ function HRInsights() {
 
         <InsightCard
           onClick={() => setOpenCard("atrisk")}
-          tint="bg-pastel-peach"
-          icon={<AlertTriangle className="w-5 h-5" />}
+          tint="bg-pastel-peach" tintVar="--pastel-peach"
+          icon={<ShieldAlert className="w-5 h-5" strokeWidth={2.25} />}
           label="People at risk"
           headline={`${attritionOverview.atRiskCount}`}
           sub={`of ${attritionOverview.totalEmployees} employees`}
@@ -98,8 +98,8 @@ function HRInsights() {
 
         <InsightCard
           onClick={() => setOpenCard("reasons")}
-          tint="bg-pastel-mint"
-          icon={<Heart className="w-5 h-5" />}
+          tint="bg-pastel-mint" tintVar="--pastel-mint"
+          icon={<Compass className="w-5 h-5" strokeWidth={2.25} />}
           label="Top reason people leave"
           headline="Career growth"
           sub="34% of exits last 6 months"
@@ -122,8 +122,8 @@ function HRInsights() {
 
         <InsightCard
           onClick={() => setOpenCard("trend")}
-          tint="bg-pastel-blue"
-          icon={<Users className="w-5 h-5" />}
+          tint="bg-pastel-blue" tintVar="--pastel-blue"
+          icon={<UserRoundSearch className="w-5 h-5" strokeWidth={2.25} />}
           label="Highest-risk person"
           headline="Usman Ali"
           sub="82% likely to leave in 60–90 days"
@@ -154,8 +154,8 @@ function HRInsights() {
 
         <InsightCard
           onClick={() => setOpenCard("departments")}
-          tint="bg-pastel-lavender"
-          icon={<Building2 className="w-5 h-5" />}
+          tint="bg-pastel-lavender" tintVar="--pastel-lavender"
+          icon={<Network className="w-5 h-5" strokeWidth={2.25} />}
           label="Department at risk"
           headline="Operations"
           sub="22 people flagged"
@@ -176,8 +176,8 @@ function HRInsights() {
 
         <InsightCard
           onClick={() => setOpenCard("tenure")}
-          tint="bg-pastel-rose"
-          icon={<Clock className="w-5 h-5" />}
+          tint="bg-pastel-rose" tintVar="--pastel-rose"
+          icon={<Hourglass className="w-5 h-5" strokeWidth={2.25} />}
           label="When people leave"
           headline="1–3 years"
           sub="most common tenure at exit"
@@ -204,6 +204,7 @@ function HRInsights() {
 
 function InsightCard({
   tint,
+  tintVar,
   icon,
   label,
   headline,
@@ -212,6 +213,7 @@ function InsightCard({
   onClick,
 }: {
   tint: string;
+  tintVar: string;
   icon: React.ReactNode;
   label: string;
   headline: string;
@@ -222,19 +224,27 @@ function InsightCard({
   return (
     <button
       onClick={onClick}
+      style={{ ["--tile" as string]: `var(${tintVar})` }}
       className={cn(
-        "group text-left rounded-2xl border bg-card p-5 h-[280px] flex flex-col transition-all",
-        "hover:shadow-lg hover:-translate-y-0.5 hover:border-primary/40",
+        "group relative text-left rounded-2xl border bg-card p-5 h-[280px] flex flex-col overflow-hidden transition-all",
+        "hover:shadow-[0_20px_40px_-24px_color-mix(in_oklab,var(--tile)_70%,transparent)]",
+        "hover:-translate-y-0.5 hover:border-primary/30",
       )}
     >
-      <div className="flex items-center justify-between mb-3">
-        <div className={cn("w-9 h-9 rounded-xl grid place-items-center text-foreground/70", tint)}>{icon}</div>
-        <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:translate-x-0.5 transition-transform" />
+      <div className="card-glow" />
+      <div
+        aria-hidden
+        className="blob pointer-events-none absolute -top-10 -right-10 w-32 h-32 rounded-full opacity-40 blur-2xl"
+        style={{ background: `var(${tintVar})` }}
+      />
+      <div className="relative flex items-center justify-between mb-3">
+        <div className={cn("icon-tile", tint)}>{icon}</div>
+        <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:translate-x-0.5 group-hover:text-foreground transition-all" />
       </div>
-      <div className="text-xs uppercase tracking-wide text-muted-foreground mb-1">{label}</div>
-      <div className="text-2xl font-semibold">{headline}</div>
-      <div className="text-xs text-muted-foreground mb-4">{sub}</div>
-      <div className="mt-auto">{visual}</div>
+      <div className="relative text-[11px] uppercase tracking-[0.12em] text-muted-foreground mb-1 font-medium">{label}</div>
+      <div className="relative text-2xl font-semibold tracking-tight">{headline}</div>
+      <div className="relative text-xs text-muted-foreground mb-4">{sub}</div>
+      <div className="relative mt-auto">{visual}</div>
     </button>
   );
 }
