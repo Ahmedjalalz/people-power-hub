@@ -59,7 +59,7 @@ function HRInsights() {
         <InsightCard
           onClick={() => setOpenCard("overview")}
           tint="bg-pastel-pink"
-          icon={<TrendingDown className="w-5 h-5" />}
+          icon={<Sparkles className="w-5 h-5" strokeWidth={2.25} />}
           label="Attrition rate"
           headline={`${attritionOverview.overallRate}%`}
           sub={`Industry avg ${attritionOverview.industryAvg}%`}
