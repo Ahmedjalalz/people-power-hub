@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import { useChat } from "@/hooks/use-chat";
 import { cn } from "@/lib/utils";
 import type { ChatMessage } from "@/types/chat";
+import { Link } from "@tanstack/react-router";
+import { employees } from "@/lib/employees";
 
 type ChatbotProps = { compact?: boolean; autoFocus?: boolean; title?: string; subtitle?: string; placeholder?: string; welcomeMessage?: string };
 
@@ -29,6 +31,53 @@ function MessageBubble({ message }: { message: ChatMessage }) {
   return <div className={cn("flex gap-2 items-start", isUser && "flex-row-reverse")}><>{!isUser && <BotAvatar />}</><div className={cn("rounded-2xl px-4 py-3 max-w-[85%] text-sm whitespace-pre-wrap leading-relaxed", isUser ? "bg-primary text-primary-foreground rounded-tr-sm" : "bg-pastel-lavender/40 text-foreground rounded-tl-sm")}><FormattedText text={message.content} />{message.role === "assistant" && message.status === "typing" && <span className="inline-block w-1.5 h-4 bg-primary/60 ml-0.5 align-middle animate-pulse" />}</div></div>;
 }
 function BotAvatar() { return <div className="w-8 h-8 rounded-full bg-primary/20 grid place-items-center shrink-0"><Sparkles className="w-4 h-4 text-primary" /></div>; }
-function FormattedText({ text }: { text: string }) { const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g); return <>{parts.map((part, index) => { if (part.startsWith("**") && part.endsWith("**")) return <strong key={index} className="font-semibold">{part.slice(2, -2)}</strong>; if (part.startsWith("*") && part.endsWith("*")) return <em key={index} className="italic">{part.slice(1, -1)}</em>; return <span key={index}>{part}</span>; })}</>; }
+function FormattedText({ text }: { text: string }) {
+  const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g);
+  return (
+    <>
+      {parts.map((part, index) => {
+        if (part.startsWith("**") && part.endsWith("**"))
+          return (
+            <strong key={index} className="font-semibold">
+              <EmployeeLinks text={part.slice(2, -2)} />
+            </strong>
+          );
+        if (part.startsWith("*") && part.endsWith("*"))
+          return (
+            <em key={index} className="italic">
+              <EmployeeLinks text={part.slice(1, -1)} />
+            </em>
+          );
+        return <EmployeeLinks key={index} text={part} />;
+      })}
+    </>
+  );
+}
 
+const nameMatcher = new RegExp(
+  `(${employees.map((employee) => employee.name).join("|")})`,
+  "g",
+);
 
+/** Turns any employee name inside chat text into a link to that employee's profile. */
+function EmployeeLinks({ text }: { text: string }) {
+  const segments = text.split(nameMatcher);
+  return (
+    <>
+      {segments.map((segment, index) => {
+        const employee = employees.find((item) => item.name === segment);
+        if (!employee) return <span key={index}>{segment}</span>;
+        return (
+          <Link
+            key={index}
+            to="/employee/$employeeId"
+            params={{ employeeId: employee.id }}
+            className="font-medium text-primary underline decoration-primary/40 underline-offset-4 hover:decoration-primary"
+          >
+            {segment}
+          </Link>
+        );
+      })}
+    </>
+  );
+}
