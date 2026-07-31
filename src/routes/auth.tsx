@@ -107,7 +107,7 @@ function AuthPage() {
             </h1>
             <p className="mt-1 text-sm text-muted-foreground">
               {mode === "signin"
-                ? "Sign in to see attrition insights for your team."
+                ? "Sign in to continue to your people dashboard."
                 : "Sign up to start exploring your people data."}
             </p>
 
