@@ -15,6 +15,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { ThemeProvider } from "@/lib/theme";
 import { Header } from "@/components/Header";
 import { FloatingChatbot } from "@/components/FloatingChatbot";
+import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
   return (
@@ -92,15 +93,17 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isChatbotPage = pathname === "/chatbot";
+  const isAuthPage = pathname === "/auth";
 
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <div className="min-h-screen bg-background">
-          <Header />
+          {!isAuthPage && <Header />}
           <Outlet />
-          {!isChatbotPage && <FloatingChatbot />}
+          {!isChatbotPage && !isAuthPage && <FloatingChatbot />}
         </div>
+        <Toaster />
       </ThemeProvider>
     </QueryClientProvider>
   );
