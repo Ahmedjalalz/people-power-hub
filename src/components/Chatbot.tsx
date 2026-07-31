@@ -6,18 +6,20 @@ import { useChat } from "@/hooks/use-chat";
 import { cn } from "@/lib/utils";
 import type { ChatMessage } from "@/types/chat";
 
-type ChatbotProps = { compact?: boolean; title?: string; subtitle?: string; placeholder?: string; welcomeMessage?: string };
+type ChatbotProps = { compact?: boolean; autoFocus?: boolean; title?: string; subtitle?: string; placeholder?: string; welcomeMessage?: string };
 
-export function Chatbot({ compact = false, title = "HR Insights Assistant", subtitle = "Ask about attrition, risk & retention", placeholder = "Ask about an employee or risk...", welcomeMessage = "Hi! I'm your HR Insights assistant. Ask me things like *\"Is Usman expected to leave soon?\"* or *\"Who is at highest risk this quarter?\"*" }: ChatbotProps) {
+export function Chatbot({ compact = false, autoFocus = false, title = "HR Insights Assistant", subtitle = "Ask about attrition, risk & retention", placeholder = "Ask about an employee or risk...", welcomeMessage = "Hi! I'm your HR Insights assistant. Ask me things like *\"Is Usman expected to leave soon?\"* or *\"Who is at highest risk this quarter?\"*" }: ChatbotProps) {
   const { messages, isStreaming, sendMessage } = useChat({ welcomeMessage });
   const [input, setInput] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => { scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" }); }, [messages]);
+  useEffect(() => { if (autoFocus) inputRef.current?.focus(); }, [autoFocus]);
   const send = () => { const trimmed = input.trim(); if (!trimmed || isStreaming) return; setInput(""); void sendMessage(trimmed); };
   return <div className={cn("flex flex-col h-full bg-card", compact ? "" : "rounded-2xl border")}>
     <div className="flex items-center gap-2 px-4 py-3 border-b bg-pastel-lavender/50 rounded-t-2xl"><div className="w-8 h-8 rounded-full bg-primary/20 grid place-items-center"><Sparkles className="w-4 h-4 text-primary" /></div><div><div className="font-semibold text-sm">{title}</div><div className="text-xs text-muted-foreground">{subtitle}</div></div></div>
     <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4">{messages.map((message) => <MessageBubble key={message.id} message={message} />)}</div>
-    <div className="p-3 border-t flex gap-2"><Input value={input} onChange={(event) => setInput(event.target.value)} onKeyDown={(event) => event.key === "Enter" && send()} placeholder={placeholder} className="rounded-full" disabled={isStreaming} /><Button onClick={send} size="icon" className="rounded-full shrink-0" disabled={isStreaming}><Send className="w-4 h-4" /></Button></div>
+    <div className="p-3 border-t flex gap-2"><Input ref={inputRef} value={input} onChange={(event) => setInput(event.target.value)} onKeyDown={(event) => event.key === "Enter" && send()} placeholder={placeholder} className="rounded-full" disabled={isStreaming} /><Button onClick={send} size="icon" className="rounded-full shrink-0" disabled={isStreaming}><Send className="w-4 h-4" /></Button></div>
   </div>;
 }
 
@@ -28,4 +30,5 @@ function MessageBubble({ message }: { message: ChatMessage }) {
 }
 function BotAvatar() { return <div className="w-8 h-8 rounded-full bg-primary/20 grid place-items-center shrink-0"><Sparkles className="w-4 h-4 text-primary" /></div>; }
 function FormattedText({ text }: { text: string }) { const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g); return <>{parts.map((part, index) => { if (part.startsWith("**") && part.endsWith("**")) return <strong key={index} className="font-semibold">{part.slice(2, -2)}</strong>; if (part.startsWith("*") && part.endsWith("*")) return <em key={index} className="italic">{part.slice(1, -1)}</em>; return <span key={index}>{part}</span>; })}</>; }
+
 
