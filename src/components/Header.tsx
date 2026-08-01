@@ -1,10 +1,10 @@
-import { Link, useNavigate } from "@tanstack/react-router";
+﻿import { Link, useNavigate } from "@tanstack/react-router";
 import { Moon, Sun, BarChart3, MessageSquare, Users, LogOut } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTheme } from "@/lib/theme";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { cloudClient } from "@/lib/cloud-client";
+import { signOut as clearLocalSession } from "@/lib/local-auth";
 
 export function Header() {
   const { theme, toggle } = useTheme();
@@ -14,7 +14,7 @@ export function Header() {
   const signOut = async () => {
     await queryClient.cancelQueries();
     queryClient.clear();
-    await cloudClient.auth.signOut();
+    clearLocalSession();
     await navigate({ to: "/auth", replace: true });
   };
 
@@ -69,3 +69,4 @@ function NavTab({ to, icon, label }: { to: string; icon: React.ReactNode; label:
     </Link>
   );
 }
+
