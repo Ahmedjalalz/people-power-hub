@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { supabase } from "@/integrations/supabase/client";
+import { cloudClient } from "@/lib/cloud-client";
 import { lovable } from "@/integrations/lovable/index";
 
 export const Route = createFileRoute("/auth")({
@@ -35,10 +35,10 @@ function AuthPage() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    void supabase.auth.getSession().then(({ data }) => {
+    void cloudClient.auth.getSession().then(({ data }) => {
       if (data.session) void navigate({ to: "/", replace: true });
     });
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: sub } = cloudClient.auth.onAuthStateChange((_event, session) => {
       if (session) void navigate({ to: "/", replace: true });
     });
     return () => sub.subscription.unsubscribe();
@@ -50,11 +50,11 @@ function AuthPage() {
     setBusy(true);
     try {
       if (mode === "signin") {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { error } = await cloudClient.auth.signInWithPassword({ email, password });
         if (error) throw error;
         await navigate({ to: "/", replace: true });
       } else {
-        const { data, error } = await supabase.auth.signUp({
+        const { data, error } = await cloudClient.auth.signUp({
           email,
           password,
           options: { emailRedirectTo: window.location.origin },

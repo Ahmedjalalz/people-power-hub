@@ -1,12 +1,12 @@
 import { createFileRoute, redirect, Outlet, useRouterState } from "@tanstack/react-router";
-import { supabase } from "@/integrations/supabase/client";
+import { cloudClient } from "@/lib/cloud-client";
 import { Header } from "@/components/Header";
 import { FloatingChatbot } from "@/components/FloatingChatbot";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
   beforeLoad: async () => {
-    const { data, error } = await supabase.auth.getUser();
+    const { data, error } = await cloudClient.auth.getUser();
     if (error || !data.user) {
       throw redirect({ to: "/auth" });
     }
