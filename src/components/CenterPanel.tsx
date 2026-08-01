@@ -26,13 +26,15 @@ export function CenterPanel({
     <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
       <DialogPrimitive.Portal>
         <DialogPrimitive.Overlay className="panel-veil fixed inset-0 z-50 bg-foreground/25 backdrop-blur-md" />
+        <div className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center p-4">
         <DialogPrimitive.Content
           className={cn(
-            "panel-content fixed left-1/2 top-1/2 z-50 w-[calc(100vw-2rem)] -translate-x-1/2 -translate-y-1/2",
+            "panel-content pointer-events-auto w-full",
             "max-h-[86vh] overflow-y-auto rounded-3xl border bg-card p-6 shadow-2xl",
             size === "lg" ? "max-w-4xl" : "max-w-2xl",
           )}
         >
+
           <div className="flex items-start gap-3">
             {onBack && (
               <button
