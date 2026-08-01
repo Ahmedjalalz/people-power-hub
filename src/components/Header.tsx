@@ -4,7 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useTheme } from "@/lib/theme";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { supabase } from "@/integrations/supabase/client";
+import { cloudClient } from "@/lib/cloud-client";
 
 export function Header() {
   const { theme, toggle } = useTheme();
@@ -14,7 +14,7 @@ export function Header() {
   const signOut = async () => {
     await queryClient.cancelQueries();
     queryClient.clear();
-    await supabase.auth.signOut();
+    await cloudClient.auth.signOut();
     await navigate({ to: "/auth", replace: true });
   };
 
