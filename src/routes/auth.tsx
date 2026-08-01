@@ -9,7 +9,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 
 export const Route = createFileRoute("/auth")({
-  ssr: false,
   head: () => ({
     meta: [
       { title: "Sign in — PeopleLens HR" },
@@ -19,6 +18,8 @@ export const Route = createFileRoute("/auth")({
         property: "og:description",
         content: "Sign in to PeopleLens to view HR insights and attrition risk.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: AuthPage,
