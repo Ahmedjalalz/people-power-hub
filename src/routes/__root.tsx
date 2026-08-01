@@ -5,7 +5,6 @@ import {
   createRootRouteWithContext,
   useRouter,
   useRouterState,
-  ClientOnly,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -100,11 +99,9 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <div className="min-h-screen bg-background">
-          <ClientOnly fallback={null}>{!isAuthPage && <Header />}</ClientOnly>
+          {!isAuthPage && <Header />}
           <Outlet />
-          <ClientOnly fallback={null}>
-            {!isChatbotPage && !isAuthPage && <FloatingChatbot />}
-          </ClientOnly>
+          {!isChatbotPage && !isAuthPage && <FloatingChatbot />}
         </div>
         <Toaster />
       </ThemeProvider>
