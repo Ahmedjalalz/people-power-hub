@@ -64,6 +64,7 @@ export function CenterPanel({
           </div>
           <div className="mt-5">{children}</div>
         </DialogPrimitive.Content>
+        </div>
       </DialogPrimitive.Portal>
     </DialogPrimitive.Root>
   );
