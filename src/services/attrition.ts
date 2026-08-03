@@ -89,6 +89,63 @@ export type EmployeeProfileResponse = {
   };
 };
 
+export type DepartmentRiskResponse = {
+  status: "success";
+  visual: "attrition_risk_by_department";
+  metric: string;
+  total_departments: number;
+  total_people_at_risk: number;
+  highest_risk_department: {
+    rank: number;
+    department: string;
+    people_at_risk: number;
+    total_employees: number;
+    risk_rate_percent: number;
+    people_at_risk_endpoint: string;
+  };
+  departments: {
+    rank: number;
+    department: string;
+    people_at_risk: number;
+    total_employees: number;
+    risk_rate_percent: number;
+    people_at_risk_endpoint: string;
+  }[];
+};
+
+export type TopRiskDriversResponse = {
+  status: "success";
+  visual: "top_attrition_risk_drivers";
+  title: string;
+  basis: string;
+  interpretation_note: string;
+  people_at_risk: number;
+  reasons_per_employee_maximum: number;
+  total_reason_mentions: number;
+  top_driver: {
+    rank: number;
+    feature_key: string;
+    label: string;
+    mention_count: number;
+    share_percent: number;
+    employee_share_percent: number;
+  };
+  drivers: {
+    rank: number;
+    feature_key: string;
+    label: string;
+    mention_count: number;
+    share_percent: number;
+    employee_share_percent: number;
+  }[];
+  other_reason_mentions: number;
+  chart_segments: {
+    label: string;
+    value: number;
+    share_percent: number;
+  }[];
+};
+
 async function request<T>(params: URLSearchParams, options?: RequestInit): Promise<T> {
   const response = await fetch(`/api/attrition?${params.toString()}`, options);
   const payload: unknown = await response.json().catch(() => null);
@@ -113,6 +170,12 @@ export const getPersonAtRiskDetail = (employeeId: string) =>
 
 export const getEmployeeProfile = (employeeId: string) =>
   request<EmployeeProfileResponse>(new URLSearchParams({ resource: "profile", employeeId }));
+
+export const getDepartmentRisk = () =>
+  request<DepartmentRiskResponse>(new URLSearchParams({ resource: "department-risk" }));
+
+export const getTopRiskDrivers = (limit = 3) =>
+  request<TopRiskDriversResponse>(new URLSearchParams({ resource: "top-risk-drivers", limit: String(limit) }));
 
 export const refreshAttritionDashboard = () =>
   request<AttritionSummary>(new URLSearchParams({ resource: "refresh" }), { method: "POST" });

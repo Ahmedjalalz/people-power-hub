@@ -8,16 +8,20 @@ import { ShieldAlert, TrendingUp, Compass, Network, Hourglass, RefreshCw } from 
 import { CenterPanel } from "@/components/CenterPanel";
 import { Callout } from "@/components/InsightCard";
 import { cn } from "@/lib/utils";
-import { attritionOverview, reasonBreakdown, departmentRisk, tenureBuckets } from "@/lib/attrition-data";
+import { attritionOverview, tenureBuckets } from "@/lib/attrition-data";
 import { initials, riskTone } from "@/lib/employees";
 import {
   getAttritionSummary,
+  getDepartmentRisk,
   getEmployeeProfile,
   getPeopleAtRisk,
   getPersonAtRiskDetail,
+  getTopRiskDrivers,
   refreshAttritionDashboard,
   type AtRiskDetail,
+  type DepartmentRiskResponse,
   type EmployeeProfileResponse,
+  type TopRiskDriversResponse,
 } from "@/services/attrition";
 
 type SubView = "trend" | "people" | "reasons" | "departments" | "tenure";
@@ -29,6 +33,8 @@ export function AttritionPanel({ open, onClose }: { open: boolean; onClose: () =
   const [personId, setPersonId] = useState<string | null>(null);
   const queryClient = useQueryClient();
   const summaryQuery = useQuery({ queryKey: ["attrition", "summary"], queryFn: getAttritionSummary });
+  const departmentRiskQuery = useQuery({ queryKey: ["attrition", "department-risk"], queryFn: getDepartmentRisk, enabled: sub === "departments" });
+  const topRiskDriversQuery = useQuery({ queryKey: ["attrition", "top-risk-drivers"], queryFn: () => getTopRiskDrivers(3), enabled: sub === "reasons" });
   const peopleQuery = useQuery({
     queryKey: ["attrition", "people-at-risk"], queryFn: () => getPeopleAtRisk(200), enabled: sub === "people",
   });
@@ -107,11 +113,18 @@ export function AttritionPanel({ open, onClose }: { open: boolean; onClose: () =
     <ChartPanel open={sub === "trend"} onClose={() => setSub(null)} title="Attrition trend" description="Attrition trend over the last 6 months.">
       <div className="h-64"><ResponsiveContainer><LineChart data={attritionOverview.trend}><XAxis dataKey="month" /><YAxis unit="%" /><Tooltip contentStyle={chartTooltip} /><Line type="monotone" dataKey="rate" stroke="var(--primary)" strokeWidth={3} /></LineChart></ResponsiveContainer></div>
     </ChartPanel>
-    <ChartPanel open={sub === "reasons"} onClose={() => setSub(null)} title="Why people leave" description="Reasons cited in exit interviews over the last 6 months.">
-      <div className="h-64"><ResponsiveContainer><PieChart><Pie data={reasonBreakdown} dataKey="value" nameKey="reason" innerRadius={50} outerRadius={90}>{reasonBreakdown.map((reason) => <Cell key={reason.reason} fill={reason.color} />)}</Pie><Tooltip contentStyle={chartTooltip} /></PieChart></ResponsiveContainer></div>
+    <ChartPanel open={sub === "reasons"} onClose={() => setSub(null)} title="Why people leave" description="The shared model drivers behind the people-at-risk list.">
+      {topRiskDriversQuery.isPending ? <StateMessage>Loading risk drivers...</StateMessage>
+        : topRiskDriversQuery.isError ? <StateMessage error>{topRiskDriversQuery.error.message}</StateMessage>
+          : topRiskDriversQuery.data ? <div className="space-y-4">
+            <div className="h-64"><ResponsiveContainer><PieChart><Pie data={topRiskDriversQuery.data.chart_segments} dataKey="value" nameKey="label" innerRadius={50} outerRadius={90}>{topRiskDriversQuery.data.chart_segments.map((segment, index) => <Cell key={segment.label} fill={index === topRiskDriversQuery.data.chart_segments.length - 1 ? "var(--muted-foreground)" : ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--chart-4)"][index % 4]} />)}</Pie><Tooltip contentStyle={chartTooltip} /></PieChart></ResponsiveContainer></div>
+            <div className="space-y-2">{topRiskDriversQuery.data.drivers.map((driver) => <div key={driver.feature_key} className="rounded-2xl border bg-card/70 p-3"><div className="flex items-center justify-between"><span className="font-medium">{driver.label}</span><span className="text-sm text-muted-foreground">{driver.share_percent.toFixed(2)}%</span></div><p className="mt-1 text-xs text-muted-foreground">Mentioned in {driver.mention_count} model signals · {driver.employee_share_percent.toFixed(2)}% of at-risk employees</p></div>)}</div>
+          </div> : null}
     </ChartPanel>
     <ChartPanel open={sub === "departments"} onClose={() => setSub(null)} title="Attrition risk by department" description="How many people are currently flagged in each team.">
-      <div className="h-64"><ResponsiveContainer><BarChart data={departmentRisk} layout="vertical"><XAxis type="number" /><YAxis type="category" dataKey="dept" width={80} /><Tooltip contentStyle={chartTooltip} /><Bar dataKey="risk" fill="var(--chart-4)" radius={[0, 8, 8, 0]} /></BarChart></ResponsiveContainer></div>
+      {departmentRiskQuery.isPending ? <StateMessage>Loading department risk...</StateMessage>
+        : departmentRiskQuery.isError ? <StateMessage error>{departmentRiskQuery.error.message}</StateMessage>
+          : departmentRiskQuery.data ? <div className="h-64"><ResponsiveContainer><BarChart data={departmentRiskQuery.data.departments} layout="vertical"><XAxis type="number" /><YAxis type="category" dataKey="department" width={100} /><Tooltip contentStyle={chartTooltip} /><Bar dataKey="people_at_risk" fill="var(--chart-4)" radius={[0, 8, 8, 0]} /></BarChart></ResponsiveContainer></div> : null}
     </ChartPanel>
     <ChartPanel open={sub === "tenure"} onClose={() => setSub(null)} title="When people tend to leave" description="How long people stayed before leaving.">
       <div className="h-64"><ResponsiveContainer><BarChart data={tenureBuckets}><XAxis dataKey="bucket" /><YAxis /><Tooltip contentStyle={chartTooltip} /><Bar dataKey="leaving" fill="var(--chart-4)" radius={[8, 8, 0, 0]} /></BarChart></ResponsiveContainer></div>

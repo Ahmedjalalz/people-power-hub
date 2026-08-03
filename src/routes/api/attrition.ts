@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-const allowedResources = new Set(["summary", "people-at-risk", "detail", "profile", "refresh"]);
+const allowedResources = new Set(["summary", "people-at-risk", "detail", "profile", "department-risk", "top-risk-drivers", "refresh"]);
 
 export const Route = createFileRoute("/api/attrition")({
   server: {
@@ -27,6 +27,8 @@ async function forward(request: Request): Promise<Response> {
   const path =
     resource === "summary" ? "/api/v1/dashboard/attrition/summary"
     : resource === "people-at-risk" ? "/api/v1/dashboard/attrition/people-at-risk"
+    : resource === "department-risk" ? "/api/v1/dashboard/attrition/department-risk"
+    : resource === "top-risk-drivers" ? "/api/v1/dashboard/attrition/top-risk-drivers"
     : resource === "refresh" ? "/api/v1/dashboard/attrition/refresh"
     : resource === "detail" && employeeId ? `/api/v1/dashboard/attrition/people-at-risk/${encodeURIComponent(employeeId)}`
     : resource === "profile" && employeeId ? `/api/v1/dashboard/attrition/employees/${encodeURIComponent(employeeId)}/profile`
@@ -42,6 +44,11 @@ async function forward(request: Request): Promise<Response> {
       const value = url.searchParams.get(key);
       if (value) upstreamUrl.searchParams.set(key, value);
     }
+  }
+
+  if (resource === "top-risk-drivers") {
+    const limit = url.searchParams.get("limit");
+    if (limit) upstreamUrl.searchParams.set("limit", limit);
   }
 
   try {
