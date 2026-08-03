@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { ShieldAlert, Users2, HeartHandshake } from "lucide-react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from "recharts";
@@ -7,6 +8,7 @@ import { CenterPanel } from "@/components/CenterPanel";
 import { AttritionPanel } from "@/components/AttritionPanel";
 import { attritionOverview } from "@/lib/attrition-data";
 import { atRiskEmployees } from "@/lib/employees";
+import { getAttritionSummary } from "@/services/attrition";
 
 export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
@@ -46,6 +48,14 @@ const engagementData = [
 
 function HRInsights() {
   const [openCard, setOpenCard] = useState<MainCard | null>(null);
+  const summaryQuery = useQuery({ queryKey: ["attrition", "summary"], queryFn: getAttritionSummary });
+  const liveRiskCount = summaryQuery.data?.people_at_risk ?? atRiskEmployees().length;
+  const liveRiskRate = summaryQuery.data?.attrition_risk_rate_percent ?? attritionOverview.overallRate;
+  const summarySubText = summaryQuery.isPending
+    ? "Loading live risk data"
+    : summaryQuery.data
+      ? `${liveRiskRate.toFixed(1)}% risk rate across ${summaryQuery.data.total_employees} employees`
+      : `Attrition rate ${attritionOverview.overallRate}% · industry ${attritionOverview.industryAvg}%`;
 
   return (
     <main className="mx-auto max-w-7xl px-6 py-8">
@@ -67,8 +77,8 @@ function HRInsights() {
           tintVar="--pastel-teal"
           icon={<ShieldAlert className="h-5 w-5" strokeWidth={2.25} />}
           label="Attrition"
-          headline={`${atRiskEmployees().length} people may leave`}
-          sub={`Attrition rate ${attritionOverview.overallRate}% · industry ${attritionOverview.industryAvg}%`}
+          headline={`${liveRiskCount} people may leave`}
+          sub={summarySubText}
           visual={
             <div className="space-y-3">
               <div className="flex h-16 items-end gap-1">

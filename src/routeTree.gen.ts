@@ -13,6 +13,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedChatbotRouteImport } from './routes/_authenticated/chatbot'
+import { Route as ApiAttritionRouteImport } from './routes/api/attrition'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AuthenticatedEmployeeEmployeeIdRouteImport } from './routes/_authenticated/employee.$employeeId'
 
@@ -35,6 +36,11 @@ const AuthenticatedChatbotRoute = AuthenticatedChatbotRouteImport.update({
   path: '/chatbot',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiAttritionRoute = ApiAttritionRouteImport.update({
+  id: '/api/attrition',
+  path: '/api/attrition',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiChatRoute = ApiChatRouteImport.update({
   id: '/api/chat',
   path: '/api/chat',
@@ -51,12 +57,14 @@ export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRoute
   '/chatbot': typeof AuthenticatedChatbotRoute
+  '/api/attrition': typeof ApiAttritionRoute
   '/api/chat': typeof ApiChatRoute
   '/employee/$employeeId': typeof AuthenticatedEmployeeEmployeeIdRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/chatbot': typeof AuthenticatedChatbotRoute
+  '/api/attrition': typeof ApiAttritionRoute
   '/api/chat': typeof ApiChatRoute
   '/': typeof AuthenticatedIndexRoute
   '/employee/$employeeId': typeof AuthenticatedEmployeeEmployeeIdRoute
@@ -66,20 +74,34 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/chatbot': typeof AuthenticatedChatbotRoute
+  '/api/attrition': typeof ApiAttritionRoute
   '/api/chat': typeof ApiChatRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/employee/$employeeId': typeof AuthenticatedEmployeeEmployeeIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/chatbot' | '/api/chat' | '/employee/$employeeId'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/chatbot'
+    | '/api/attrition'
+    | '/api/chat'
+    | '/employee/$employeeId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/auth' | '/chatbot' | '/api/chat' | '/' | '/employee/$employeeId'
+  to:
+    | '/auth'
+    | '/chatbot'
+    | '/api/attrition'
+    | '/api/chat'
+    | '/'
+    | '/employee/$employeeId'
   id:
     | '__root__'
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/chatbot'
+    | '/api/attrition'
     | '/api/chat'
     | '/_authenticated/'
     | '/_authenticated/employee/$employeeId'
@@ -88,6 +110,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ApiAttritionRoute: typeof ApiAttritionRoute
   ApiChatRoute: typeof ApiChatRoute
 }
 
@@ -120,6 +143,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/chatbot'
       preLoaderRoute: typeof AuthenticatedChatbotRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/attrition': {
+      id: '/api/attrition'
+      path: '/api/attrition'
+      fullPath: '/api/attrition'
+      preLoaderRoute: typeof ApiAttritionRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/chat': {
       id: '/api/chat'
@@ -156,6 +186,7 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  ApiAttritionRoute: ApiAttritionRoute,
   ApiChatRoute: ApiChatRoute,
 }
 export const routeTree = rootRouteImport
