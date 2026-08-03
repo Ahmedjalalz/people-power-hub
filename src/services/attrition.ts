@@ -10,6 +10,36 @@ export type AttritionSummary = {
   people_at_risk_endpoint: string;
 };
 
+export type AttritionRateResponse = {
+  status: "success";
+  visual: "attrition_rate_overview";
+  title: string;
+  description: string;
+  prediction_window: string;
+  risk_threshold: number;
+  total_employees: number;
+  attrition_rate_percent: number;
+  people_at_risk: number;
+  people_not_at_risk: number;
+  card: {
+    label: string;
+    value_percent: number;
+    supporting_text: string;
+  };
+  chart: {
+    type: string;
+    name_key: string;
+    value_key: string;
+    segments: {
+      risk_status: string;
+      employee_count: number;
+      percentage: number;
+    }[];
+  };
+  interpretation_note: string;
+  people_at_risk_endpoint: string;
+};
+
 export type AtRiskEmployee = {
   employee_id: string;
   employee_name: string;
@@ -161,6 +191,8 @@ async function request<T>(params: URLSearchParams, options?: RequestInit): Promi
 }
 
 export const getAttritionSummary = () => request<AttritionSummary>(new URLSearchParams({ resource: "summary" }));
+
+export const getAttritionRate = () => request<AttritionRateResponse>(new URLSearchParams({ resource: "attrition-rate" }));
 
 export const getPeopleAtRisk = (limit = 50) =>
   request<PeopleAtRiskResponse>(new URLSearchParams({ resource: "people-at-risk", offset: "0", limit: String(limit) }));

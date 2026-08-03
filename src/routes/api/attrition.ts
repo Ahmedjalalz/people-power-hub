@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-const allowedResources = new Set(["summary", "people-at-risk", "detail", "profile", "department-risk", "top-risk-drivers", "refresh"]);
+const allowedResources = new Set(["summary", "attrition-rate", "people-at-risk", "detail", "profile", "department-risk", "top-risk-drivers", "refresh"]);
 
 export const Route = createFileRoute("/api/attrition")({
   server: {
@@ -26,6 +26,7 @@ async function forward(request: Request): Promise<Response> {
 
   const path =
     resource === "summary" ? "/api/v1/dashboard/attrition/summary"
+    : resource === "attrition-rate" ? "/api/v1/dashboard/attrition/attrition-rate"
     : resource === "people-at-risk" ? "/api/v1/dashboard/attrition/people-at-risk"
     : resource === "department-risk" ? "/api/v1/dashboard/attrition/department-risk"
     : resource === "top-risk-drivers" ? "/api/v1/dashboard/attrition/top-risk-drivers"

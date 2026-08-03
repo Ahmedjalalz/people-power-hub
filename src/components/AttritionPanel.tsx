@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { attritionOverview, tenureBuckets } from "@/lib/attrition-data";
 import { initials, riskTone } from "@/lib/employees";
 import {
+  getAttritionRate,
   getAttritionSummary,
   getDepartmentRisk,
   getEmployeeProfile,
@@ -19,6 +20,7 @@ import {
   getTopRiskDrivers,
   refreshAttritionDashboard,
   type AtRiskDetail,
+  type AttritionRateResponse,
   type DepartmentRiskResponse,
   type EmployeeProfileResponse,
   type TopRiskDriversResponse,
@@ -33,8 +35,9 @@ export function AttritionPanel({ open, onClose }: { open: boolean; onClose: () =
   const [personId, setPersonId] = useState<string | null>(null);
   const queryClient = useQueryClient();
   const summaryQuery = useQuery({ queryKey: ["attrition", "summary"], queryFn: getAttritionSummary });
+  const attritionRateQuery = useQuery({ queryKey: ["attrition", "rate"], queryFn: getAttritionRate, enabled: sub === "trend" });
   const departmentRiskQuery = useQuery({ queryKey: ["attrition", "department-risk"], queryFn: getDepartmentRisk, enabled: sub === "departments" });
-  const topRiskDriversQuery = useQuery({ queryKey: ["attrition", "top-risk-drivers"], queryFn: () => getTopRiskDrivers(3), enabled: sub === "reasons" });
+  const topRiskDriversQuery = useQuery({ queryKey: ["attrition", "top-risk-drivers"], queryFn: () => getTopRiskDrivers(3), enabled: true });
   const peopleQuery = useQuery({
     queryKey: ["attrition", "people-at-risk"], queryFn: () => getPeopleAtRisk(200), enabled: sub === "people",
   });
@@ -51,18 +54,21 @@ export function AttritionPanel({ open, onClose }: { open: boolean; onClose: () =
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["attrition"] }),
   });
   const summary = summaryQuery.data;
+  const topReason = topRiskDriversQuery.data
+    ? topRiskDriversQuery.data.drivers.find((driver) => !["other", "Other", "OTHERS"].includes(driver.label.trim())) ?? topRiskDriversQuery.data.top_driver
+    : undefined;
 
   return <>
     <CenterPanel open={open} onOpenChange={(next) => !next && onClose()} title="Attrition"
       description="Everything about who might leave, why, and who could step in." size="lg">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <MiniCard tint="bg-pastel-teal" icon={<TrendingUp className="h-5 w-5" />} label="Attrition rate"
-          headline={`${attritionOverview.overallRate}%`} sub={`Industry average ${attritionOverview.industryAvg}%`} onClick={() => setSub("trend")} />
+          headline={attritionRateQuery.data ? `${attritionRateQuery.data.card.value_percent.toFixed(1)}%` : `${attritionOverview.overallRate}%`} sub={attritionRateQuery.data ? attritionRateQuery.data.card.supporting_text : `Industry average ${attritionOverview.industryAvg}%`} onClick={() => setSub("trend")} />
         <MiniCard tint="bg-pastel-peach" icon={<ShieldAlert className="h-5 w-5" />} label="People at risk"
           headline={summary ? `${summary.people_at_risk} people` : "Loading..."}
           sub={summary ? `of ${summary.total_employees} employees - see the list` : "Getting live risk data"} onClick={() => setSub("people")} />
         <MiniCard tint="bg-pastel-sky" icon={<Compass className="h-5 w-5" />} label="Top reason people leave"
-          headline="Career growth" sub="34% of exits in the last 6 months" onClick={() => setSub("reasons")} />
+          headline={topReason ? topReason.label : "Loading..."} sub={topReason ? `${topReason.share_percent.toFixed(2)}% of model mentions` : "Loading risk drivers"} onClick={() => setSub("reasons")} />
         <MiniCard tint="bg-pastel-lavender" icon={<Network className="h-5 w-5" />} label="Department at risk"
           headline="Operations" sub="22 people flagged" onClick={() => setSub("departments")} />
         <MiniCard tint="bg-pastel-rose" icon={<Hourglass className="h-5 w-5" />} label="When people leave"
@@ -110,8 +116,26 @@ export function AttritionPanel({ open, onClose }: { open: boolean; onClose: () =
       onBack={() => setPersonId(null)}
     />
 
-    <ChartPanel open={sub === "trend"} onClose={() => setSub(null)} title="Attrition trend" description="Attrition trend over the last 6 months.">
-      <div className="h-64"><ResponsiveContainer><LineChart data={attritionOverview.trend}><XAxis dataKey="month" /><YAxis unit="%" /><Tooltip contentStyle={chartTooltip} /><Line type="monotone" dataKey="rate" stroke="var(--primary)" strokeWidth={3} /></LineChart></ResponsiveContainer></div>
+    <ChartPanel open={sub === "trend"} onClose={() => setSub(null)} title="Predicted Attrition Rate" description="Current workforce distribution based on the attrition prediction model.">
+      {attritionRateQuery.isPending ? <StateMessage>Loading attrition rate...</StateMessage>
+        : attritionRateQuery.isError ? <StateMessage error>{attritionRateQuery.error.message}</StateMessage>
+          : attritionRateQuery.data ? <div className="space-y-4">
+            <div className="flex items-center justify-between rounded-2xl border bg-card/70 p-4">
+              <div>
+                <div className="text-sm font-semibold">{attritionRateQuery.data.card.value_percent.toFixed(1)}%</div>
+                <div className="text-xs text-muted-foreground">{attritionRateQuery.data.card.supporting_text}</div>
+              </div>
+              <div className="text-right text-xs text-muted-foreground">
+                <div>Prediction window</div>
+                <div className="font-medium text-foreground">{attritionRateQuery.data.prediction_window.replaceAll("_", " ")}</div>
+              </div>
+            </div>
+            <div className="h-64"><ResponsiveContainer><PieChart><Pie data={attritionRateQuery.data.chart.segments} dataKey="employee_count" nameKey="risk_status" innerRadius={50} outerRadius={90}>{attritionRateQuery.data.chart.segments.map((segment, index) => <Cell key={segment.risk_status} fill={segment.risk_status === "At Risk" ? "var(--chart-2)" : "var(--chart-5)"} />)}</Pie><Tooltip contentStyle={chartTooltip} /></PieChart></ResponsiveContainer></div>
+            <div className="space-y-2 text-sm">
+              {attritionRateQuery.data.chart.segments.map((segment) => <div key={segment.risk_status} className="flex items-center justify-between rounded-2xl border bg-card/70 px-3 py-2"><span>{segment.risk_status}</span><span className="font-medium">{segment.employee_count} ({segment.percentage.toFixed(1)}%)</span></div>)}
+            </div>
+            <p className="text-xs text-muted-foreground">{attritionRateQuery.data.interpretation_note}</p>
+          </div> : null}
     </ChartPanel>
     <ChartPanel open={sub === "reasons"} onClose={() => setSub(null)} title="Why people leave" description="The shared model drivers behind the people-at-risk list.">
       {topRiskDriversQuery.isPending ? <StateMessage>Loading risk drivers...</StateMessage>
