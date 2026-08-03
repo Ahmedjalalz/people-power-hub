@@ -26,7 +26,7 @@ import {
   type TopRiskDriversResponse,
 } from "@/services/attrition";
 
-type SubView = "trend" | "people" | "reasons" | "departments" | "tenure";
+type SubView = "trend" | "people" | "reasons" | "departments";
 
 const chartTooltip = { background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12 };
 
@@ -71,8 +71,6 @@ export function AttritionPanel({ open, onClose }: { open: boolean; onClose: () =
           headline={topReason ? topReason.label : "Loading..."} sub={topReason ? `${topReason.share_percent.toFixed(2)}% of model mentions` : "Loading risk drivers"} onClick={() => setSub("reasons")} />
         <MiniCard tint="bg-pastel-lavender" icon={<Network className="h-5 w-5" />} label="Department at risk"
           headline="Operations" sub="22 people flagged" onClick={() => setSub("departments")} />
-        <MiniCard tint="bg-pastel-rose" icon={<Hourglass className="h-5 w-5" />} label="When people leave"
-          headline="1-3 years" sub="most common tenure at exit" onClick={() => setSub("tenure")} />
       </div>
       {summaryQuery.isError && <p className="mt-4 text-sm text-destructive">Live risk data unavailable: {summaryQuery.error.message}</p>}
     </CenterPanel>
@@ -149,9 +147,6 @@ export function AttritionPanel({ open, onClose }: { open: boolean; onClose: () =
       {departmentRiskQuery.isPending ? <StateMessage>Loading department risk...</StateMessage>
         : departmentRiskQuery.isError ? <StateMessage error>{departmentRiskQuery.error.message}</StateMessage>
           : departmentRiskQuery.data ? <div className="h-64"><ResponsiveContainer><BarChart data={departmentRiskQuery.data.departments} layout="vertical"><XAxis type="number" /><YAxis type="category" dataKey="department" width={100} /><Tooltip contentStyle={chartTooltip} /><Bar dataKey="people_at_risk" fill="var(--chart-4)" radius={[0, 8, 8, 0]} /></BarChart></ResponsiveContainer></div> : null}
-    </ChartPanel>
-    <ChartPanel open={sub === "tenure"} onClose={() => setSub(null)} title="When people tend to leave" description="How long people stayed before leaving.">
-      <div className="h-64"><ResponsiveContainer><BarChart data={tenureBuckets}><XAxis dataKey="bucket" /><YAxis /><Tooltip contentStyle={chartTooltip} /><Bar dataKey="leaving" fill="var(--chart-4)" radius={[8, 8, 0, 0]} /></BarChart></ResponsiveContainer></div>
     </ChartPanel>
   </>;
 }
