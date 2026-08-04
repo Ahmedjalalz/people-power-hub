@@ -6,6 +6,8 @@ import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from "recha
 import { InsightCard, Callout } from "@/components/InsightCard";
 import { CenterPanel } from "@/components/CenterPanel";
 import { AttritionPanel } from "@/components/AttritionPanel";
+import { HeadcountPanel } from "@/components/HeadcountPanel";
+
 import { attritionOverview } from "@/lib/attrition-data";
 import { atRiskEmployees } from "@/lib/employees";
 import { getAttritionSummary } from "@/services/attrition";
@@ -31,11 +33,11 @@ export const Route = createFileRoute("/_authenticated/")({
 type MainCard = "attrition" | "headcount" | "engagement";
 
 const headcountData = [
-  { dept: "Engineering", people: 74 },
-  { dept: "Operations", people: 62 },
-  { dept: "Support", people: 43 },
-  { dept: "Sales", people: 39 },
-  { dept: "Finance", people: 30 },
+  { dept: "Engineering", people: 54 },
+  { dept: "Operations", people: 45 },
+  { dept: "Support", people: 32 },
+  { dept: "Sales", people: 29 },
+  { dept: "Finance", people: 22 },
 ];
 
 const engagementData = [
@@ -105,7 +107,8 @@ function HRInsights() {
           icon={<Users2 className="h-5 w-5" strokeWidth={2.25} />}
           label="Headcount"
           headline={`${attritionOverview.totalEmployees} employees`}
-          sub="Across 5 departments"
+          sub="316 approved · 68 vacant · 84% budget used"
+
           visual={
             <div className="space-y-1.5">
               {headcountData.map((row) => (
@@ -114,7 +117,7 @@ function HRInsights() {
                   <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-foreground/5">
                     <div
                       className="h-full rounded-full bg-primary/60"
-                      style={{ width: `${(row.people / 80) * 100}%` }}
+                      style={{ width: `${(row.people / 60) * 100}%` }}
                     />
                   </div>
                   <span className="w-6 text-right">{row.people}</span>
@@ -152,29 +155,8 @@ function HRInsights() {
 
       <AttritionPanel open={openCard === "attrition"} onClose={() => setOpenCard(null)} />
 
-      <CenterPanel
-        open={openCard === "headcount"}
-        onOpenChange={(next) => !next && setOpenCard(null)}
-        title="Headcount by department"
-        description="How the 248 employees are spread across teams today."
-      >
-        <div className="h-64">
-          <ResponsiveContainer>
-            <BarChart data={headcountData}>
-              <XAxis dataKey="dept" stroke="var(--muted-foreground)" fontSize={12} />
-              <YAxis stroke="var(--muted-foreground)" fontSize={12} />
-              <Tooltip
-                contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12 }}
-              />
-              <Bar dataKey="people" fill="var(--chart-4)" radius={[8, 8, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-        <Callout tint="bg-pastel-sky/60">
-          Engineering and Operations hold more than half of the company — small changes there move the
-          overall numbers most.
-        </Callout>
-      </CenterPanel>
+      <HeadcountPanel open={openCard === "headcount"} onClose={() => setOpenCard(null)} />
+
 
       <CenterPanel
         open={openCard === "engagement"}
