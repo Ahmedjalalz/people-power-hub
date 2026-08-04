@@ -6,6 +6,8 @@ import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from "recha
 import { InsightCard, Callout } from "@/components/InsightCard";
 import { CenterPanel } from "@/components/CenterPanel";
 import { AttritionPanel } from "@/components/AttritionPanel";
+import { HeadcountPanel } from "@/components/HeadcountPanel";
+
 import { attritionOverview } from "@/lib/attrition-data";
 import { atRiskEmployees } from "@/lib/employees";
 import { getAttritionSummary } from "@/services/attrition";
