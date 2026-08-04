@@ -11,16 +11,16 @@ export type Dept = {
 };
 
 export const departments: Dept[] = [
-  { name: "Engineering", businessUnit: "Technology", location: "Lahore", approved: 96, budgeted: 92, actual: 74, vacancies: 22, utilization: 96, utilizationDelta: 3.2 },
-  { name: "Operations", businessUnit: "Delivery", location: "Karachi", approved: 70, budgeted: 68, actual: 62, vacancies: 8, utilization: 88, utilizationDelta: 1.1 },
-  { name: "Customer Support", businessUnit: "Delivery", location: "Karachi", approved: 52, budgeted: 48, actual: 43, vacancies: 9, utilization: 91, utilizationDelta: -0.8 },
-  { name: "Sales", businessUnit: "Commercial", location: "Islamabad", approved: 46, budgeted: 44, actual: 39, vacancies: 7, utilization: 84, utilizationDelta: 2.4 },
-  { name: "Marketing", businessUnit: "Commercial", location: "Islamabad", approved: 26, budgeted: 24, actual: 21, vacancies: 5, utilization: 72, utilizationDelta: -1.6 },
-  { name: "Finance", businessUnit: "Corporate", location: "Lahore", approved: 34, budgeted: 33, actual: 30, vacancies: 4, utilization: 78, utilizationDelta: 0.6 },
-  { name: "Human Resources", businessUnit: "Corporate", location: "Lahore", approved: 22, budgeted: 21, actual: 18, vacancies: 4, utilization: 66, utilizationDelta: -0.4 },
-  { name: "IT", businessUnit: "Technology", location: "Remote", approved: 30, budgeted: 29, actual: 24, vacancies: 6, utilization: 93, utilizationDelta: 4.1 },
-  { name: "Legal", businessUnit: "Corporate", location: "Lahore", approved: 12, budgeted: 12, actual: 11, vacancies: 1, utilization: 61, utilizationDelta: 0.2 },
-  { name: "Administration", businessUnit: "Corporate", location: "Karachi", approved: 18, budgeted: 17, actual: 16, vacancies: 2, utilization: 69, utilizationDelta: 0.9 },
+  { name: "Engineering", businessUnit: "Technology", location: "Lahore", approved: 76, budgeted: 74, actual: 54, vacancies: 22, utilization: 96, utilizationDelta: 3.2 },
+  { name: "Operations", businessUnit: "Delivery", location: "Karachi", approved: 53, budgeted: 52, actual: 45, vacancies: 8, utilization: 88, utilizationDelta: 1.1 },
+  { name: "Customer Support", businessUnit: "Delivery", location: "Karachi", approved: 41, budgeted: 39, actual: 32, vacancies: 9, utilization: 91, utilizationDelta: -0.8 },
+  { name: "Sales", businessUnit: "Commercial", location: "Islamabad", approved: 36, budgeted: 35, actual: 29, vacancies: 7, utilization: 84, utilizationDelta: 2.4 },
+  { name: "Marketing", businessUnit: "Commercial", location: "Islamabad", approved: 20, budgeted: 19, actual: 15, vacancies: 5, utilization: 72, utilizationDelta: -1.6 },
+  { name: "Finance", businessUnit: "Corporate", location: "Lahore", approved: 26, budgeted: 26, actual: 22, vacancies: 4, utilization: 78, utilizationDelta: 0.6 },
+  { name: "Human Resources", businessUnit: "Corporate", location: "Lahore", approved: 17, budgeted: 16, actual: 13, vacancies: 4, utilization: 66, utilizationDelta: -0.4 },
+  { name: "IT", businessUnit: "Technology", location: "Remote", approved: 24, budgeted: 23, actual: 18, vacancies: 6, utilization: 93, utilizationDelta: 4.1 },
+  { name: "Legal", businessUnit: "Corporate", location: "Lahore", approved: 9, budgeted: 9, actual: 8, vacancies: 1, utilization: 61, utilizationDelta: 0.2 },
+  { name: "Administration", businessUnit: "Corporate", location: "Karachi", approved: 14, budgeted: 14, actual: 12, vacancies: 2, utilization: 69, utilizationDelta: 0.9 },
 ];
 
 export const businessUnits = ["Technology", "Delivery", "Commercial", "Corporate"];
@@ -76,11 +76,11 @@ export type Kpi = {
 
 export const kpis: Kpi[] = [
   { key: "actual", title: "Actual employees", value: "248", delta: 1.6, tooltip: "Employees currently active on payroll.", tint: "bg-pastel-teal", spark: [231, 234, 238, 240, 244, 248] },
-  { key: "approved", title: "Approved employees", value: "406", delta: 0.9, tooltip: "Total approved workforce positions.", tint: "bg-pastel-sky", spark: [392, 395, 398, 400, 403, 406] },
-  { key: "budgeted", title: "Budgeted positions", value: "388", delta: 0.5, tooltip: "Positions approved inside the workforce budget.", tint: "bg-pastel-blue", spark: [376, 379, 381, 383, 386, 388] },
+  { key: "approved", title: "Approved employees", value: "316", delta: 0.9, tooltip: "Total approved workforce positions.", tint: "bg-pastel-sky", spark: [302, 305, 308, 311, 314, 316] },
+  { key: "budgeted", title: "Budgeted positions", value: "307", delta: 0.5, tooltip: "Positions approved inside the workforce budget.", tint: "bg-pastel-blue", spark: [293, 296, 299, 302, 305, 307] },
   { key: "vacant", title: "Vacant positions", value: "68", delta: -4.2, tooltip: "Approved positions that are currently unfilled.", tint: "bg-pastel-peach", spark: [79, 76, 74, 72, 70, 68] },
   { key: "funded", title: "Funded vacancies", value: "51", delta: 2.8, tooltip: "Vacancies that already have hiring budget approved.", tint: "bg-pastel-mint", spark: [44, 46, 47, 49, 50, 51] },
-  { key: "vacancyRate", title: "Vacancy rate", value: "16.7%", delta: -1.3, tooltip: "Vacant positions as a share of approved positions.", tint: "bg-pastel-yellow", spark: [19.4, 18.8, 18.1, 17.5, 17.1, 16.7] },
+  { key: "vacancyRate", title: "Vacancy rate", value: "21.5%", delta: -1.3, tooltip: "Vacant positions as a share of approved positions.", tint: "bg-pastel-yellow", spark: [25.1, 24.2, 23.4, 22.6, 22.0, 21.5] },
   { key: "budgetUse", title: "Budget utilization", value: "84%", delta: 2.1, tooltip: "Share of the workforce budget used so far this year.", tint: "bg-pastel-lavender", spark: [76, 78, 79, 81, 82, 84] },
   { key: "cost", title: "Avg. cost per employee", value: "$32.4k", delta: 1.2, tooltip: "Average yearly employment cost per person.", tint: "bg-pastel-pink", spark: [30.8, 31.1, 31.5, 31.8, 32.1, 32.4] },
   { key: "hiring", title: "Hiring progress", value: "62%", delta: 5.4, tooltip: "Progress against this year's hiring plan.", tint: "bg-pastel-teal", spark: [38, 44, 49, 54, 58, 62] },

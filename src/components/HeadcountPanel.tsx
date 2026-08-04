@@ -141,7 +141,7 @@ export function HeadcountPanel({
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {kpis.map((kpi) => {
           const Icon = kpiIcons[kpi.key] ?? Users2;
-          const value = kpi.key === "actual" ? String(totalActual) : kpi.key === "approved" ? String(totalApproved) : kpi.key === "vacant" ? String(totalVacancies) : kpi.value;
+          const value = isFiltered && kpi.key === "actual" ? String(totalActual) : isFiltered && kpi.key === "approved" ? String(totalApproved) : isFiltered && kpi.key === "vacant" ? String(totalVacancies) : kpi.value;
           return (
             <div key={kpi.key} title={kpi.tooltip} className="rounded-2xl border bg-card p-4">
               <div className="flex items-start justify-between">
