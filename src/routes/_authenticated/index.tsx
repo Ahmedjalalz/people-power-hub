@@ -105,7 +105,8 @@ function HRInsights() {
           icon={<Users2 className="h-5 w-5" strokeWidth={2.25} />}
           label="Headcount"
           headline={`${attritionOverview.totalEmployees} employees`}
-          sub="Across 5 departments"
+          sub="406 approved · 68 vacant · 84% budget used"
+
           visual={
             <div className="space-y-1.5">
               {headcountData.map((row) => (
