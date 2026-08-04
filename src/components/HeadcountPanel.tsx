@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, AreaChart, Area,
-  PieChart, Pie, Cell, LineChart, Line,
+  PieChart, Pie, Cell,
 } from "recharts";
 import {
   Users2, BadgeCheck, Wallet, DoorOpen, PiggyBank, Percent, Gauge, Coins, Target,
@@ -244,7 +244,6 @@ export function HeadcountPanel({
             <p className="mt-1 text-xs leading-relaxed text-foreground/80">{insight.body}</p>
             <Link
               to="/chatbot"
-              search={{ q: `Give me a deeper analysis on: ${insight.title} in headcount planning.` }}
               className="mt-3 inline-block text-xs font-medium underline underline-offset-4"
             >
               View analysis
@@ -269,7 +268,6 @@ export function HeadcountPanel({
         ) : (
           <Link
             to="/chatbot"
-            search={{ q: "Walk me through our headcount position: staffing gaps, vacancies and budget pressure." }}
             className="mt-4 inline-flex items-center gap-2 rounded-xl bg-primary px-3.5 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
           >
             <MessageSquare className="h-4 w-4" /> Ask AI Assistant
