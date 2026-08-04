@@ -153,29 +153,8 @@ function HRInsights() {
 
       <AttritionPanel open={openCard === "attrition"} onClose={() => setOpenCard(null)} />
 
-      <CenterPanel
-        open={openCard === "headcount"}
-        onOpenChange={(next) => !next && setOpenCard(null)}
-        title="Headcount by department"
-        description="How the 248 employees are spread across teams today."
-      >
-        <div className="h-64">
-          <ResponsiveContainer>
-            <BarChart data={headcountData}>
-              <XAxis dataKey="dept" stroke="var(--muted-foreground)" fontSize={12} />
-              <YAxis stroke="var(--muted-foreground)" fontSize={12} />
-              <Tooltip
-                contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12 }}
-              />
-              <Bar dataKey="people" fill="var(--chart-4)" radius={[8, 8, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-        <Callout tint="bg-pastel-sky/60">
-          Engineering and Operations hold more than half of the company — small changes there move the
-          overall numbers most.
-        </Callout>
-      </CenterPanel>
+      <HeadcountPanel open={openCard === "headcount"} onClose={() => setOpenCard(null)} />
+
 
       <CenterPanel
         open={openCard === "engagement"}
