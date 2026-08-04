@@ -33,11 +33,11 @@ export const Route = createFileRoute("/_authenticated/")({
 type MainCard = "attrition" | "headcount" | "engagement";
 
 const headcountData = [
-  { dept: "Engineering", people: 74 },
-  { dept: "Operations", people: 62 },
-  { dept: "Support", people: 43 },
-  { dept: "Sales", people: 39 },
-  { dept: "Finance", people: 30 },
+  { dept: "Engineering", people: 54 },
+  { dept: "Operations", people: 45 },
+  { dept: "Support", people: 32 },
+  { dept: "Sales", people: 29 },
+  { dept: "Finance", people: 22 },
 ];
 
 const engagementData = [
@@ -117,7 +117,7 @@ function HRInsights() {
                   <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-foreground/5">
                     <div
                       className="h-full rounded-full bg-primary/60"
-                      style={{ width: `${(row.people / 80) * 100}%` }}
+                      style={{ width: `${(row.people / 60) * 100}%` }}
                     />
                   </div>
                   <span className="w-6 text-right">{row.people}</span>
