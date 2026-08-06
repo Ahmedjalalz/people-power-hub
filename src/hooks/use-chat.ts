@@ -46,5 +46,13 @@ export function useChat({ welcomeMessage }: UseChatOptions) {
       setIsStreaming(false); setStatusText(null);
     }
   }, [isStreaming, threadId]);
-  return { threadId, messages, isStreaming, statusText, metadata, sendMessage, startNewChat };
+  const injectMockMessage = useCallback((visualType: "bar" | "pie" | "area" | "table") => {
+    setMessages((current) => [
+      ...current,
+      { id: createId(), role: "user", content: `Show me the ${visualType} visualization.`, timestamp: Date.now(), status: "done" },
+      { id: createId(), role: "assistant", content: `Here is the requested ${visualType} chart:`, timestamp: Date.now(), status: "done", visual: visualType }
+    ]);
+  }, []);
+
+  return { threadId, messages, isStreaming, statusText, metadata, sendMessage, startNewChat, injectMockMessage };
 }

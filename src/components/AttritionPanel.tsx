@@ -128,7 +128,7 @@ export function AttritionPanel({ open, onClose }: { open: boolean; onClose: () =
                 <div className="font-medium text-foreground">{attritionRateQuery.data.prediction_window.replaceAll("_", " ")}</div>
               </div>
             </div>
-            <div className="h-64"><ResponsiveContainer><PieChart><Pie data={attritionRateQuery.data.chart.segments} dataKey="employee_count" nameKey="risk_status" innerRadius={50} outerRadius={90}>{attritionRateQuery.data.chart.segments.map((segment, index) => <Cell key={segment.risk_status} fill={segment.risk_status === "At Risk" ? "var(--chart-2)" : "var(--chart-5)"} />)}</Pie><Tooltip contentStyle={chartTooltip} /></PieChart></ResponsiveContainer></div>
+            <div className="h-64"><ResponsiveContainer><PieChart><Pie data={attritionRateQuery.data.chart.segments} dataKey="employee_count" nameKey="risk_status" innerRadius={50} outerRadius={90}>{attritionRateQuery.data.chart.segments.map((segment, index) => <Cell key={segment.risk_status} fill={segment.risk_status === "At Risk" ? "var(--chart-2)" : "var(--chart-5)"} />)}</Pie><Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} /></PieChart></ResponsiveContainer></div>
             <div className="space-y-2 text-sm">
               {attritionRateQuery.data.chart.segments.map((segment) => <div key={segment.risk_status} className="flex items-center justify-between rounded-2xl border bg-card/70 px-3 py-2"><span>{segment.risk_status}</span><span className="font-medium">{segment.employee_count} ({segment.percentage.toFixed(1)}%)</span></div>)}
             </div>
@@ -139,14 +139,14 @@ export function AttritionPanel({ open, onClose }: { open: boolean; onClose: () =
       {topRiskDriversQuery.isPending ? <StateMessage>Loading risk drivers...</StateMessage>
         : topRiskDriversQuery.isError ? <StateMessage error>{topRiskDriversQuery.error.message}</StateMessage>
           : topRiskDriversQuery.data ? <div className="space-y-4">
-            <div className="h-64"><ResponsiveContainer><PieChart><Pie data={topRiskDriversQuery.data.chart_segments} dataKey="value" nameKey="label" innerRadius={50} outerRadius={90}>{topRiskDriversQuery.data.chart_segments.map((segment, index) => <Cell key={segment.label} fill={index === topRiskDriversQuery.data.chart_segments.length - 1 ? "var(--muted-foreground)" : ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--chart-4)"][index % 4]} />)}</Pie><Tooltip contentStyle={chartTooltip} /></PieChart></ResponsiveContainer></div>
+            <div className="h-64"><ResponsiveContainer><PieChart><Pie data={topRiskDriversQuery.data.chart_segments} dataKey="value" nameKey="label" innerRadius={50} outerRadius={90}>{topRiskDriversQuery.data.chart_segments.map((segment, index) => <Cell key={segment.label} fill={index === topRiskDriversQuery.data.chart_segments.length - 1 ? "var(--muted-foreground)" : ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--chart-4)"][index % 4]} />)}</Pie><Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} /></PieChart></ResponsiveContainer></div>
             <div className="space-y-2">{topRiskDriversQuery.data.drivers.map((driver) => <div key={driver.feature_key} className="rounded-2xl border bg-card/70 p-3"><div className="flex items-center justify-between"><span className="font-medium">{driver.label}</span><span className="text-sm text-muted-foreground">{driver.share_percent.toFixed(2)}%</span></div><p className="mt-1 text-xs text-muted-foreground">Mentioned in {driver.mention_count} model signals · {driver.employee_share_percent.toFixed(2)}% of at-risk employees</p></div>)}</div>
           </div> : null}
     </ChartPanel>
     <ChartPanel open={sub === "departments"} onClose={() => setSub(null)} title="Attrition risk by department" description="How many people are currently flagged in each team.">
       {departmentRiskQuery.isPending ? <StateMessage>Loading department risk...</StateMessage>
         : departmentRiskQuery.isError ? <StateMessage error>{departmentRiskQuery.error.message}</StateMessage>
-          : departmentRiskQuery.data ? <div className="h-64"><ResponsiveContainer><BarChart data={departmentRiskQuery.data.departments} layout="vertical"><XAxis type="number" /><YAxis type="category" dataKey="department" width={100} /><Tooltip contentStyle={chartTooltip} /><Bar dataKey="people_at_risk" fill="var(--chart-4)" radius={[0, 8, 8, 0]} /></BarChart></ResponsiveContainer></div> : null}
+          : departmentRiskQuery.data ? <div className="h-64"><ResponsiveContainer><BarChart data={departmentRiskQuery.data.departments} layout="vertical"><XAxis type="number" /><YAxis type="category" dataKey="department" width={100} /><Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} /><Bar dataKey="people_at_risk" fill="var(--chart-4)" radius={[0, 8, 8, 0]} /></BarChart></ResponsiveContainer></div> : null}
     </ChartPanel>
   </>;
 }

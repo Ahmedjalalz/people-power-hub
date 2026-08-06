@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { MessageCircle, X } from "lucide-react";
 import { Chatbot } from "./Chatbot";
 import { cn } from "@/lib/utils";
@@ -20,9 +20,15 @@ export function FloatingChatbot() {
       </button>
 
       {open && (
-        <div className="fixed bottom-24 right-6 z-50 w-[380px] max-w-[calc(100vw-2rem)] h-[560px] max-h-[calc(100vh-8rem)] rounded-2xl shadow-2xl border bg-card overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-200">
-          <Chatbot autoFocus />
-        </div>
+        <>
+          <div 
+            className="fixed inset-0 z-40 bg-background/50 backdrop-blur-sm animate-in fade-in duration-200" 
+            onClick={() => setOpen(false)} 
+          />
+          <div className="fixed bottom-24 left-6 right-6 z-50 h-[80vh] max-h-[calc(100vh-8rem)] rounded-2xl shadow-2xl border bg-card/95 backdrop-blur overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-200">
+            <Chatbot autoFocus />
+          </div>
+        </>
       )}
     </>
   );

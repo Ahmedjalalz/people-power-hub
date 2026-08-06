@@ -11,6 +11,7 @@ import { HeadcountPanel } from "@/components/HeadcountPanel";
 import { attritionOverview } from "@/lib/attrition-data";
 import { atRiskEmployees } from "@/lib/employees";
 import { getAttritionSummary } from "@/services/attrition";
+import { getHeadcountKPIs, getHeadcountByDepartment } from "@/services/headcount";
 
 export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
@@ -59,6 +60,18 @@ function HRInsights() {
       ? `${liveRiskRate.toFixed(1)}% risk rate across ${summaryQuery.data.total_employees} employees`
       : `Attrition rate ${attritionOverview.overallRate}% · industry ${attritionOverview.industryAvg}%`;
 
+  const headcountKPIsQuery = useQuery({ queryKey: ["headcount", "kpis"], queryFn: getHeadcountKPIs });
+  const headcountDeptQuery = useQuery({ queryKey: ["headcount", "dept"], queryFn: getHeadcountByDepartment });
+
+  const totalEmployees = headcountKPIsQuery.data?.metrics?.find(m => m.metric_name === "actual_employee_count")?.value ?? attritionOverview.totalEmployees;
+  const approved = headcountKPIsQuery.data?.metrics?.find(m => m.metric_name === "approved_position_count")?.value ?? 316;
+  const vacant = headcountKPIsQuery.data?.metrics?.find(m => m.metric_name === "vacant_approved_position_count")?.value ?? 68;
+  const budgetUse = headcountKPIsQuery.data?.metrics?.find(m => m.metric_name === "budget_utilization_percentage")?.value ?? 84;
+  const hData = headcountDeptQuery.data?.records?.map(r => ({
+    dept: r.department,
+    people: r.actual_employee_count
+  })) ?? headcountData;
+
   return (
     <main className="mx-auto max-w-7xl px-6 py-8">
       <div className="mb-8">
@@ -106,12 +119,12 @@ function HRInsights() {
           tintVar="--pastel-sky"
           icon={<Users2 className="h-5 w-5" strokeWidth={2.25} />}
           label="Headcount"
-          headline={`${attritionOverview.totalEmployees} employees`}
-          sub="316 approved · 68 vacant · 84% budget used"
+          headline={`${totalEmployees} employees`}
+          sub={`${approved} approved · ${vacant} vacant · ${budgetUse}% budget used`}
 
           visual={
             <div className="space-y-1.5">
-              {headcountData.map((row) => (
+              {hData.map((row) => (
                 <div key={row.dept} className="flex items-center gap-2 text-[11px]">
                   <span className="w-20 text-muted-foreground">{row.dept}</span>
                   <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-foreground/5">

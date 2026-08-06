@@ -1,19 +1,32 @@
 import { useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, AreaChart, Area,
-  PieChart, Pie, Cell,
+  PieChart, Pie, Cell, LineChart, Line,
 } from "recharts";
 import {
   Users2, BadgeCheck, Wallet, DoorOpen, PiggyBank, Percent, Gauge, Coins, Target,
   Repeat, UserPlus, UserMinus, Sparkle, MessageSquare, Table2, BarChart3, Search, RotateCcw, Check,
 } from "lucide-react";
+import {
+  getHeadcountKPIs,
+  getHeadcountByDepartment,
+  getHeadcountTrend,
+  getMovementTrend,
+  getCompositionByJobLevel,
+  getVacancyAgeing,
+  getBudgetUtilization,
+  getCriticalSnapshot,
+  getExceptionsAndActions,
+  getWorkforceActivity
+} from "@/services/headcount";
 import { Link } from "@tanstack/react-router";
 import { CenterPanel } from "@/components/CenterPanel";
 import { cn } from "@/lib/utils";
 import {
   aiInsights, businessUnits, criticalSnapshot, dateRanges, departments, employmentTypes,
   headcountTrend, jobLevelMix, jobLevels, kpis, locations, skills, suggestedActions,
-  todayActivity, vacancyAgeing, type RiskLevel,
+  todayActivity, vacancyAgeing, movementTrend, type RiskLevel,
 } from "@/lib/headcount-data";
 
 const chartTooltip = { background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12 };
@@ -51,28 +64,148 @@ export function HeadcountPanel({
   const [draft, setDraft] = useState<Filters>(emptyFilters);
   const [applied, setApplied] = useState<Filters>(emptyFilters);
 
+  const kpisQuery = useQuery({ queryKey: ["headcount", "kpis"], queryFn: getHeadcountKPIs, enabled: open });
+  const deptQuery = useQuery({ queryKey: ["headcount", "dept"], queryFn: getHeadcountByDepartment, enabled: open });
+  const trendQuery = useQuery({ queryKey: ["headcount", "trend"], queryFn: getHeadcountTrend, enabled: open });
+  const movementQuery = useQuery({ queryKey: ["headcount", "movement"], queryFn: getMovementTrend, enabled: open });
+  const jobLevelQuery = useQuery({ queryKey: ["headcount", "jobLevel"], queryFn: getCompositionByJobLevel, enabled: open });
+  const vacancyAgeingQuery = useQuery({ queryKey: ["headcount", "vacancyAgeing"], queryFn: getVacancyAgeing, enabled: open });
+  const budgetQuery = useQuery({ queryKey: ["headcount", "budget"], queryFn: getBudgetUtilization, enabled: open });
+  const criticalQuery = useQuery({ queryKey: ["headcount", "critical"], queryFn: getCriticalSnapshot, enabled: open });
+  const exceptionsQuery = useQuery({ queryKey: ["headcount", "exceptions"], queryFn: getExceptionsAndActions, enabled: open });
+  const activityQuery = useQuery({ queryKey: ["headcount", "activity"], queryFn: getWorkforceActivity, enabled: open });
+
+  // Map Real Data to mock shapes where possible to preserve UI
+  const realDepartments = useMemo(() => {
+    if (!deptQuery.data?.records || !budgetQuery.data?.records || !criticalQuery.data?.records) return departments;
+    
+    // Combine department data from multiple endpoints
+    const budgetMap = new Map(budgetQuery.data.records.map(r => [r.department, r.budget_utilization_percentage]));
+    const criticalMap = new Map(criticalQuery.data.records.map(r => [r.department, r.vacant_approved_position_count]));
+
+    return deptQuery.data.records.map(r => {
+      const deptName = r.department;
+      return {
+        name: deptName,
+        businessUnit: "Technology", // Mock fallback for filters
+        location: "Remote", // Mock fallback for filters
+        approved: r.approved_position_count,
+        budgeted: r.budgeted_position_count,
+        actual: r.actual_employee_count,
+        vacancies: criticalMap.get(deptName) ?? 0,
+        utilization: budgetMap.get(deptName) ?? 0,
+        utilizationDelta: 0,
+      };
+    });
+  }, [deptQuery.data, budgetQuery.data, criticalQuery.data]);
+
   const filteredDepartments = useMemo(() => {
-    return departments.filter((dept) => {
+    return realDepartments.filter((dept) => {
       if (applied.department !== "All" && dept.name !== applied.department) return false;
       if (applied.businessUnit !== "All" && dept.businessUnit !== applied.businessUnit) return false;
       if (applied.location !== "All" && dept.location !== applied.location) return false;
       if (applied.search.trim() && !dept.name.toLowerCase().includes(applied.search.trim().toLowerCase())) return false;
       return true;
     });
-  }, [applied]);
+  }, [applied, realDepartments]);
 
   const scale = filteredDepartments.length
     ? filteredDepartments.reduce((sum, dept) => sum + dept.actual, 0) /
-      departments.reduce((sum, dept) => sum + dept.actual, 0)
+      (realDepartments.reduce((sum, dept) => sum + dept.actual, 0) || 1)
     : 0;
 
   const levels = useMemo(
     () =>
-      jobLevelMix
-        .filter((row) => applied.jobLevel === "All" || row.level === applied.jobLevel)
-        .map((row) => ({ ...row, count: Math.max(1, Math.round(row.count * scale)) })),
-    [applied.jobLevel, scale],
+      (jobLevelQuery.data?.records ? jobLevelQuery.data.records.map(r => ({ level: r.job_level, count: r.actual_employee_count, color: "var(--pastel-blue)" })) : jobLevelMix)
+        .filter((row: any) => applied.jobLevel === "All" || row.level === applied.jobLevel)
+        .map((row: any) => ({ ...row, count: Math.max(1, Math.round(row.count * scale)) })),
+    [applied.jobLevel, scale, jobLevelQuery.data],
   );
+
+  const realHeadcountTrend = useMemo(() => {
+    if (!trendQuery.data?.records) return headcountTrend;
+    return trendQuery.data.records.map((r: any) => ({
+      month: r.snapshot_month.substring(0, 7),
+      people: r.actual_employee_count
+    }));
+  }, [trendQuery.data]);
+
+  const realMovementTrend = useMemo(() => {
+    if (!movementQuery.data?.records) return movementTrend;
+    return movementQuery.data.records.map((r: any) => ({
+      month: r.month.substring(0, 7),
+      joiners: r.joiner_count,
+      leavers: r.leaver_count,
+      promotions: r.promotion_count,
+      transfers: r.transfer_count
+    }));
+  }, [movementQuery.data]);
+
+  const realVacancyAgeing = useMemo(() => {
+    if (!vacancyAgeingQuery.data?.records) return vacancyAgeing;
+    // Map numerical days into buckets
+    const buckets = [
+      { bucket: "0–30 days", count: 0, color: "var(--pastel-mint)" },
+      { bucket: "31–60 days", count: 0, color: "var(--pastel-teal)" },
+      { bucket: "61–90 days", count: 0, color: "var(--pastel-yellow)" },
+      { bucket: "90+ days", count: 0, color: "var(--pastel-peach)" }
+    ];
+    for (const r of vacancyAgeingQuery.data.records) {
+      const days = r.vacancy_age_in_days;
+      if (days <= 30) buckets[0].count++;
+      else if (days <= 60) buckets[1].count++;
+      else if (days <= 90) buckets[2].count++;
+      else buckets[3].count++;
+    }
+    return buckets;
+  }, [vacancyAgeingQuery.data]);
+
+  const realCriticalSnapshot = useMemo(() => {
+    if (!criticalQuery.data?.records) return criticalSnapshot;
+    return criticalQuery.data.records.map((r: any) => {
+      const riskLevel = r.vacancy_rate_percentage >= 20 ? "Critical" : r.vacancy_rate_percentage >= 14 ? "High" : r.vacancy_rate_percentage >= 8 ? "Medium" : "Low";
+      return {
+        dept: r.department,
+        current: r.actual_employee_count,
+        approved: r.approved_position_count,
+        vacancies: r.vacant_approved_position_count,
+        risk: riskLevel as RiskLevel
+      };
+    });
+  }, [criticalQuery.data]);
+
+  const realAiInsights = useMemo(() => {
+    if (!exceptionsQuery.data?.records) return aiInsights;
+    return exceptionsQuery.data.records.map((r: any) => {
+      const tint = r.severity === "Critical" ? "bg-pastel-peach" : r.severity === "Warning" ? "bg-pastel-yellow" : "bg-pastel-mint";
+      return {
+        title: r.exception_type,
+        body: r.exception_description,
+        tint
+      };
+    });
+  }, [exceptionsQuery.data]);
+
+  const realSuggestedActions = useMemo(() => {
+    if (!exceptionsQuery.data?.records) return suggestedActions;
+    return exceptionsQuery.data.records.map((r: any) => r.recommended_action);
+  }, [exceptionsQuery.data]);
+
+  const realTodayActivity = useMemo(() => {
+    if (!activityQuery.data?.metrics) return todayActivity;
+    const m = activityQuery.data.metrics;
+    const getVal = (name: string) => m.find((x: any) => x.metric_name === name)?.value ?? 0;
+    
+    return [
+      { label: "Total employees", value: getVal("actual_employee_count").toString(), percent: "100%", change: 0 },
+      { label: "Available for work", value: getVal("employees_available_for_work").toString(), percent: getVal("workforce_availability_percentage").toFixed(1) + "%", change: 0 },
+      { label: "On approved leave", value: getVal("employees_on_approved_leave").toString(), percent: "", change: 0 },
+      { label: "Absent", value: getVal("employees_absent").toString(), percent: "", change: 0 },
+      { label: "Overtime hours", value: getVal("total_overtime_hours").toString(), percent: "", change: 0 },
+      { label: "Open positions", value: getVal("daily_open_position_count").toString(), percent: "", change: 0 },
+      { label: "Critical openings", value: getVal("daily_critical_open_position_count").toString(), percent: "", change: 0 },
+    ];
+  }, [activityQuery.data]);
 
   const trendMonths = { "Last 30 days": 6, "This quarter": 6, "This year": 12, "Last 24 months": 24 }[applied.dateRange] ?? 24;
 
@@ -80,6 +213,24 @@ export function HeadcountPanel({
   const totalApproved = filteredDepartments.reduce((sum, dept) => sum + dept.approved, 0);
   const totalVacancies = filteredDepartments.reduce((sum, dept) => sum + dept.vacancies, 0);
   const isFiltered = JSON.stringify(applied) !== JSON.stringify(emptyFilters);
+
+  const realKpis = useMemo(() => {
+    if (!kpisQuery.data?.metrics) return kpis;
+    const m = kpisQuery.data.metrics;
+    const getVal = (name: string) => m.find(x => x.metric_name === name)?.value ?? 0;
+    
+    return kpis.map(k => {
+      let val = k.value;
+      if (k.key === "actual") val = getVal("actual_employee_count").toString();
+      if (k.key === "approved") val = getVal("approved_position_count").toString();
+      if (k.key === "budgeted") val = getVal("budgeted_position_count").toString();
+      if (k.key === "vacant") val = getVal("vacant_approved_position_count").toString();
+      if (k.key === "vacancyRate") val = getVal("vacancy_rate_percentage").toFixed(1) + "%";
+      if (k.key === "budgetUse") val = getVal("budget_utilization_percentage").toFixed(1) + "%";
+      
+      return { ...k, value: val };
+    });
+  }, [kpisQuery.data]);
 
   return (
     <CenterPanel
@@ -96,7 +247,7 @@ export function HeadcountPanel({
       {/* Global filters */}
       <div className="mb-6 rounded-2xl border bg-muted/30 p-4">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          <Select label="Department" value={draft.department} options={departments.map((d) => d.name)} onChange={(v) => setDraft({ ...draft, department: v })} />
+          <Select label="Department" value={draft.department} options={realDepartments.map((d) => d.name)} onChange={(v) => setDraft({ ...draft, department: v })} />
           <Select label="Business unit" value={draft.businessUnit} options={businessUnits} onChange={(v) => setDraft({ ...draft, businessUnit: v })} />
           <Select label="Work location" value={draft.location} options={locations} onChange={(v) => setDraft({ ...draft, location: v })} />
           <Select label="Employment type" value={draft.employmentType} options={employmentTypes} onChange={(v) => setDraft({ ...draft, employmentType: v })} />
@@ -139,7 +290,7 @@ export function HeadcountPanel({
       {/* Section 1 — KPI cards */}
       <SectionTitle>Key workforce numbers</SectionTitle>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {kpis.map((kpi) => {
+        {realKpis.map((kpi) => {
           const Icon = kpiIcons[kpi.key] ?? Users2;
           const value = isFiltered && kpi.key === "actual" ? String(totalActual) : isFiltered && kpi.key === "approved" ? String(totalApproved) : isFiltered && kpi.key === "vacant" ? String(totalVacancies) : kpi.value;
           return (
@@ -148,7 +299,7 @@ export function HeadcountPanel({
                 <span className={cn("grid h-9 w-9 place-items-center rounded-full", kpi.tint)}>
                   <Icon className="h-4 w-4" />
                 </span>
-                <span className={cn("text-xs font-medium", kpi.delta >= 0 ? "text-emerald-600" : "text-rose-600")}>
+                <span className={cn("text-xs font-medium", kpi.delta >= 0 ? "text-emerald-600 dark:text-emerald-500" : "text-rose-600 dark:text-rose-500")}>
                   {kpi.delta >= 0 ? "▲" : "▼"} {Math.abs(kpi.delta)}%
                 </span>
               </div>
@@ -164,21 +315,24 @@ export function HeadcountPanel({
       <SectionTitle>Approved vs Budgeted vs Actual Headcount by Department</SectionTitle>
       <DeptComparison rows={filteredDepartments} />
 
-      {/* Section 3 */}
+      {/* Section 3 & Movement */}
       <SectionTitle>Headcount Trend</SectionTitle>
-      <TrendChart months={trendMonths} />
+      <TrendChart months={trendMonths} trendData={realHeadcountTrend} />
+
+      <SectionTitle>Workforce Dynamics</SectionTitle>
+      <MovementTrendChart months={trendMonths} movementData={realMovementTrend} />
 
       {/* Sections 4 & 5 */}
       <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-2">
         <DonutCard
           title="Workforce Composition by Job Level"
-          data={levels.map((row) => ({ label: row.level, value: row.count, color: row.color }))}
-          footer={`Total headcount: ${levels.reduce((sum, row) => sum + row.count, 0)}`}
+          data={levels.map((row: any) => ({ label: row.level, value: row.count, color: row.color }))}
+          footer={`Total headcount: ${levels.reduce((sum: number, row: any) => sum + row.count, 0)}`}
         />
         <DonutCard
           title="Vacancy Ageing"
-          data={vacancyAgeing.map((row) => ({ label: row.bucket, value: row.count, color: row.color }))}
-          footer={`${vacancyAgeing.reduce((sum, row) => sum + row.count, 0)} open vacancies`}
+          data={realVacancyAgeing.map((row) => ({ label: row.bucket, value: row.count, color: row.color }))}
+          footer={`${realVacancyAgeing.reduce((sum, row) => sum + row.count, 0)} open vacancies`}
         />
       </div>
 
@@ -195,7 +349,7 @@ export function HeadcountPanel({
                 <div className={cn("h-full rounded-full", tone)} style={{ width: `${dept.utilization}%` }} />
               </div>
               <span className="hidden text-right text-sm sm:block">{dept.utilization}%</span>
-              <span className={cn("hidden text-right text-xs sm:block", dept.utilizationDelta >= 0 ? "text-emerald-600" : "text-rose-600")}>
+              <span className={cn("hidden text-right text-xs sm:block", dept.utilizationDelta >= 0 ? "text-emerald-600 dark:text-emerald-500" : "text-rose-600 dark:text-rose-500")}>
                 {dept.utilizationDelta >= 0 ? "+" : ""}{dept.utilizationDelta}%
               </span>
               <span className="hidden justify-self-end rounded-full bg-muted px-2 py-0.5 text-[11px] sm:block">{status}</span>
@@ -214,19 +368,29 @@ export function HeadcountPanel({
               <th className="px-4 py-2.5">Current</th>
               <th className="px-4 py-2.5">Approved</th>
               <th className="px-4 py-2.5">Variance</th>
+              <th className="px-4 py-2.5">Status</th>
               <th className="px-4 py-2.5">Vacancies</th>
               <th className="px-4 py-2.5">Risk</th>
             </tr>
           </thead>
           <tbody>
-            {criticalSnapshot
-              .filter((row) => filteredDepartments.some((dept) => dept.name === row.dept))
-              .map((row) => (
+            {realCriticalSnapshot
+              .filter((row: any) => filteredDepartments.some((dept: any) => dept.name === row.dept))
+              .map((row: any) => (
                 <tr key={row.dept} className={cn("border-t", row.risk === "Critical" && "bg-pastel-peach/25")}>
                   <td className="px-4 py-2.5">{row.dept}</td>
                   <td className="px-4 py-2.5">{row.current}</td>
                   <td className="px-4 py-2.5">{row.approved}</td>
                   <td className="px-4 py-2.5">{row.current - row.approved}</td>
+                  <td className="px-4 py-2.5 font-medium">
+                    {row.current > row.approved ? (
+                      <span className="text-pastel-rose">Overstaffed</span>
+                    ) : row.current < row.approved ? (
+                      <span className="text-pastel-peach">Understaffed</span>
+                    ) : (
+                      <span className="text-pastel-mint">Balanced</span>
+                    )}
+                  </td>
                   <td className="px-4 py-2.5">{row.vacancies}</td>
                   <td className="px-4 py-2.5"><RiskBadge level={row.risk} /></td>
                 </tr>
@@ -238,7 +402,7 @@ export function HeadcountPanel({
       {/* Section 8 */}
       <SectionTitle>AI Insights & Recommendations</SectionTitle>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        {aiInsights.map((insight) => (
+        {realAiInsights.map((insight: any) => (
           <div key={insight.title} className={cn("rounded-2xl p-4", insight.tint)}>
             <div className="text-sm font-semibold">{insight.title}</div>
             <p className="mt-1 text-xs leading-relaxed text-foreground/80">{insight.body}</p>
@@ -254,7 +418,7 @@ export function HeadcountPanel({
       <div className="mt-3 rounded-2xl border bg-card p-4">
         <div className="text-sm font-semibold">Suggested actions</div>
         <div className="mt-3 flex flex-wrap gap-2">
-          {suggestedActions.map((action) => (
+          {realSuggestedActions.map((action: any) => (
             <span key={action} className="rounded-full bg-muted px-3 py-1 text-xs">{action}</span>
           ))}
         </div>
@@ -278,13 +442,13 @@ export function HeadcountPanel({
       {/* Section 9 */}
       <SectionTitle>Today's Workforce Activity</SectionTitle>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        {todayActivity.map((item) => (
+        {realTodayActivity.map((item: any) => (
           <div key={item.label} className="rounded-2xl border bg-card p-3">
             <div className="text-[11px] text-muted-foreground">{item.label}</div>
             <div className="text-xl font-semibold tracking-tight">{item.value}</div>
             <div className="flex items-center justify-between text-[11px]">
               <span className="text-muted-foreground">{item.percent}</span>
-              <span className={item.change >= 0 ? "text-emerald-600" : "text-rose-600"}>
+              <span className={item.change >= 0 ? "text-emerald-600 dark:text-emerald-500" : "text-rose-600 dark:text-rose-500"}>
                 {item.change >= 0 ? "+" : ""}{item.change}% vs yesterday
               </span>
             </div>
@@ -358,7 +522,7 @@ function DeptComparison({ rows }: { rows: typeof departments }) {
             <BarChart data={rows} margin={{ left: -18 }}>
               <XAxis dataKey="name" stroke="var(--muted-foreground)" fontSize={10} interval={0} angle={-25} textAnchor="end" height={60} />
               <YAxis stroke="var(--muted-foreground)" fontSize={11} />
-              <Tooltip contentStyle={chartTooltip} />
+              <Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} />
               <Legend wrapperStyle={{ fontSize: 11 }} />
               <Bar name="Approved" dataKey="approved" fill="var(--pastel-sky)" radius={[6, 6, 0, 0]} />
               <Bar name="Budgeted" dataKey="budgeted" fill="var(--pastel-teal)" radius={[6, 6, 0, 0]} />
@@ -389,10 +553,10 @@ function DeptComparison({ rows }: { rows: typeof departments }) {
   );
 }
 
-function TrendChart({ months }: { months: number }) {
+function TrendChart({ months, trendData = headcountTrend }: { months: number, trendData?: any[] }) {
   const [range, setRange] = useState<number | null>(null);
   const window = range ?? months;
-  const data = headcountTrend.slice(-window);
+  const data = trendData.slice(-window);
   const first = data[0]?.people ?? 0;
   const last = data[data.length - 1]?.people ?? 0;
   const growth = first ? ((last - first) / first) * 100 : 0;
@@ -422,9 +586,44 @@ function TrendChart({ months }: { months: number }) {
             </defs>
             <XAxis dataKey="month" stroke="var(--muted-foreground)" fontSize={10} interval={Math.max(0, Math.floor(data.length / 8))} />
             <YAxis stroke="var(--muted-foreground)" fontSize={11} domain={["dataMin - 8", "dataMax + 6"]} />
-            <Tooltip contentStyle={chartTooltip} />
+            <Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} />
             <Area type="monotone" dataKey="people" stroke="var(--primary)" strokeWidth={2.5} fill="url(#hcFill)" animationDuration={900} />
           </AreaChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  );
+}
+
+function MovementTrendChart({ months, movementData = movementTrend }: { months: number, movementData?: any[] }) {
+  const [range, setRange] = useState<number | null>(null);
+  const window = range ?? months;
+  const data = movementData.slice(-window);
+  
+  return (
+    <div className="rounded-2xl border bg-card p-4">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-medium">Joiners vs Leavers vs Promotions vs Transfers</span>
+        </div>
+        <div className="flex gap-1">
+          {[["6M", 6], ["12M", 12], ["24M", 24], ["All", movementTrend.length]].map(([label, value]) => (
+            <ToggleButton key={label as string} active={window === value} onClick={() => setRange(value as number)} label={label as string} />
+          ))}
+        </div>
+      </div>
+      <div className="h-64">
+        <ResponsiveContainer>
+          <LineChart data={data} margin={{ left: -18 }}>
+            <XAxis dataKey="month" stroke="var(--muted-foreground)" fontSize={10} interval={Math.max(0, Math.floor(data.length / 8))} />
+            <YAxis stroke="var(--muted-foreground)" fontSize={11} />
+            <Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} />
+            <Legend wrapperStyle={{ fontSize: 11 }} />
+            <Line type="monotone" name="Joiners" dataKey="joiners" stroke="var(--pastel-mint)" strokeWidth={2.5} dot={false} />
+            <Line type="monotone" name="Leavers" dataKey="leavers" stroke="var(--pastel-rose)" strokeWidth={2.5} dot={false} />
+            <Line type="monotone" name="Promotions" dataKey="promotions" stroke="var(--pastel-teal)" strokeWidth={2.5} dot={false} />
+            <Line type="monotone" name="Transfers" dataKey="transfers" stroke="var(--pastel-sky)" strokeWidth={2.5} dot={false} />
+          </LineChart>
         </ResponsiveContainer>
       </div>
     </div>
@@ -445,7 +644,7 @@ function DonutCard({
               <Pie data={data} dataKey="value" nameKey="label" innerRadius={42} outerRadius={68} paddingAngle={2}>
                 {data.map((row) => <Cell key={row.label} fill={row.color} stroke="var(--card)" />)}
               </Pie>
-              <Tooltip contentStyle={chartTooltip} />
+              <Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} />
             </PieChart>
           </ResponsiveContainer>
         </div>
@@ -486,7 +685,7 @@ function SkillsSection() {
               <div className="h-full rounded-full bg-primary/60" style={{ width: `${(skill.employees / max) * 100}%` }} />
             </div>
             <span className="w-8 text-right text-xs text-muted-foreground">{skill.employees}</span>
-            <span className="w-12 text-right text-[11px] text-emerald-600">+{skill.growth}%</span>
+            <span className="w-12 text-right text-[11px] text-emerald-600 dark:text-emerald-500">+{skill.growth}%</span>
           </div>
         ))}
       </div>

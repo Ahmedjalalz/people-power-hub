@@ -7,6 +7,7 @@ export type ChatMessage = {
   timestamp: number;
   status: "thinking" | "typing" | "done";
   statusText?: string;
+  visual?: "bar" | "pie" | "area" | "table";
 };
 
 export type ChatStreamEvent =

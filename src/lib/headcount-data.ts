@@ -146,3 +146,23 @@ export const suggestedActions = [
   "Increase internship intake",
   "Review department staffing plans",
 ];
+
+export const movementTrend: { month: string; joiners: number; leavers: number; promotions: number; transfers: number }[] = (() => {
+  const labels = [
+    "Sep 24", "Oct 24", "Nov 24", "Dec 24", "Jan 25", "Feb 25", "Mar 25", "Apr 25",
+    "May 25", "Jun 25", "Jul 25", "Aug 25", "Sep 25", "Oct 25", "Nov 25", "Dec 25",
+    "Jan 26", "Feb 26", "Mar 26", "Apr 26", "May 26", "Jun 26", "Jul 26", "Aug 26",
+  ];
+  const joiners = [5, 7, 8, 4, 12, 6, 9, 8, 10, 7, 6, 8, 5, 7, 4, 9, 11, 8, 7, 9, 8, 7, 6, 5];
+  const leavers = [2, 4, 4, 2, 9, 8, 4, 5, 7, 5, 4, 5, 3, 5, 5, 5, 8, 6, 5, 7, 6, 5, 4, 3];
+  const promotions = [1, 2, 5, 1, 10, 3, 4, 2, 5, 3, 2, 3, 1, 2, 1, 8, 6, 3, 2, 4, 3, 2, 1, 1];
+  const transfers = [0, 1, 2, 0, 4, 2, 3, 1, 3, 2, 1, 2, 0, 1, 2, 3, 4, 2, 1, 2, 2, 1, 0, 1];
+  
+  return labels.map((month, index) => ({
+    month,
+    joiners: joiners[index]!,
+    leavers: leavers[index]!,
+    promotions: promotions[index]!,
+    transfers: transfers[index]!,
+  }));
+})();
