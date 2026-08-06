@@ -63,14 +63,15 @@ function HRInsights() {
   const headcountKPIsQuery = useQuery({ queryKey: ["headcount", "kpis"], queryFn: getHeadcountKPIs });
   const headcountDeptQuery = useQuery({ queryKey: ["headcount", "dept"], queryFn: getHeadcountByDepartment });
 
-  const totalEmployees = headcountKPIsQuery.data?.metrics?.find(m => m.metric_name === "actual_employee_count")?.value ?? attritionOverview.totalEmployees;
-  const approved = headcountKPIsQuery.data?.metrics?.find(m => m.metric_name === "approved_position_count")?.value ?? 316;
-  const vacant = headcountKPIsQuery.data?.metrics?.find(m => m.metric_name === "vacant_approved_position_count")?.value ?? 68;
-  const budgetUse = headcountKPIsQuery.data?.metrics?.find(m => m.metric_name === "budget_utilization_percentage")?.value ?? 84;
-  const hData = headcountDeptQuery.data?.records?.map(r => ({
+  const totalEmployees = headcountKPIsQuery.data?.metrics?.find(m => m.metric_name === "actual_employee_count")?.value ?? 0;
+  const approved = headcountKPIsQuery.data?.metrics?.find(m => m.metric_name === "approved_position_count")?.value ?? 0;
+  const vacant = headcountKPIsQuery.data?.metrics?.find(m => m.metric_name === "vacant_approved_position_count")?.value ?? 0;
+  const budgetUse = headcountKPIsQuery.data?.metrics?.find(m => m.metric_name === "budget_utilization_percentage")?.value ?? 0;
+  const hData = headcountDeptQuery.data?.records?.slice(0, 5).map(r => ({
     dept: r.department,
     people: r.actual_employee_count
-  })) ?? headcountData;
+  })) ?? [];
+  const maxPeople = Math.max(...hData.map(r => r.people), 1);
 
   return (
     <main className="mx-auto max-w-7xl px-6 py-8">
@@ -119,21 +120,21 @@ function HRInsights() {
           tintVar="--pastel-sky"
           icon={<Users2 className="h-5 w-5" strokeWidth={2.25} />}
           label="Headcount"
-          headline={`${totalEmployees} employees`}
-          sub={`${approved} approved · ${vacant} vacant · ${budgetUse}% budget used`}
+          headline={headcountKPIsQuery.isPending ? "Loading..." : `${totalEmployees} employees`}
+          sub={headcountKPIsQuery.isPending ? "Fetching live headcount backend..." : `${approved} approved · ${vacant} vacant · ${typeof budgetUse === 'number' ? budgetUse.toFixed(1) : budgetUse}% budget used`}
 
           visual={
             <div className="space-y-1.5">
               {hData.map((row) => (
                 <div key={row.dept} className="flex items-center gap-2 text-[11px]">
-                  <span className="w-20 text-muted-foreground">{row.dept}</span>
+                  <span className="w-24 truncate text-muted-foreground">{row.dept}</span>
                   <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-foreground/5">
                     <div
                       className="h-full rounded-full bg-primary/60"
-                      style={{ width: `${(row.people / 60) * 100}%` }}
+                      style={{ width: `${(row.people / maxPeople) * 100}%` }}
                     />
                   </div>
-                  <span className="w-6 text-right">{row.people}</span>
+                  <span className="w-6 text-right font-medium">{row.people}</span>
                 </div>
               ))}
             </div>
