@@ -163,6 +163,34 @@ function useVoiceInput(onTranscript: (text: string) => void) {
 
     recognitionRef.current = recognition;
 
+    if (!window.isSecureContext) {
+      setErrorMessage("Use localhost or HTTPS for voice input.");
+      setVoiceState("idle");
+      return;
+    }
+
+    if (navigator.mediaDevices?.getUserMedia) {
+      navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(() => {
+          try {
+            recognition.start();
+          } catch (err) {
+            console.error("Failed to start speech recognition:", err);
+            isListeningRef.current = false;
+            setErrorMessage("Voice input could not be started.");
+            setVoiceState("idle");
+          }
+        })
+        .catch((err) => {
+          console.error("Microphone permission denied:", err);
+          isIntentionallyStopped.current = true;
+          isListeningRef.current = false;
+          setErrorMessage("Please allow microphone access in your browser.");
+          setVoiceState("idle");
+        });
+      return;
+    }
+
     try {
       recognition.start();
     } catch (err) {
@@ -319,13 +347,29 @@ export function Chatbot({
               <span className="text-xs text-primary font-medium ml-1">Listening…</span>
             </div>
 
-            {/* Stop / cancel */}
+            {/* Cancel voice input */}
             <button
               onClick={stopListening}
-              className="shrink-0 w-7 h-7 rounded-full bg-primary/10 grid place-items-center text-primary hover:bg-primary/20 transition-colors"
-              aria-label="Stop recording"
+              className="shrink-0 w-7 h-7 rounded-full bg-muted/70 grid place-items-center text-muted-foreground hover:bg-muted transition-colors"
+              aria-label="Cancel voice input"
+              title="Cancel"
             >
               <X className="w-3.5 h-3.5" />
+            </button>
+
+            {/* Send transcript */}
+            <button
+              onClick={() => {
+                const trimmed = input.trim();
+                if (!trimmed) return;
+                stopListening();
+                send();
+              }}
+              className="shrink-0 w-7 h-7 rounded-full bg-primary grid place-items-center text-primary-foreground hover:bg-primary/90 transition-colors"
+              aria-label="Send voice message"
+              title="Send"
+            >
+              <Send className="w-3.5 h-3.5" />
             </button>
           </div>
         ) : (
