@@ -15,7 +15,9 @@ import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedChatbotRouteImport } from './routes/_authenticated/chatbot'
 import { Route as ApiAttritionRouteImport } from './routes/api/attrition'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as PipelineHeadcountRouteImport } from './routes/pipeline/headcount'
 import { Route as AuthenticatedEmployeeEmployeeIdRouteImport } from './routes/_authenticated/employee.$employeeId'
+import { Route as ApiPipelineHeadcountRouteImport } from './routes/api/pipeline/headcount'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
@@ -46,12 +48,22 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PipelineHeadcountRoute = PipelineHeadcountRouteImport.update({
+  id: '/pipeline/headcount',
+  path: '/pipeline/headcount',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedEmployeeEmployeeIdRoute =
   AuthenticatedEmployeeEmployeeIdRouteImport.update({
     id: '/employee/$employeeId',
     path: '/employee/$employeeId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiPipelineHeadcountRoute = ApiPipelineHeadcountRouteImport.update({
+  id: '/api/pipeline/headcount',
+  path: '/api/pipeline/headcount',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
@@ -59,15 +71,19 @@ export interface FileRoutesByFullPath {
   '/chatbot': typeof AuthenticatedChatbotRoute
   '/api/attrition': typeof ApiAttritionRoute
   '/api/chat': typeof ApiChatRoute
+  '/pipeline/headcount': typeof PipelineHeadcountRoute
   '/employee/$employeeId': typeof AuthenticatedEmployeeEmployeeIdRoute
+  '/api/pipeline/headcount': typeof ApiPipelineHeadcountRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/chatbot': typeof AuthenticatedChatbotRoute
   '/api/attrition': typeof ApiAttritionRoute
   '/api/chat': typeof ApiChatRoute
+  '/pipeline/headcount': typeof PipelineHeadcountRoute
   '/': typeof AuthenticatedIndexRoute
   '/employee/$employeeId': typeof AuthenticatedEmployeeEmployeeIdRoute
+  '/api/pipeline/headcount': typeof ApiPipelineHeadcountRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -76,8 +92,10 @@ export interface FileRoutesById {
   '/_authenticated/chatbot': typeof AuthenticatedChatbotRoute
   '/api/attrition': typeof ApiAttritionRoute
   '/api/chat': typeof ApiChatRoute
+  '/pipeline/headcount': typeof PipelineHeadcountRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/employee/$employeeId': typeof AuthenticatedEmployeeEmployeeIdRoute
+  '/api/pipeline/headcount': typeof ApiPipelineHeadcountRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -87,15 +105,19 @@ export interface FileRouteTypes {
     | '/chatbot'
     | '/api/attrition'
     | '/api/chat'
+    | '/pipeline/headcount'
     | '/employee/$employeeId'
+    | '/api/pipeline/headcount'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
     | '/chatbot'
     | '/api/attrition'
     | '/api/chat'
+    | '/pipeline/headcount'
     | '/'
     | '/employee/$employeeId'
+    | '/api/pipeline/headcount'
   id:
     | '__root__'
     | '/_authenticated'
@@ -103,8 +125,10 @@ export interface FileRouteTypes {
     | '/_authenticated/chatbot'
     | '/api/attrition'
     | '/api/chat'
+    | '/pipeline/headcount'
     | '/_authenticated/'
     | '/_authenticated/employee/$employeeId'
+    | '/api/pipeline/headcount'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -112,6 +136,8 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ApiAttritionRoute: typeof ApiAttritionRoute
   ApiChatRoute: typeof ApiChatRoute
+  PipelineHeadcountRoute: typeof PipelineHeadcountRoute
+  ApiPipelineHeadcountRoute: typeof ApiPipelineHeadcountRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -158,12 +184,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pipeline/headcount': {
+      id: '/pipeline/headcount'
+      path: '/pipeline/headcount'
+      fullPath: '/pipeline/headcount'
+      preLoaderRoute: typeof PipelineHeadcountRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/employee/$employeeId': {
       id: '/_authenticated/employee/$employeeId'
       path: '/employee/$employeeId'
       fullPath: '/employee/$employeeId'
       preLoaderRoute: typeof AuthenticatedEmployeeEmployeeIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/pipeline/headcount': {
+      id: '/api/pipeline/headcount'
+      path: '/api/pipeline/headcount'
+      fullPath: '/api/pipeline/headcount'
+      preLoaderRoute: typeof ApiPipelineHeadcountRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -188,6 +228,8 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ApiAttritionRoute: ApiAttritionRoute,
   ApiChatRoute: ApiChatRoute,
+  PipelineHeadcountRoute: PipelineHeadcountRoute,
+  ApiPipelineHeadcountRoute: ApiPipelineHeadcountRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

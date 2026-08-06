@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { Send, Sparkles, BarChart3, PieChart as PieChartIcon, Activity, TableProperties } from "lucide-react";
+import { useEffect, useRef, useState, useCallback } from "react";
+import { Send, Sparkles, BarChart3, PieChart as PieChartIcon, Activity, TableProperties, Mic, MicOff, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useChat } from "@/hooks/use-chat";
@@ -12,50 +12,432 @@ import { departments, jobLevelMix, headcountTrend } from "@/lib/headcount-data";
 
 const chartTooltip = { background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12 };
 
-type ChatbotProps = { compact?: boolean; autoFocus?: boolean; title?: string; subtitle?: string; placeholder?: string; welcomeMessage?: string };
+// ── Web Speech API type declaration ──────────────────────────────────────────
+interface ISpeechRecognition extends EventTarget {
+  lang: string;
+  interimResults: boolean;
+  continuous: boolean;
+  maxAlternatives: number;
+  onstart: (() => void) | null;
+  onresult: ((event: ISpeechRecognitionEvent) => void) | null;
+  onerror: ((event: Event) => void) | null;
+  onend: (() => void) | null;
+  start(): void;
+  stop(): void;
+}
+interface ISpeechRecognitionEvent {
+  results: {
+    length: number;
+    [index: number]: { isFinal: boolean; [alt: number]: { transcript: string } };
+  };
+}
+declare global {
+  interface Window {
+    SpeechRecognition: new () => ISpeechRecognition;
+    webkitSpeechRecognition: new () => ISpeechRecognition;
+  }
+}
 
-export function Chatbot({ compact = false, autoFocus = false, title = "HR Insights Assistant", subtitle = "Ask about attrition, risk & retention", placeholder = "Ask about an employee or risk...", welcomeMessage = "Hi! I'm your HR Insights assistant. Ask me things like *\"Is Usman expected to leave soon?\"* or *\"Who is at highest risk this quarter?\"*" }: ChatbotProps) {
+type VoiceState = "idle" | "listening" | "processing";
+
+function useVoiceInput(onTranscript: (text: string) => void) {
+  const [voiceState, setVoiceState] = useState<VoiceState>("idle");
+  const [isSupported, setIsSupported] = useState(false);
+  const recognitionRef = useRef<ISpeechRecognition | null>(null);
+  const isIntentionallyStopped = useRef(false);
+  const isListeningRef = useRef(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    const SpeechRecognitionAPI =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+    setIsSupported(!!SpeechRecognitionAPI);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      isIntentionallyStopped.current = true;
+      isListeningRef.current = false;
+      if (recognitionRef.current) {
+        recognitionRef.current.onstart = null;
+        recognitionRef.current.onresult = null;
+        recognitionRef.current.onerror = null;
+        recognitionRef.current.onend = null;
+        try {
+          recognitionRef.current.stop();
+        } catch (e) {
+          console.warn("Failed to stop recognition on unmount", e);
+        }
+        recognitionRef.current = null;
+      }
+    };
+  }, []);
+
+  const startListening = useCallback(() => {
+    const SpeechRecognitionAPI =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognitionAPI) return;
+
+    setErrorMessage(null);
+
+    if (recognitionRef.current) {
+      isIntentionallyStopped.current = true;
+      recognitionRef.current.onstart = null;
+      recognitionRef.current.onresult = null;
+      recognitionRef.current.onerror = null;
+      recognitionRef.current.onend = null;
+      try {
+        recognitionRef.current.stop();
+      } catch (e) {
+        console.warn("Failed to stop previous recognition", e);
+      }
+      recognitionRef.current = null;
+    }
+
+    isIntentionallyStopped.current = false;
+    isListeningRef.current = true;
+
+    const recognition: ISpeechRecognition = new SpeechRecognitionAPI();
+    recognition.lang = "en-US";
+    recognition.interimResults = true;
+    recognition.continuous = true;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => {
+      console.log("Speech recognition started");
+      isListeningRef.current = true;
+      setVoiceState("listening");
+    };
+
+    recognition.onresult = (event: ISpeechRecognitionEvent) => {
+      let fullTranscript = "";
+      for (let i = 0; i < event.results.length; i++) {
+        fullTranscript += event.results[i][0].transcript;
+      }
+      onTranscript(fullTranscript);
+    };
+
+    recognition.onerror = (event: any) => {
+      console.error("Speech recognition error:", event);
+      const error = event?.error as string | undefined;
+
+      if (["not-allowed", "service-not-allowed", "audio-capture", "aborted"].includes(error || "")) {
+        isIntentionallyStopped.current = true;
+        isListeningRef.current = false;
+        setErrorMessage("Microphone access was blocked or unavailable.");
+        setVoiceState("idle");
+        return;
+      }
+
+      if (error === "no-speech") {
+        setVoiceState("listening");
+        return;
+      }
+
+      isListeningRef.current = false;
+      setErrorMessage("Voice input stopped unexpectedly. Please try again.");
+      setVoiceState("idle");
+    };
+
+    recognition.onend = () => {
+      console.log("Speech recognition ended");
+      if (isIntentionallyStopped.current || !isListeningRef.current) {
+        isListeningRef.current = false;
+        setVoiceState("idle");
+        return;
+      }
+
+      setVoiceState("listening");
+      window.setTimeout(() => {
+        if (recognitionRef.current === recognition && !isIntentionallyStopped.current) {
+          try {
+            recognition.start();
+          } catch (err) {
+            console.error("Failed to restart speech recognition:", err);
+            isListeningRef.current = false;
+            setVoiceState("idle");
+          }
+        }
+      }, 120);
+    };
+
+    recognitionRef.current = recognition;
+
+    try {
+      recognition.start();
+    } catch (err) {
+      console.error("Failed to start speech recognition:", err);
+      isListeningRef.current = false;
+      setErrorMessage("Voice input could not be started.");
+      setVoiceState("idle");
+    }
+  }, [onTranscript]);
+
+  const stopListening = useCallback(() => {
+    isIntentionallyStopped.current = true;
+    isListeningRef.current = false;
+    if (recognitionRef.current) {
+      recognitionRef.current.onstart = null;
+      recognitionRef.current.onresult = null;
+      recognitionRef.current.onerror = null;
+      recognitionRef.current.onend = null;
+      try {
+        recognitionRef.current.stop();
+      } catch (e) {
+        console.warn("Failed to stop recognition", e);
+      }
+      recognitionRef.current = null;
+    }
+    setVoiceState("idle");
+  }, []);
+
+  const toggleListening = useCallback(() => {
+    if (voiceState === "listening") {
+      stopListening();
+    } else {
+      startListening();
+    }
+  }, [voiceState, startListening, stopListening]);
+
+  return { voiceState, isSupported, toggleListening, stopListening, errorMessage };
+}
+
+// ── Wave visualizer shown inside the input bar while recording ────────────────
+function VoiceWaveBars() {
+  return (
+    <div className="flex items-center gap-[3px] px-2">
+      {[1, 2, 3, 4, 5].map((i) => (
+        <span key={i} className="voice-bar" />
+      ))}
+    </div>
+  );
+}
+
+type ChatbotProps = {
+  compact?: boolean;
+  autoFocus?: boolean;
+  title?: string;
+  subtitle?: string;
+  placeholder?: string;
+  welcomeMessage?: string;
+};
+
+export function Chatbot({
+  compact = false,
+  autoFocus = false,
+  title = "HR Insights Assistant",
+  subtitle = "Ask about attrition, risk & retention",
+  placeholder = "Ask about an employee or risk...",
+  welcomeMessage = "Hi! I'm your HR Insights assistant. Ask me things like *\"Is Usman expected to leave soon?\"* or *\"Who is at highest risk this quarter?\"*",
+}: ChatbotProps) {
   const { messages, isStreaming, sendMessage, injectMockMessage } = useChat({ welcomeMessage });
   const [input, setInput] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  useEffect(() => { scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" }); }, [messages]);
-  useEffect(() => { if (autoFocus) inputRef.current?.focus(); }, [autoFocus]);
-  const send = () => { const trimmed = input.trim(); if (!trimmed || isStreaming) return; setInput(""); void sendMessage(trimmed); };
-  return <div className={cn("flex flex-col h-full bg-card", compact ? "" : "rounded-2xl border")}>
-    <div className="flex flex-col border-b bg-pastel-lavender/50 rounded-t-2xl">
-      <div className="flex items-center gap-2 px-4 py-3">
-        <div className="w-8 h-8 rounded-full bg-primary/20 grid place-items-center"><Sparkles className="w-4 h-4 text-primary" /></div>
-        <div><div className="font-semibold text-sm">{title}</div><div className="text-xs text-muted-foreground">{subtitle}</div></div>
-      </div>
-      <div className="flex items-center gap-2 px-4 pb-3 overflow-x-auto no-scrollbar">
-        <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground whitespace-nowrap">Mock visuals:</span>
-        <Button variant="outline" size="sm" className="h-7 text-xs rounded-full" onClick={() => injectMockMessage("bar")}><BarChart3 className="w-3 h-3 mr-1" /> Bar</Button>
-        <Button variant="outline" size="sm" className="h-7 text-xs rounded-full" onClick={() => injectMockMessage("pie")}><PieChartIcon className="w-3 h-3 mr-1" /> Pie</Button>
-        <Button variant="outline" size="sm" className="h-7 text-xs rounded-full" onClick={() => injectMockMessage("area")}><Activity className="w-3 h-3 mr-1" /> Area</Button>
-        <Button variant="outline" size="sm" className="h-7 text-xs rounded-full" onClick={() => injectMockMessage("table")}><TableProperties className="w-3 h-3 mr-1" /> Table</Button>
-      </div>
-    </div>
-    <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4">{messages.map((message) => <MessageBubble key={message.id} message={message} />)}</div>
-    <div className="p-3 border-t flex gap-2"><Input ref={inputRef} value={input} onChange={(event) => setInput(event.target.value)} onKeyDown={(event) => event.key === "Enter" && send()} placeholder={placeholder} className="rounded-full" disabled={isStreaming} /><Button onClick={send} size="icon" className="rounded-full shrink-0" disabled={isStreaming}><Send className="w-4 h-4" /></Button></div>
-  </div>;
-}
 
-function MessageBubble({ message }: { message: ChatMessage }) {
-  const isUser = message.role === "user";
-  if (message.role === "assistant" && message.status === "thinking") return <div className="flex gap-2 items-start"><BotAvatar /><div className="rounded-2xl rounded-tl-sm bg-pastel-lavender/40 px-4 py-3 max-w-[85%]"><div className="text-xs italic text-muted-foreground flex items-center gap-1"><span>{message.statusText}</span><span className="thinking-dot">.</span><span className="thinking-dot">.</span><span className="thinking-dot">.</span></div></div></div>;
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+  }, [messages]);
+
+  useEffect(() => {
+    if (autoFocus) inputRef.current?.focus();
+  }, [autoFocus]);
+
+  const send = () => {
+    const trimmed = input.trim();
+    if (!trimmed || isStreaming) return;
+    setInput("");
+    void sendMessage(trimmed);
+  };
+
+  // Voice input — transcript lands in the text box for review before sending
+  const handleTranscript = useCallback((text: string) => {
+    setInput(text);
+    setTimeout(() => inputRef.current?.focus(), 80);
+  }, []);
+
+  const { voiceState, isSupported, toggleListening, stopListening, errorMessage } =
+    useVoiceInput(handleTranscript);
+
+  const isListening = voiceState === "listening";
+
   return (
-    <div className={cn("flex gap-2 items-start", isUser && "flex-row-reverse")}>
-      {!isUser && <BotAvatar />}
-      <div className={cn("rounded-2xl px-4 py-3 max-w-[85%] text-sm whitespace-pre-wrap leading-relaxed", isUser ? "bg-primary text-primary-foreground rounded-tr-sm" : "bg-pastel-lavender/40 text-foreground rounded-tl-sm w-full")}>
-        <FormattedText text={message.content} />
-        {message.visual && <div className="mt-4"><ChatVisualizer type={message.visual} /></div>}
-        {message.role === "assistant" && message.status === "typing" && <span className="inline-block w-1.5 h-4 bg-primary/60 ml-0.5 align-middle animate-pulse" />}
+    <div className={cn("flex flex-col h-full bg-card", compact ? "" : "rounded-2xl border")}>
+      {/* ── Header ── */}
+      <div className="flex flex-col border-b bg-pastel-lavender/50 rounded-t-2xl">
+        <div className="flex items-center gap-2 px-4 py-3">
+          <div className="w-8 h-8 rounded-full bg-primary/20 grid place-items-center">
+            <Sparkles className="w-4 h-4 text-primary" />
+          </div>
+          <div>
+            <div className="font-semibold text-sm">{title}</div>
+            <div className="text-xs text-muted-foreground">{subtitle}</div>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 px-4 pb-3 overflow-x-auto no-scrollbar">
+          <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground whitespace-nowrap">
+            Mock visuals:
+          </span>
+          <Button variant="outline" size="sm" className="h-7 text-xs rounded-full" onClick={() => injectMockMessage("bar")}>
+            <BarChart3 className="w-3 h-3 mr-1" /> Bar
+          </Button>
+          <Button variant="outline" size="sm" className="h-7 text-xs rounded-full" onClick={() => injectMockMessage("pie")}>
+            <PieChartIcon className="w-3 h-3 mr-1" /> Pie
+          </Button>
+          <Button variant="outline" size="sm" className="h-7 text-xs rounded-full" onClick={() => injectMockMessage("area")}>
+            <Activity className="w-3 h-3 mr-1" /> Area
+          </Button>
+          <Button variant="outline" size="sm" className="h-7 text-xs rounded-full" onClick={() => injectMockMessage("table")}>
+            <TableProperties className="w-3 h-3 mr-1" /> Table
+          </Button>
+        </div>
+      </div>
+
+      {/* ── Messages ── */}
+      <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4">
+        {messages.map((message) => (
+          <MessageBubble key={message.id} message={message} />
+        ))}
+      </div>
+
+      {/* ── Input bar ── */}
+      <div className="p-3 border-t">
+        {/* Listening state — full-width wave bar replaces normal input */}
+        {isListening ? (
+          <div className="flex items-center gap-2 rounded-full border bg-primary/5 border-primary/30 px-3 py-2 transition-all">
+            {/* Pulsing mic icon with ring */}
+            <div className="relative shrink-0 flex items-center justify-center w-8 h-8">
+              <span className="mic-ring absolute inset-0 rounded-full bg-primary/25" />
+              <div className="relative z-10 w-8 h-8 rounded-full bg-primary grid place-items-center">
+                <Mic className="w-4 h-4 text-primary-foreground" />
+              </div>
+            </div>
+
+            {/* Audio wave bars */}
+            <div className="flex-1 flex items-center">
+              <VoiceWaveBars />
+              <span className="text-xs text-primary font-medium ml-1">Listening…</span>
+            </div>
+
+            {/* Stop / cancel */}
+            <button
+              onClick={stopListening}
+              className="shrink-0 w-7 h-7 rounded-full bg-primary/10 grid place-items-center text-primary hover:bg-primary/20 transition-colors"
+              aria-label="Stop recording"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        ) : (
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <Input
+                ref={inputRef}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && send()}
+                placeholder={placeholder}
+                className="rounded-full pr-10"
+                disabled={isStreaming}
+              />
+            </div>
+
+            {/* Mic button — only shown if browser supports SpeechRecognition */}
+            {isSupported && (
+              <Button
+                onClick={toggleListening}
+                size="icon"
+                variant="outline"
+                className={cn(
+                  "rounded-full shrink-0 transition-all duration-200",
+                  "border-primary/30 text-primary hover:bg-primary/10 hover:border-primary/50",
+                )}
+                disabled={isStreaming}
+                aria-label="Voice input"
+                title="Click to speak"
+              >
+                <Mic className="w-4 h-4" />
+              </Button>
+            )}
+
+            {/* Send button */}
+            <Button
+              onClick={send}
+              size="icon"
+              className="rounded-full shrink-0"
+              disabled={isStreaming || !input.trim()}
+            >
+              <Send className="w-4 h-4" />
+            </Button>
+          </div>
+        )}
+
+        {/* Hint below: only shown when browser doesn't support API */}
+        {!isSupported && (
+          <p className="mt-1.5 text-center text-[10px] text-muted-foreground flex items-center justify-center gap-1">
+            <MicOff className="w-3 h-3" /> Voice input not supported in this browser.
+          </p>
+        )}
+
+        {errorMessage && (
+          <p className="mt-1.5 text-center text-[10px] text-destructive flex items-center justify-center gap-1">
+            <MicOff className="w-3 h-3" /> {errorMessage}
+          </p>
+        )}
       </div>
     </div>
   );
 }
-function BotAvatar() { return <div className="w-8 h-8 rounded-full bg-primary/20 grid place-items-center shrink-0"><Sparkles className="w-4 h-4 text-primary" /></div>; }
+
+function MessageBubble({ message }: { message: ChatMessage }) {
+  const isUser = message.role === "user";
+  if (message.role === "assistant" && message.status === "thinking")
+    return (
+      <div className="flex gap-2 items-start">
+        <BotAvatar />
+        <div className="rounded-2xl rounded-tl-sm bg-pastel-lavender/40 px-4 py-3 max-w-[85%]">
+          <div className="text-xs italic text-muted-foreground flex items-center gap-1">
+            <span>{message.statusText}</span>
+            <span className="thinking-dot">.</span>
+            <span className="thinking-dot">.</span>
+            <span className="thinking-dot">.</span>
+          </div>
+        </div>
+      </div>
+    );
+  return (
+    <div className={cn("flex gap-2 items-start", isUser && "flex-row-reverse")}>
+      {!isUser && <BotAvatar />}
+      <div
+        className={cn(
+          "rounded-2xl px-4 py-3 max-w-[85%] text-sm whitespace-pre-wrap leading-relaxed",
+          isUser
+            ? "bg-primary text-primary-foreground rounded-tr-sm"
+            : "bg-pastel-lavender/40 text-foreground rounded-tl-sm w-full",
+        )}
+      >
+        <FormattedText text={message.content} />
+        {message.visual && (
+          <div className="mt-4">
+            <ChatVisualizer type={message.visual} />
+          </div>
+        )}
+        {message.role === "assistant" && message.status === "typing" && (
+          <span className="inline-block w-1.5 h-4 bg-primary/60 ml-0.5 align-middle animate-pulse" />
+        )}
+      </div>
+    </div>
+  );
+}
+
+function BotAvatar() {
+  return (
+    <div className="w-8 h-8 rounded-full bg-primary/20 grid place-items-center shrink-0">
+      <Sparkles className="w-4 h-4 text-primary" />
+    </div>
+  );
+}
+
 function FormattedText({ text }: { text: string }) {
   const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g);
   return (
@@ -139,7 +521,9 @@ function ChatVisualizer({ type }: { type: "bar" | "pie" | "area" | "table" }) {
           <ResponsiveContainer>
             <PieChart>
               <Pie data={jobLevelMix.slice(0, 5)} dataKey="count" nameKey="level" innerRadius={35} outerRadius={60} paddingAngle={2}>
-                {jobLevelMix.slice(0, 5).map((row) => <Cell key={row.level} fill={row.color} stroke="var(--card)" />)}
+                {jobLevelMix.slice(0, 5).map((row) => (
+                  <Cell key={row.level} fill={row.color} stroke="var(--card)" />
+                ))}
               </Pie>
               <Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} />
             </PieChart>
@@ -178,7 +562,10 @@ function ChatVisualizer({ type }: { type: "bar" | "pie" | "area" | "table" }) {
         <div className="overflow-x-auto p-2">
           <table className="w-full text-left">
             <thead className="text-muted-foreground">
-              <tr><th className="p-2 font-medium">Department</th><th className="p-2 font-medium">Usage</th></tr>
+              <tr>
+                <th className="p-2 font-medium">Department</th>
+                <th className="p-2 font-medium">Usage</th>
+              </tr>
             </thead>
             <tbody>
               {departments.slice(0, 4).map((d) => (
