@@ -60,8 +60,8 @@ function HRInsights() {
       ? `${liveRiskRate.toFixed(1)}% risk rate across ${summaryQuery.data.total_employees} employees`
       : `Attrition rate ${attritionOverview.overallRate}% · industry ${attritionOverview.industryAvg}%`;
 
-  const headcountKPIsQuery = useQuery({ queryKey: ["headcount", "kpis"], queryFn: getHeadcountKPIs });
-  const headcountDeptQuery = useQuery({ queryKey: ["headcount", "dept"], queryFn: getHeadcountByDepartment });
+  const headcountKPIsQuery = useQuery({ queryKey: ["headcount", "kpis"], queryFn: () => getHeadcountKPIs() });
+  const headcountDeptQuery = useQuery({ queryKey: ["headcount", "dept"], queryFn: () => getHeadcountByDepartment() });
 
   const totalEmployees = headcountKPIsQuery.data?.metrics?.find(m => m.metric_name === "actual_employee_count")?.value ?? 0;
   const approved = headcountKPIsQuery.data?.metrics?.find(m => m.metric_name === "approved_position_count")?.value ?? 0;
