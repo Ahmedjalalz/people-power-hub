@@ -33,7 +33,7 @@ export const Route = createFileRoute("/_authenticated/")({
   component: HRInsights,
 });
 
-type MainCard = "attrition" | "headcount" | "engagement";
+type MainCard = "attrition" | "headcount" | "engagement" | "performance";
 
 const headcountData = [
   { dept: "Engineering", people: 54 },
