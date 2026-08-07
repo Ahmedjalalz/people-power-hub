@@ -24,15 +24,8 @@ export function Header() {
   };
 
   return (
-    <>
-      {user && !user.email_confirmed && (
-        <div className="bg-amber-50 dark:bg-amber-950/50 text-amber-900 dark:text-amber-200 px-6 py-2.5 text-center text-sm font-medium border-b border-amber-200 dark:border-amber-900/50 flex items-center justify-center gap-2">
-          <span className="relative flex h-2.5 w-2.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span><span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500"></span></span>
-          Please verify your account using the email sent to <span className="font-bold">{user.email}</span>.
-        </div>
-      )}
-      <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
+    <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
         <Link to="/" className="flex items-center gap-2">
           <div className="grid h-9 w-9 place-items-center rounded-xl bg-pastel-teal">
             <Users className="h-5 w-5 text-primary" />
@@ -73,7 +66,6 @@ export function Header() {
         </nav>
       </div>
     </header>
-    </>
   );
 }
 

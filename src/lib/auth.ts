@@ -52,6 +52,13 @@ export function getAuthHeader(): { Authorization?: string } {
   return {};
 }
 
+export class AuthError extends Error {
+  constructor(message: string, public code?: string) {
+    super(message);
+    this.name = "AuthError";
+  }
+}
+
 export async function login(email: string, password: string): Promise<User> {
   const res = await fetch(`${API_BASE}/auth/login`, {
     method: "POST",
@@ -61,7 +68,7 @@ export async function login(email: string, password: string): Promise<User> {
 
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}));
-    throw new Error(errorData.message || "Failed to login. Please check your credentials.");
+    throw new AuthError(errorData.message || "Failed to login. Please check your credentials.", errorData.code);
   }
 
   const data: AuthResponse = await res.json();
@@ -69,21 +76,57 @@ export async function login(email: string, password: string): Promise<User> {
   return data.user;
 }
 
-export async function signup(email: string, password: string): Promise<User> {
+export async function signup(full_name: string, email: string, password: string): Promise<void> {
   const res = await fetch(`${API_BASE}/auth/signup`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ full_name, email, password }),
   });
 
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}));
-    throw new Error(errorData.message || "Failed to sign up.");
+    throw new AuthError(errorData.message || "Failed to sign up.", errorData.code);
   }
+  // Do not auto-login after signup, as the user must verify their email first.
+}
 
-  const data: AuthResponse = await res.json();
-  setTokens(data.access_token, data.refresh_token);
-  return data.user;
+export async function forgotPassword(email: string): Promise<void> {
+  const res = await fetch(`${API_BASE}/auth/forgot-password`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new AuthError(errorData.message || "Failed to request password reset.", errorData.code);
+  }
+}
+
+export async function resetPassword(password: string, token: string): Promise<void> {
+  const res = await fetch(`${API_BASE}/auth/reset-password`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ password, token }),
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new AuthError(errorData.message || "Failed to reset password.", errorData.code);
+  }
+}
+
+export async function resendVerification(email: string): Promise<void> {
+  const res = await fetch(`${API_BASE}/auth/resend-verification`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new AuthError(errorData.message || "Failed to resend verification email.", errorData.code);
+  }
 }
 
 export async function logout(): Promise<void> {
