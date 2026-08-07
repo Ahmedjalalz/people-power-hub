@@ -17,6 +17,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as PipelineHeadcountRouteImport } from './routes/pipeline/headcount'
+import { Route as ApiPerformanceRouteImport } from './routes/api/performance'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiAttritionRouteImport } from './routes/api/attrition'
 import { Route as AuthenticatedChatbotRouteImport } from './routes/_authenticated/chatbot'
@@ -62,6 +63,11 @@ const PipelineHeadcountRoute = PipelineHeadcountRouteImport.update({
   path: '/pipeline/headcount',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPerformanceRoute = ApiPerformanceRouteImport.update({
+  id: '/api/performance',
+  path: '/api/performance',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiChatRoute = ApiChatRouteImport.update({
   id: '/api/chat',
   path: '/api/chat',
@@ -99,6 +105,7 @@ export interface FileRoutesByFullPath {
   '/chatbot': typeof AuthenticatedChatbotRoute
   '/api/attrition': typeof ApiAttritionRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/performance': typeof ApiPerformanceRoute
   '/pipeline/headcount': typeof PipelineHeadcountRoute
   '/employee/$employeeId': typeof AuthenticatedEmployeeEmployeeIdRoute
   '/api/pipeline/headcount': typeof ApiPipelineHeadcountRoute
@@ -112,6 +119,7 @@ export interface FileRoutesByTo {
   '/chatbot': typeof AuthenticatedChatbotRoute
   '/api/attrition': typeof ApiAttritionRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/performance': typeof ApiPerformanceRoute
   '/pipeline/headcount': typeof PipelineHeadcountRoute
   '/': typeof AuthenticatedIndexRoute
   '/employee/$employeeId': typeof AuthenticatedEmployeeEmployeeIdRoute
@@ -128,6 +136,7 @@ export interface FileRoutesById {
   '/_authenticated/chatbot': typeof AuthenticatedChatbotRoute
   '/api/attrition': typeof ApiAttritionRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/performance': typeof ApiPerformanceRoute
   '/pipeline/headcount': typeof PipelineHeadcountRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/employee/$employeeId': typeof AuthenticatedEmployeeEmployeeIdRoute
@@ -145,6 +154,7 @@ export interface FileRouteTypes {
     | '/chatbot'
     | '/api/attrition'
     | '/api/chat'
+    | '/api/performance'
     | '/pipeline/headcount'
     | '/employee/$employeeId'
     | '/api/pipeline/headcount'
@@ -158,6 +168,7 @@ export interface FileRouteTypes {
     | '/chatbot'
     | '/api/attrition'
     | '/api/chat'
+    | '/api/performance'
     | '/pipeline/headcount'
     | '/'
     | '/employee/$employeeId'
@@ -173,6 +184,7 @@ export interface FileRouteTypes {
     | '/_authenticated/chatbot'
     | '/api/attrition'
     | '/api/chat'
+    | '/api/performance'
     | '/pipeline/headcount'
     | '/_authenticated/'
     | '/_authenticated/employee/$employeeId'
@@ -188,6 +200,7 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   ApiAttritionRoute: typeof ApiAttritionRoute
   ApiChatRoute: typeof ApiChatRoute
+  ApiPerformanceRoute: typeof ApiPerformanceRoute
   PipelineHeadcountRoute: typeof PipelineHeadcountRoute
   ApiPipelineHeadcountRoute: typeof ApiPipelineHeadcountRoute
 }
@@ -248,6 +261,13 @@ declare module '@tanstack/react-router' {
       path: '/pipeline/headcount'
       fullPath: '/pipeline/headcount'
       preLoaderRoute: typeof PipelineHeadcountRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/performance': {
+      id: '/api/performance'
+      path: '/api/performance'
+      fullPath: '/api/performance'
+      preLoaderRoute: typeof ApiPerformanceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/chat': {
@@ -312,19 +332,10 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   ApiAttritionRoute: ApiAttritionRoute,
   ApiChatRoute: ApiChatRoute,
+  ApiPerformanceRoute: ApiPerformanceRoute,
   PipelineHeadcountRoute: PipelineHeadcountRoute,
   ApiPipelineHeadcountRoute: ApiPipelineHeadcountRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
