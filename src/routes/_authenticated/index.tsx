@@ -167,11 +167,55 @@ function HRInsights() {
             </div>
           }
         />
+
+        <InsightCard
+          onClick={() => setOpenCard("performance")}
+          tint="bg-pastel-mint"
+          tintVar="--pastel-mint"
+          icon={<Target className="h-5 w-5" strokeWidth={2.25} />}
+          label="Employee performance"
+          headline={perfQuery.isPending ? "Loading..." : `${perfNum(perf["average_performance_score"])} avg score`}
+          sub={
+            perfQuery.isPending
+              ? "Fetching live performance data..."
+              : perfQuery.error
+                ? "Performance data unavailable right now"
+                : `${perfNum(perf["total_employees"], 0)} employees reviewed`
+          }
+          visual={
+            <div className="space-y-1.5">
+              {[
+                { label: "Strong + exceptional", value: perf["strong_and_exceptional_count"], tint: "bg-primary/60" },
+                { label: "Improving", value: perf["improving_count"], tint: "bg-primary/40" },
+                { label: "Declining", value: perf["declining_count"], tint: "bg-foreground/30" },
+              ].map((row) => {
+                const max = Math.max(
+                  Number(perf["strong_and_exceptional_count"] ?? 0),
+                  Number(perf["improving_count"] ?? 0),
+                  Number(perf["declining_count"] ?? 0),
+                  1,
+                );
+                return (
+                  <div key={row.label} className="flex items-center gap-2 text-[11px]">
+                    <span className="w-28 truncate text-muted-foreground">{row.label}</span>
+                    <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-foreground/5">
+                      <div className={`h-full rounded-full ${row.tint}`} style={{ width: `${(Number(row.value ?? 0) / max) * 100}%` }} />
+                    </div>
+                    <span className="w-8 text-right font-medium">{perfNum(row.value, 0)}</span>
+                  </div>
+                );
+              })}
+            </div>
+          }
+        />
       </div>
 
       <AttritionPanel open={openCard === "attrition"} onClose={() => setOpenCard(null)} />
 
       <HeadcountPanel open={openCard === "headcount"} onClose={() => setOpenCard(null)} />
+
+      <PerformancePanel open={openCard === "performance"} onClose={() => setOpenCard(null)} />
+
 
 
       <CenterPanel
