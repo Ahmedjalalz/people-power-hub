@@ -1,12 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { ShieldAlert, Users2, HeartHandshake } from "lucide-react";
+import { ShieldAlert, Users2, HeartHandshake, Target } from "lucide-react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from "recharts";
 import { InsightCard, Callout } from "@/components/InsightCard";
 import { CenterPanel } from "@/components/CenterPanel";
 import { AttritionPanel } from "@/components/AttritionPanel";
 import { HeadcountPanel } from "@/components/HeadcountPanel";
+import { PerformancePanel } from "@/components/performance/PerformancePanel";
+import { getPerformanceOverview, pickObject } from "@/services/performance";
 
 import { attritionOverview } from "@/lib/attrition-data";
 import { atRiskEmployees } from "@/lib/employees";
