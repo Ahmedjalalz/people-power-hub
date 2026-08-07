@@ -1,26 +1,38 @@
-﻿import { Link, useNavigate } from "@tanstack/react-router";
-import { Moon, Sun, BarChart3, MessageSquare, Users, LogOut } from "lucide-react";
-import { useQueryClient } from "@tanstack/react-query";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { Moon, Sun, BarChart3, MessageSquare, Users, LogOut, User as UserIcon } from "lucide-react";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useTheme } from "@/lib/theme";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { signOut as clearLocalSession } from "@/lib/local-auth";
+import { logout as clearLocalSession, getCurrentUser } from "@/lib/auth";
 
 export function Header() {
   const { theme, toggle } = useTheme();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
+  const { data: user } = useQuery({
+    queryKey: ["currentUser"],
+    queryFn: getCurrentUser,
+  });
+
   const signOut = async () => {
     await queryClient.cancelQueries();
     queryClient.clear();
-    clearLocalSession();
+    await clearLocalSession();
     await navigate({ to: "/auth", replace: true });
   };
 
   return (
-    <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
+    <>
+      {user && !user.email_confirmed && (
+        <div className="bg-amber-50 dark:bg-amber-950/50 text-amber-900 dark:text-amber-200 px-6 py-2.5 text-center text-sm font-medium border-b border-amber-200 dark:border-amber-900/50 flex items-center justify-center gap-2">
+          <span className="relative flex h-2.5 w-2.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span><span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500"></span></span>
+          Please verify your account using the email sent to <span className="font-bold">{user.email}</span>.
+        </div>
+      )}
+      <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
         <Link to="/" className="flex items-center gap-2">
           <div className="grid h-9 w-9 place-items-center rounded-xl bg-pastel-teal">
             <Users className="h-5 w-5 text-primary" />
@@ -32,6 +44,14 @@ export function Header() {
         <nav className="flex items-center gap-1">
           <NavTab to="/" icon={<BarChart3 className="h-4 w-4" />} label="HR Insights" />
           <NavTab to="/chatbot" icon={<MessageSquare className="h-4 w-4" />} label="Assistant" />
+          
+          {user && (
+            <div className="ml-4 mr-2 flex items-center gap-2 rounded-full border px-3 py-1 text-sm text-muted-foreground">
+              <UserIcon className="h-4 w-4" />
+              <span className="hidden md:inline">{user.email}</span>
+            </div>
+          )}
+
           <Button
             variant="ghost"
             size="icon"
@@ -53,6 +73,7 @@ export function Header() {
         </nav>
       </div>
     </header>
+    </>
   );
 }
 

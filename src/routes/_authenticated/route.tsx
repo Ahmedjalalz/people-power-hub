@@ -1,7 +1,7 @@
-﻿import { createFileRoute, redirect, Outlet, useRouterState } from "@tanstack/react-router";
+import { createFileRoute, redirect, Outlet, useRouterState } from "@tanstack/react-router";
 import { Header } from "@/components/Header";
 import { FloatingChatbot } from "@/components/FloatingChatbot";
-import { isSignedIn } from "@/lib/local-auth";
+import { isSignedIn } from "@/lib/auth";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
