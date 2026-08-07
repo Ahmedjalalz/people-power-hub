@@ -75,6 +75,11 @@ function HRInsights() {
   })) ?? [];
   const maxPeople = Math.max(...hData.map(r => r.people), 1);
 
+  const perfQuery = useQuery({ queryKey: ["perf", "overview", {}], queryFn: () => getPerformanceOverview() });
+  const perf = (pickObject<Record<string, unknown>>(perfQuery.data, "overview", "data") ?? {}) as Record<string, unknown>;
+  const perfNum = (value: unknown, digits = 1) =>
+    typeof value === "number" && Number.isFinite(value) ? value.toFixed(digits) : "—";
+
   return (
     <main className="mx-auto max-w-7xl px-6 py-8">
       <div className="mb-8">
