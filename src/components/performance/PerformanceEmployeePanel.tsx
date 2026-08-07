@@ -5,7 +5,7 @@ import {
 } from "recharts";
 import { Target, TrendingUp, TrendingDown, Sparkles, GraduationCap, BookOpen, Flag } from "lucide-react";
 import { CenterPanel } from "@/components/CenterPanel";
-import { AsyncState, SectionCard, StatTile, bandTint, trendTint, num } from "@/components/performance/PerformanceUI";
+import { AsyncState, SectionCard, bandTint, trendTint, num } from "@/components/performance/PerformanceUI";
 import {
   getPerformanceEmployee,
   getPerformanceEmployeeTrend,
