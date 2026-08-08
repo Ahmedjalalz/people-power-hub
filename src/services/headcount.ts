@@ -1,3 +1,5 @@
+import { getAuthHeader } from "@/lib/auth";
+
 export type HeadcountPayload = {
   question?: string;
   analysis_type?: string;
@@ -21,9 +23,12 @@ export type HeadcountResponse = {
 };
 
 export async function fetchHeadcount(payload: HeadcountPayload): Promise<HeadcountResponse> {
-  const response = await fetch('/api/pipeline/headcount', {
+  const response = await fetch('/pipeline/headcount', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      ...getAuthHeader(),
+    },
     body: JSON.stringify(payload),
   });
   

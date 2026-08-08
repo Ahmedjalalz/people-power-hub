@@ -1,3 +1,5 @@
+import { getAuthHeader } from "@/lib/auth";
+
 export type AttritionSummary = {
   status: "success";
   visual: "people_at_risk";
@@ -177,7 +179,14 @@ export type TopRiskDriversResponse = {
 };
 
 async function request<T>(params: URLSearchParams, options?: RequestInit): Promise<T> {
-  const response = await fetch(`/api/attrition?${params.toString()}`, options);
+  const response = await fetch(`/api/attrition?${params.toString()}`, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeader(),
+      ...(options?.headers ?? {}),
+    },
+  });
   const payload: unknown = await response.json().catch(() => null);
   if (!response.ok) {
     const message = typeof payload === "object" && payload && "detail" in payload

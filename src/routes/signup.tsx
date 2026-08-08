@@ -1,13 +1,13 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { Users, Loader2 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Users, Loader2, ServerCrash } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PasswordInput } from "@/components/PasswordInput";
 import { PasswordStrength, isPasswordStrong } from "@/components/PasswordStrength";
-import { isSignedIn, signup, resendVerification, AuthError } from "@/lib/auth";
+import { isSignedIn, signup, resendVerification, wakeUpServer, AuthError } from "@/lib/auth";
 
 export const Route = createFileRoute("/signup")({
   head: () => ({ meta: [{ title: "Sign up — PeopleLens HR" }, { name: "description", content: "Create an account for PeopleLens to view HR insights and attrition risk." }] }),
@@ -21,10 +21,15 @@ function SignupPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [busy, setBusy] = useState(false);
+  const [slowRequest, setSlowRequest] = useState(false);
   const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null);
   const [resending, setResending] = useState(false);
+  const slowTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => { if (isSignedIn()) void navigate({ to: "/", replace: true }); }, [navigate]);
+
+  // Wake up the Render server as soon as the page loads
+  useEffect(() => { void wakeUpServer(); }, []);
 
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -42,23 +47,29 @@ function SignupPage() {
     }
 
     setBusy(true);
-    
+    setSlowRequest(false);
+
+    // After 6 s, show the "server waking up" notice
+    slowTimer.current = setTimeout(() => setSlowRequest(true), 6_000);
+
     try {
-      await signup(fullName, email, password);
+      await signup(fullName, email, password, confirmPassword);
       toast.success("Account created successfully");
       await navigate({ to: "/check-email", replace: true });
-    } catch (error: any) {
-      const msg = error instanceof AuthError ? error.message : "Failed to sign up";
+    } catch (error: unknown) {
+      const msg = error instanceof AuthError ? (error as AuthError).message : "Failed to sign up";
       const isUnverified = msg.toLowerCase().includes("unverified") || msg.toLowerCase().includes("verify");
       const isDuplicate = msg.toLowerCase().includes("already exists") || msg.toLowerCase().includes("duplicate");
-      
+
       if (isUnverified || isDuplicate) {
         toast.error("An account with this email already exists.");
-        // We assume they might need to verify their email
         setUnverifiedEmail(email);
       } else {
         toast.error(msg);
       }
+    } finally {
+      if (slowTimer.current) clearTimeout(slowTimer.current);
+      setSlowRequest(false);
       setBusy(false);
     }
   };
@@ -70,8 +81,9 @@ function SignupPage() {
       await resendVerification(unverifiedEmail);
       toast.success("Verification email resent. Please check your inbox.");
       await navigate({ to: "/check-email", replace: true });
-    } catch (error: any) {
-      toast.error(error.message || "Failed to resend verification email");
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : "Failed to resend verification email";
+      toast.error(msg);
     } finally {
       setResending(false);
     }
@@ -82,6 +94,17 @@ function SignupPage() {
       <div aria-hidden className="blob pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-pastel-teal opacity-60 blur-3xl" />
       <div className="relative"><div className="mb-6 flex items-center gap-2"><div className="grid h-10 w-10 place-items-center rounded-xl bg-pastel-teal"><Users className="h-5 w-5 text-primary" /></div><div><div className="text-lg font-semibold">PeopleLens</div><div className="text-xs text-muted-foreground">HR Management</div></div></div>
         <h1 className="text-2xl font-semibold tracking-tight">Create an account</h1><p className="mt-1 text-sm text-muted-foreground">Sign up to get started with your people dashboard.</p>
+
+        {/* Slow / cold-start notice */}
+        {slowRequest && (
+          <div className="mt-4 flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/50 dark:text-amber-200">
+            <ServerCrash className="mt-0.5 h-4 w-4 shrink-0" />
+            <div>
+              <p className="font-medium">Server is waking up…</p>
+              <p className="mt-0.5 text-xs opacity-80">The backend runs on a free tier and may take up to 60 s to start after inactivity. Please wait — your sign-up is still in progress.</p>
+            </div>
+          </div>
+        )}
         
         {unverifiedEmail && (
           <div className="mt-4 rounded-xl bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-900/50 p-4 text-sm text-amber-900 dark:text-amber-200">
@@ -107,7 +130,10 @@ function SignupPage() {
             <PasswordInput id="confirmPassword" required autoComplete="new-password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} placeholder="••••••••" className="rounded-xl" />
           </div>
 
-          <Button type="submit" className="w-full rounded-xl" disabled={busy || (password !== confirmPassword && confirmPassword.length > 0)}>{busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Sign up</Button>
+          <Button type="submit" className="w-full rounded-xl" disabled={busy || (password !== confirmPassword && confirmPassword.length > 0)}>
+            {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {busy ? (slowRequest ? "Waiting for server…" : "Creating account…") : "Sign up"}
+          </Button>
         </form>
         <p className="mt-5 text-center text-sm text-muted-foreground">
           Already have an account?{" "}

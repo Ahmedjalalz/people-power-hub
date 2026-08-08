@@ -1,6 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 
+const API_BASE =
+  process.env["NEXT_PUBLIC_API_BASE_URL"]?.trim().replace(/\/$/, "") ||
+  process.env["VITE_API_URL"]?.trim().replace(/\/$/, "") ||
+  "https://hr-work-force.onrender.com";
+
 const chatRequestSchema = z.object({
   message: z.string().trim().min(1).max(2_000),
   thread_id: z.string().trim().min(1).max(200),
@@ -15,20 +20,15 @@ export const Route = createFileRoute("/api/chat")({
           return Response.json({ error: "Invalid chat request." }, { status: 400 });
         }
 
-        const apiBaseUrl = process.env["NEXT_PUBLIC_API_BASE_URL"]?.trim().replace(/\/$/, "");
-        if (!apiBaseUrl) {
-          return Response.json(
-            { error: "NEXT_PUBLIC_API_BASE_URL is not configured." },
-            { status: 500 },
-          );
-        }
+        const authorization = request.headers.get("Authorization");
 
         try {
-          const upstream = await fetch(`${apiBaseUrl}/chat/stream`, {
+          const upstream = await fetch(`${API_BASE}/chat/stream`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
               Accept: "text/event-stream",
+              ...(authorization ? { Authorization: authorization } : {}),
             },
             body: JSON.stringify(result.data),
             signal: request.signal,
@@ -44,7 +44,10 @@ export const Route = createFileRoute("/api/chat")({
           }
 
           if (!upstream.body) {
-            return Response.json({ error: "Chat service returned no response stream." }, { status: 502 });
+            return Response.json(
+              { error: "Chat service returned no response stream." },
+              { status: 502 },
+            );
           }
 
           return new Response(upstream.body, {

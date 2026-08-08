@@ -1,4 +1,5 @@
 import type { ChatStreamEvent } from "@/types/chat";
+import { getAuthHeader } from "@/lib/auth";
 
 const STREAM_TIMEOUT_MS = 60_000;
 
@@ -21,7 +22,11 @@ export async function streamChat({ message, threadId, signal, onEvent }: { messa
   try {
     const response = await fetch("/api/chat", {
       method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "text/event-stream" },
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "text/event-stream",
+        ...getAuthHeader(),
+      },
       body: JSON.stringify({ message, thread_id: threadId }),
       signal: requestSignal,
     });
