@@ -77,8 +77,14 @@ function HRInsights() {
 
   const perfQuery = useQuery({ queryKey: ["perf", "overview", {}], queryFn: () => getPerformanceOverview() });
   const perf = (pickObject<Record<string, unknown>>(perfQuery.data, "overview", "data") ?? {}) as Record<string, unknown>;
-  const perfNum = (value: unknown, digits = 1) =>
-    typeof value === "number" && Number.isFinite(value) ? value.toFixed(digits) : "—";
+  const perfNum = (value: unknown, digits = 1) => {
+    const parsed = typeof value === "number" ? value : parseFloat(String(value ?? ""));
+    return Number.isFinite(parsed) ? (digits === 0 ? String(Math.round(parsed)) : parsed.toFixed(digits)) : "—";
+  };
+
+  const strongCount = perf["strong_or_exceptional_count"] ?? perf["Strong_Or_Exceptional_Count"] ?? perf["strong_and_exceptional_count"];
+  const improvingCount = perf["improving_count"] ?? perf["Improving_Count"] ?? perf["improving"];
+  const decliningCount = perf["declining_count"] ?? perf["Declining_Count"] ?? perf["declining"];
 
   return (
     <main className="mx-auto max-w-7xl px-6 py-8">
@@ -190,14 +196,14 @@ function HRInsights() {
           visual={
             <div className="space-y-1.5">
               {[
-                { label: "Strong + exceptional", value: perf["strong_and_exceptional_count"], tint: "bg-primary/60" },
-                { label: "Improving", value: perf["improving_count"], tint: "bg-primary/40" },
-                { label: "Declining", value: perf["declining_count"], tint: "bg-foreground/30" },
+                { label: "Strong + exceptional", value: strongCount, tint: "bg-primary/60" },
+                { label: "Improving", value: improvingCount, tint: "bg-primary/40" },
+                { label: "Declining", value: decliningCount, tint: "bg-foreground/30" },
               ].map((row) => {
                 const max = Math.max(
-                  Number(perf["strong_and_exceptional_count"] ?? 0),
-                  Number(perf["improving_count"] ?? 0),
-                  Number(perf["declining_count"] ?? 0),
+                  Number(strongCount ?? 0),
+                  Number(improvingCount ?? 0),
+                  Number(decliningCount ?? 0),
                   1,
                 );
                 return (

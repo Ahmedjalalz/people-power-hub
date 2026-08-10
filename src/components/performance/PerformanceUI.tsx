@@ -118,5 +118,6 @@ export function trendTint(trend?: string) {
 }
 
 export function num(value: unknown, digits = 1): string {
-  return typeof value === "number" && Number.isFinite(value) ? value.toFixed(digits) : "—";
+  const parsed = typeof value === "number" ? value : parseFloat(String(value ?? ""));
+  return Number.isFinite(parsed) ? (digits === 0 ? String(Math.round(parsed)) : parsed.toFixed(digits)) : "—";
 }

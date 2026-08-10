@@ -16,10 +16,55 @@ export type PerformanceOverview = {
   [key: string]: unknown;
 };
 
-export type TrendPoint = { Performance_Month?: string; average_performance_score?: number; [key: string]: unknown };
-export type DepartmentRow = { department?: string; average_performance_score?: number; employee_count?: number; rank?: number; [key: string]: unknown };
-export type DistributionRow = { performance_band?: string; employee_count?: number; percentage?: number; [key: string]: unknown };
+export type TrendPoint = {
+  // PascalCase (API)
+  Performance_Month?: string;
+  Average_Performance_Score?: number;
+  // snake_case fallbacks
+  average_performance_score?: number;
+  month?: string;
+  [key: string]: unknown;
+};
+export type DepartmentRow = {
+  // PascalCase (API)
+  Department?: string;
+  Average_Performance_Score?: number;
+  Employee_Count?: number;
+  Rank?: number;
+  // snake_case fallbacks
+  department?: string;
+  average_performance_score?: number;
+  employee_count?: number;
+  rank?: number;
+  [key: string]: unknown;
+};
+export type DistributionRow = {
+  // PascalCase (API)
+  Performance_Band?: string;
+  Employee_Count?: number;
+  Percentage?: number;
+  // snake_case fallbacks
+  performance_band?: string;
+  employee_count?: number;
+  percentage?: number;
+  [key: string]: unknown;
+};
 export type AttentionRow = {
+  // PascalCase (API)
+  Employee_ID?: string;
+  Employee_Name?: string;
+  Department?: string;
+  Position_Title?: string;
+  Role_Band?: string;
+  Latest_Performance_Score?: number;
+  Latest_Performance_Band?: string;
+  Three_Month_Change_Points?: number;
+  Performance_Trend?: string;
+  Development_KPI_1?: string;
+  Development_KPI_1_Score?: number;
+  Development_KPI_2?: string;
+  Development_KPI_2_Score?: number;
+  // snake_case fallbacks
   employee_id?: string;
   employee_name?: string;
   department?: string;
@@ -94,12 +139,58 @@ export function pickArray<T>(payload: unknown, ...keys: string[]): T[] {
 }
 
 export function pickObject<T>(payload: unknown, ...keys: string[]): T | null {
-  if (!payload || typeof payload !== "object") return null;
+  if (!payload) return null;
+  
+  if (Array.isArray(payload)) {
+    return payload.length > 0 ? pickObject<T>(payload[0], ...keys) : null;
+  }
+  
+  if (typeof payload !== "object") return null;
   const record = payload as Record<string, unknown>;
+
+  const targetKeys = [
+    "average_performance_score",
+    "total_employees",
+    "strong_and_exceptional_count",
+    "performance_score",
+    "employee_name",
+    "latest_performance_score"
+  ];
+
+  // 1. If the root object itself has target keys, use it
+  for (const tKey of targetKeys) {
+    if (tKey in record) {
+      return payload as T;
+    }
+  }
+
+  // 2. Otherwise look inside specified keys
   for (const key of keys) {
     const value = record[key];
-    if (value && typeof value === "object" && !Array.isArray(value)) return value as T;
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      return value as T;
+    }
   }
+
+  // 3. Scan all properties to find any nested object that has target keys
+  for (const value of Object.values(record)) {
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      const nestedObj = value as Record<string, unknown>;
+      for (const tKey of targetKeys) {
+        if (tKey in nestedObj) {
+          return value as T;
+        }
+      }
+    }
+  }
+
+  // 4. Fallback to first non-array object found
+  for (const value of Object.values(record)) {
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      return value as T;
+    }
+  }
+
   return payload as T;
 }
 

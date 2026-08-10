@@ -42,12 +42,18 @@ export function PerformancePanel({ open, onClose }: { open: boolean; onClose: ()
   const ask = useMutation({ mutationFn: (value: string) => askPerformance(value) });
 
   const overview = (pickObject<Record<string, any>>(overviewQuery.data, "overview", "data") ?? {}) as Record<string, any>;
+  const strongCount = overview["strong_or_exceptional_count"] ?? overview["Strong_Or_Exceptional_Count"] ?? overview["strong_and_exceptional_count"] ?? overview["Strong_And_Exceptional_Count"];
+  const strongPercentage = parseFloat(String(overview["strong_or_exceptional_percentage"] ?? overview["Strong_Or_Exceptional_Percentage"] ?? overview["strong_and_exceptional_percentage"] ?? ""));
+  const improvingCount = overview["improving_count"] ?? overview["Improving_Count"] ?? overview["improving"];
+  const decliningCount = overview["declining_count"] ?? overview["Declining_Count"] ?? overview["declining"];
+  const avgPerfScore = overview["average_performance_score"] ?? overview["Average_Performance_Score"] ?? overview["avg_performance_score"];
+  const totalEmployees = overview["employee_count"] ?? overview["Employee_Count"] ?? overview["total_employees"] ?? overview["total_evaluated"];
 
   const trend = useMemo(
     () =>
       pickArray<TrendPoint>(trendQuery.data, "trend", "records", "points").map((p) => ({
-        month: String(p.Performance_Month ?? p["month"] ?? ""),
-        score: Number(p.average_performance_score ?? 0),
+        month: String(p.Performance_Month ?? p.month ?? p["Month"] ?? ""),
+        score: Number(p.Average_Performance_Score ?? p.average_performance_score ?? 0),
       })),
     [trendQuery.data],
   );
@@ -55,8 +61,8 @@ export function PerformancePanel({ open, onClose }: { open: boolean; onClose: ()
   const departments = useMemo(
     () =>
       pickArray<DepartmentRow>(deptQuery.data, "departments", "records").map((d) => ({
-        department: String(d.department ?? "—"),
-        score: Number(d.average_performance_score ?? 0),
+        department: String(d.Department ?? d.department ?? "—"),
+        score: Number(d.Average_Performance_Score ?? d.average_performance_score ?? 0),
       })),
     [deptQuery.data],
   );
@@ -64,9 +70,9 @@ export function PerformancePanel({ open, onClose }: { open: boolean; onClose: ()
   const distribution = useMemo(
     () =>
       pickArray<DistributionRow>(distQuery.data, "distribution", "records", "bands").map((d) => ({
-        band: String(d.performance_band ?? d["band"] ?? "—"),
-        count: Number(d.employee_count ?? 0),
-        percentage: Number(d.percentage ?? 0),
+        band: String(d.Performance_Band ?? d.performance_band ?? d["band"] ?? d["Band"] ?? "—"),
+        count: Number(d.Employee_Count ?? d.employee_count ?? 0),
+        percentage: Number(d.Percentage ?? d.percentage ?? 0),
       })),
     [distQuery.data],
   );
@@ -81,16 +87,16 @@ export function PerformancePanel({ open, onClose }: { open: boolean; onClose: ()
     const term = search.trim().toLowerCase();
     const rows = attentionRows.filter((r) =>
       !term ||
-      String(r.employee_name ?? "").toLowerCase().includes(term) ||
-      String(r.department ?? "").toLowerCase().includes(term),
+      String(r.Employee_Name ?? r.employee_name ?? "").toLowerCase().includes(term) ||
+      String(r.Department ?? r.department ?? "").toLowerCase().includes(term),
     );
     const value = (row: AttentionRow) => {
       switch (sort.key) {
-        case "score": return Number(row.latest_performance_score ?? row.performance_score ?? 0);
-        case "change": return Number(row.three_month_change ?? 0);
-        case "band": return String(row.performance_band ?? "");
-        case "department": return String(row.department ?? "");
-        default: return String(row.employee_name ?? "");
+        case "score": return Number(row.Latest_Performance_Score ?? row.latest_performance_score ?? row.performance_score ?? 0);
+        case "change": return Number(row.Three_Month_Change_Points ?? row.three_month_change ?? 0);
+        case "band": return String(row.Latest_Performance_Band ?? row.performance_band ?? "");
+        case "department": return String(row.Department ?? row.department ?? "");
+        default: return String(row.Employee_Name ?? row.employee_name ?? "");
       }
     };
     return rows.slice().sort((a, b) => {
@@ -105,18 +111,18 @@ export function PerformancePanel({ open, onClose }: { open: boolean; onClose: ()
     setSort((prev) => ({ key, dir: prev.key === key && prev.dir === "asc" ? "desc" : "asc" }));
 
   const kpis = [
-    { label: "Avg performance score", value: num(overview["average_performance_score"]), tint: "bg-pastel-teal" },
-    { label: "Total employees", value: num(overview["total_employees"], 0), tint: "bg-pastel-sky" },
+    { label: "Avg performance score", value: num(avgPerfScore), tint: "bg-pastel-teal" },
+    { label: "Total employees", value: num(totalEmployees, 0), tint: "bg-pastel-sky" },
     {
       label: "Strong + exceptional",
-      value: num(overview["strong_and_exceptional_count"], 0),
-      hint: typeof overview["strong_and_exceptional_percentage"] === "number"
-        ? `${overview["strong_and_exceptional_percentage"].toFixed(1)}% of employees`
+      value: num(strongCount, 0),
+      hint: Number.isFinite(strongPercentage)
+        ? `${strongPercentage.toFixed(1)}% of employees`
         : undefined,
       tint: "bg-pastel-mint",
     },
-    { label: "Improving", value: num(overview["improving_count"], 0), tint: "bg-pastel-lavender" },
-    { label: "Declining", value: num(overview["declining_count"], 0), tint: "bg-pastel-peach" },
+    { label: "Improving", value: num(improvingCount, 0), tint: "bg-pastel-lavender" },
+    { label: "Declining", value: num(decliningCount, 0), tint: "bg-pastel-peach" },
   ];
 
   const answer = ask.data
@@ -262,33 +268,42 @@ export function PerformancePanel({ open, onClose }: { open: boolean; onClose: ()
                   </thead>
                   <tbody>
                     {visibleRows.map((row, index) => {
-                      const change = Number(row.three_month_change ?? 0);
-                      const kpiList = Array.isArray(row.development_kpis)
-                        ? row.development_kpis.join(", ")
-                        : String(row.development_kpis ?? "—");
+                      const changeVal = row.Three_Month_Change_Points ?? row.three_month_change;
+                      const change = Number(changeVal ?? 0);
+                      const band = row.Latest_Performance_Band ?? row.performance_band;
+                      const perfTrend = row.Performance_Trend ?? row.performance_trend;
+                      const kpiParts: string[] = [];
+                      if (row.Development_KPI_1) kpiParts.push(String(row.Development_KPI_1));
+                      if (row.Development_KPI_2) kpiParts.push(String(row.Development_KPI_2));
+                      const kpiList = kpiParts.length > 0
+                        ? kpiParts.join(", ")
+                        : Array.isArray(row.development_kpis)
+                          ? row.development_kpis.join(", ")
+                          : String(row.development_kpis ?? "—");
+                      const employeeId = row.Employee_ID ?? row.employee_id;
                       return (
                         <tr
-                          key={`${row.employee_id}-${index}`}
-                          onClick={() => row.employee_id && setSelected(String(row.employee_id))}
+                          key={`${employeeId}-${index}`}
+                          onClick={() => employeeId && setSelected(String(employeeId))}
                           className="cursor-pointer border-t transition-colors hover:bg-muted/50"
                         >
-                          <td className="px-2 py-2 font-medium">{String(row.employee_name ?? "—")}</td>
-                          <td className="px-2 py-2 text-muted-foreground">{String(row.department ?? "—")}</td>
-                          <td className="px-2 py-2 font-semibold">{num(row.latest_performance_score ?? row.performance_score)}</td>
+                          <td className="px-2 py-2 font-medium">{String(row.Employee_Name ?? row.employee_name ?? "—")}</td>
+                          <td className="px-2 py-2 text-muted-foreground">{String(row.Department ?? row.department ?? "—")}</td>
+                          <td className="px-2 py-2 font-semibold">{num(row.Latest_Performance_Score ?? row.latest_performance_score ?? row.performance_score)}</td>
                           <td className="px-2 py-2">
-                            <span className={cn("rounded-full px-2 py-0.5 text-[10px]", bandTint(row.performance_band))}>
-                              {String(row.performance_band ?? "—")}
+                            <span className={cn("rounded-full px-2 py-0.5 text-[10px]", bandTint(band))}>
+                              {String(band ?? "—")}
                             </span>
                           </td>
                           <td className="px-2 py-2">
                             <span className="flex items-center gap-1">
                               {change < 0 ? <TrendingDown className="h-3.5 w-3.5" /> : <TrendingUp className="h-3.5 w-3.5" />}
-                              {typeof row.three_month_change === "number" ? `${change > 0 ? "+" : ""}${change.toFixed(1)}` : "—"}
+                              {changeVal !== undefined && changeVal !== null ? `${change > 0 ? "+" : ""}${change.toFixed(1)}` : "—"}
                             </span>
                           </td>
                           <td className="px-2 py-2">
-                            <span className={cn("rounded-full px-2 py-0.5 text-[10px]", trendTint(row.performance_trend))}>
-                              {String(row.performance_trend ?? "—")}
+                            <span className={cn("rounded-full px-2 py-0.5 text-[10px]", trendTint(perfTrend))}>
+                              {String(perfTrend ?? "—")}
                             </span>
                           </td>
                           <td className="max-w-[220px] truncate px-2 py-2 text-muted-foreground">{kpiList}</td>
