@@ -134,12 +134,12 @@ async function post<T>(resource: string, payload: unknown): Promise<T> {
     data = null;
   }
   if (!response.ok) {
-    const message =
-      (data && typeof data === "object" && "error" in data && String((data as Record<string, unknown>)["error"])) ||
-      (data && typeof data === "object" && "detail" in data && String((data as Record<string, unknown>)["detail"])) ||
-      `Request failed (${response.status}).`;
+    const record = (data && typeof data === "object" ? data : {}) as Record<string, unknown>;
+    const raw = record["error"] ?? record["detail"] ?? record["message"];
+    const message = typeof raw === "string" && raw.trim() ? raw : `Request failed (${response.status}).`;
     throw new Error(message);
   }
+
   return data as T;
 }
 
