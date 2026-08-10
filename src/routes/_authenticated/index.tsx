@@ -88,16 +88,23 @@ function HRInsights() {
 
   return (
     <main className="mx-auto max-w-7xl px-6 py-8">
-      <div className="mb-8">
-        <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-pastel-teal/70 px-3 py-1 text-xs font-medium">
-          <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-          Focus: Attrition
+      <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-pastel-teal/70 px-3 py-1 text-xs font-medium">
+            <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+            Focus: Attrition
+          </div>
+          <h1 className="text-3xl font-semibold tracking-tight">HR Insights</h1>
+          <p className="mt-1 text-muted-foreground">
+            Start with attrition — click a card to open its detail panel.
+          </p>
         </div>
-        <h1 className="text-3xl font-semibold tracking-tight">HR Insights</h1>
-        <p className="mt-1 text-muted-foreground">
-          Start with attrition — click a card to open its detail panel.
-        </p>
+        <Button onClick={() => setScenarioOpen(true)} className="rounded-xl">
+          <FlaskConical className="mr-1.5 h-4 w-4" strokeWidth={2.25} />
+          Scenario Simulator
+        </Button>
       </div>
+
 
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         <InsightCard
