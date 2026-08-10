@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { ShieldAlert, Users2, HeartHandshake, Target } from "lucide-react";
+import { ShieldAlert, Users2, HeartHandshake, Target, FlaskConical } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ScenarioSimulatorPanel } from "@/components/scenario/ScenarioSimulatorPanel";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from "recharts";
 import { InsightCard, Callout } from "@/components/InsightCard";
 import { CenterPanel } from "@/components/CenterPanel";
@@ -53,6 +55,7 @@ const engagementData = [
 
 function HRInsights() {
   const [openCard, setOpenCard] = useState<MainCard | null>(null);
+  const [scenarioOpen, setScenarioOpen] = useState(false);
   const summaryQuery = useQuery({ queryKey: ["attrition", "summary"], queryFn: getAttritionSummary });
   const liveRiskCount = summaryQuery.data?.people_at_risk ?? atRiskEmployees().length;
   const liveRiskRate = summaryQuery.data?.attrition_risk_rate_percent ?? attritionOverview.overallRate;
@@ -88,16 +91,23 @@ function HRInsights() {
 
   return (
     <main className="mx-auto max-w-7xl px-6 py-8">
-      <div className="mb-8">
-        <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-pastel-teal/70 px-3 py-1 text-xs font-medium">
-          <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-          Focus: Attrition
+      <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-pastel-teal/70 px-3 py-1 text-xs font-medium">
+            <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+            Focus: Attrition
+          </div>
+          <h1 className="text-3xl font-semibold tracking-tight">HR Insights</h1>
+          <p className="mt-1 text-muted-foreground">
+            Start with attrition — click a card to open its detail panel.
+          </p>
         </div>
-        <h1 className="text-3xl font-semibold tracking-tight">HR Insights</h1>
-        <p className="mt-1 text-muted-foreground">
-          Start with attrition — click a card to open its detail panel.
-        </p>
+        <Button onClick={() => setScenarioOpen(true)} className="rounded-xl">
+          <FlaskConical className="mr-1.5 h-4 w-4" strokeWidth={2.25} />
+          Scenario Simulator
+        </Button>
       </div>
+
 
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         <InsightCard
@@ -220,6 +230,8 @@ function HRInsights() {
           }
         />
       </div>
+
+      <ScenarioSimulatorPanel open={scenarioOpen} onClose={() => setScenarioOpen(false)} />
 
       <AttritionPanel open={openCard === "attrition"} onClose={() => setOpenCard(null)} />
 
