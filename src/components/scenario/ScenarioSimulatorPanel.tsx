@@ -298,7 +298,7 @@ function ScenarioForm({ scenario }: { scenario: ScenarioDefinition }) {
         </div>
       </SectionCard>
 
-      {(simulate.isPending || simulate.error || simulate.data) && (
+      {(simulate.isPending || Boolean(simulate.error) || Boolean(simulate.data)) && (
         <ScenarioResult
           isPending={simulate.isPending}
           error={simulate.error}
