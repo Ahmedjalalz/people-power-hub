@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { ShieldAlert, Users2, HeartHandshake, Target } from "lucide-react";
+import { ShieldAlert, Users2, HeartHandshake, Target, FlaskConical } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ScenarioSimulatorPanel } from "@/components/scenario/ScenarioSimulatorPanel";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from "recharts";
 import { InsightCard, Callout } from "@/components/InsightCard";
 import { CenterPanel } from "@/components/CenterPanel";
@@ -53,6 +55,7 @@ const engagementData = [
 
 function HRInsights() {
   const [openCard, setOpenCard] = useState<MainCard | null>(null);
+  const [scenarioOpen, setScenarioOpen] = useState(false);
   const summaryQuery = useQuery({ queryKey: ["attrition", "summary"], queryFn: getAttritionSummary });
   const liveRiskCount = summaryQuery.data?.people_at_risk ?? atRiskEmployees().length;
   const liveRiskRate = summaryQuery.data?.attrition_risk_rate_percent ?? attritionOverview.overallRate;
