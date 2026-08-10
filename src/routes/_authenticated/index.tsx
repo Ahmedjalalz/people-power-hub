@@ -231,6 +231,8 @@ function HRInsights() {
         />
       </div>
 
+      <ScenarioSimulatorPanel open={scenarioOpen} onClose={() => setScenarioOpen(false)} />
+
       <AttritionPanel open={openCard === "attrition"} onClose={() => setOpenCard(null)} />
 
       <HeadcountPanel open={openCard === "headcount"} onClose={() => setOpenCard(null)} />
