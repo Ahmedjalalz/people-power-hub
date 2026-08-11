@@ -9,41 +9,25 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SignupRouteImport } from './routes/signup'
-import { Route as ResetPasswordRouteImport } from './routes/reset-password'
-import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
-import { Route as CheckEmailRouteImport } from './routes/check-email'
-import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as CheckEmailRouteImport } from './routes/check-email'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as SignupRouteImport } from './routes/signup'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
-import { Route as PipelineHeadcountRouteImport } from './routes/pipeline/headcount'
-import { Route as ApiScenarioRouteImport } from './routes/api/scenario'
-import { Route as ApiPerformanceRouteImport } from './routes/api/performance'
-import { Route as ApiChatRouteImport } from './routes/api/chat'
-import { Route as ApiAttritionRouteImport } from './routes/api/attrition'
 import { Route as AuthenticatedChatbotRouteImport } from './routes/_authenticated/chatbot'
-import { Route as ApiPipelineHeadcountRouteImport } from './routes/api/pipeline/headcount'
-import { Route as ApiAuthActionRouteImport } from './routes/api/auth.$action'
+import { Route as ApiAttritionRouteImport } from './routes/api/attrition'
+import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as ApiPerformanceRouteImport } from './routes/api/performance'
+import { Route as ApiScenarioRouteImport } from './routes/api/scenario'
+import { Route as PipelineHeadcountRouteImport } from './routes/pipeline/headcount'
 import { Route as AuthenticatedEmployeeEmployeeIdRouteImport } from './routes/_authenticated/employee.$employeeId'
+import { Route as ApiAuthActionRouteImport } from './routes/api/auth.$action'
+import { Route as ApiPipelineHeadcountRouteImport } from './routes/api/pipeline/headcount'
 
-const SignupRoute = SignupRouteImport.update({
-  id: '/signup',
-  path: '/signup',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ResetPasswordRoute = ResetPasswordRouteImport.update({
-  id: '/reset-password',
-  path: '/reset-password',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
-  id: '/forgot-password',
-  path: '/forgot-password',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CheckEmailRoute = CheckEmailRouteImport.update({
-  id: '/check-email',
-  path: '/check-email',
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -51,8 +35,24 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
+const CheckEmailRoute = CheckEmailRouteImport.update({
+  id: '/check-email',
+  path: '/check-email',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
@@ -60,19 +60,14 @@ const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const PipelineHeadcountRoute = PipelineHeadcountRouteImport.update({
-  id: '/pipeline/headcount',
-  path: '/pipeline/headcount',
-  getParentRoute: () => rootRouteImport,
+const AuthenticatedChatbotRoute = AuthenticatedChatbotRouteImport.update({
+  id: '/chatbot',
+  path: '/chatbot',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const ApiScenarioRoute = ApiScenarioRouteImport.update({
-  id: '/api/scenario',
-  path: '/api/scenario',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPerformanceRoute = ApiPerformanceRouteImport.update({
-  id: '/api/performance',
-  path: '/api/performance',
+const ApiAttritionRoute = ApiAttritionRouteImport.update({
+  id: '/api/attrition',
+  path: '/api/attrition',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiChatRoute = ApiChatRouteImport.update({
@@ -80,24 +75,19 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiAttritionRoute = ApiAttritionRouteImport.update({
-  id: '/api/attrition',
-  path: '/api/attrition',
+const ApiPerformanceRoute = ApiPerformanceRouteImport.update({
+  id: '/api/performance',
+  path: '/api/performance',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedChatbotRoute = AuthenticatedChatbotRouteImport.update({
-  id: '/chatbot',
-  path: '/chatbot',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const ApiPipelineHeadcountRoute = ApiPipelineHeadcountRouteImport.update({
-  id: '/api/pipeline/headcount',
-  path: '/api/pipeline/headcount',
+const ApiScenarioRoute = ApiScenarioRouteImport.update({
+  id: '/api/scenario',
+  path: '/api/scenario',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiAuthActionRoute = ApiAuthActionRouteImport.update({
-  id: '/api/auth/$action',
-  path: '/api/auth/$action',
+const PipelineHeadcountRoute = PipelineHeadcountRouteImport.update({
+  id: '/pipeline/headcount',
+  path: '/pipeline/headcount',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedEmployeeEmployeeIdRoute =
@@ -106,6 +96,16 @@ const AuthenticatedEmployeeEmployeeIdRoute =
     path: '/employee/$employeeId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiAuthActionRoute = ApiAuthActionRouteImport.update({
+  id: '/api/auth/$action',
+  path: '/api/auth/$action',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPipelineHeadcountRoute = ApiPipelineHeadcountRouteImport.update({
+  id: '/api/pipeline/headcount',
+  path: '/api/pipeline/headcount',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
@@ -233,32 +233,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/signup': {
-      id: '/signup'
-      path: '/signup'
-      fullPath: '/signup'
-      preLoaderRoute: typeof SignupRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/reset-password': {
-      id: '/reset-password'
-      path: '/reset-password'
-      fullPath: '/reset-password'
-      preLoaderRoute: typeof ResetPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/forgot-password': {
-      id: '/forgot-password'
-      path: '/forgot-password'
-      fullPath: '/forgot-password'
-      preLoaderRoute: typeof ForgotPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/check-email': {
-      id: '/check-email'
-      path: '/check-email'
-      fullPath: '/check-email'
-      preLoaderRoute: typeof CheckEmailRouteImport
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -268,11 +247,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated': {
-      id: '/_authenticated'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+    '/check-email': {
+      id: '/check-email'
+      path: '/check-email'
+      fullPath: '/check-email'
+      preLoaderRoute: typeof CheckEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/': {
@@ -282,25 +282,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/pipeline/headcount': {
-      id: '/pipeline/headcount'
-      path: '/pipeline/headcount'
-      fullPath: '/pipeline/headcount'
-      preLoaderRoute: typeof PipelineHeadcountRouteImport
-      parentRoute: typeof rootRouteImport
+    '/_authenticated/chatbot': {
+      id: '/_authenticated/chatbot'
+      path: '/chatbot'
+      fullPath: '/chatbot'
+      preLoaderRoute: typeof AuthenticatedChatbotRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/api/scenario': {
-      id: '/api/scenario'
-      path: '/api/scenario'
-      fullPath: '/api/scenario'
-      preLoaderRoute: typeof ApiScenarioRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/performance': {
-      id: '/api/performance'
-      path: '/api/performance'
-      fullPath: '/api/performance'
-      preLoaderRoute: typeof ApiPerformanceRouteImport
+    '/api/attrition': {
+      id: '/api/attrition'
+      path: '/api/attrition'
+      fullPath: '/api/attrition'
+      preLoaderRoute: typeof ApiAttritionRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/chat': {
@@ -310,32 +303,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/attrition': {
-      id: '/api/attrition'
-      path: '/api/attrition'
-      fullPath: '/api/attrition'
-      preLoaderRoute: typeof ApiAttritionRouteImport
+    '/api/performance': {
+      id: '/api/performance'
+      path: '/api/performance'
+      fullPath: '/api/performance'
+      preLoaderRoute: typeof ApiPerformanceRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/chatbot': {
-      id: '/_authenticated/chatbot'
-      path: '/chatbot'
-      fullPath: '/chatbot'
-      preLoaderRoute: typeof AuthenticatedChatbotRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/api/pipeline/headcount': {
-      id: '/api/pipeline/headcount'
-      path: '/api/pipeline/headcount'
-      fullPath: '/api/pipeline/headcount'
-      preLoaderRoute: typeof ApiPipelineHeadcountRouteImport
+    '/api/scenario': {
+      id: '/api/scenario'
+      path: '/api/scenario'
+      fullPath: '/api/scenario'
+      preLoaderRoute: typeof ApiScenarioRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/auth/$action': {
-      id: '/api/auth/$action'
-      path: '/api/auth/$action'
-      fullPath: '/api/auth/$action'
-      preLoaderRoute: typeof ApiAuthActionRouteImport
+    '/pipeline/headcount': {
+      id: '/pipeline/headcount'
+      path: '/pipeline/headcount'
+      fullPath: '/pipeline/headcount'
+      preLoaderRoute: typeof PipelineHeadcountRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/employee/$employeeId': {
@@ -344,6 +330,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/employee/$employeeId'
       preLoaderRoute: typeof AuthenticatedEmployeeEmployeeIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/auth/$action': {
+      id: '/api/auth/$action'
+      path: '/api/auth/$action'
+      fullPath: '/api/auth/$action'
+      preLoaderRoute: typeof ApiAuthActionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/pipeline/headcount': {
+      id: '/api/pipeline/headcount'
+      path: '/api/pipeline/headcount'
+      fullPath: '/api/pipeline/headcount'
+      preLoaderRoute: typeof ApiPipelineHeadcountRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -381,3 +381,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
