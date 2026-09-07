@@ -1,15 +1,17 @@
-import { Link, useNavigate } from "@tanstack/react-router";
-import { Moon, Sun, BarChart3, MessageSquare, Users, LogOut, User as UserIcon } from "lucide-react";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { Moon, Sun, Users, LogOut, User as UserIcon, Menu } from "lucide-react";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useTheme } from "@/lib/theme";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { logout as clearLocalSession, getCurrentUser } from "@/lib/auth";
+import { useSidebarContext } from "@/components/AppSidebar";
 
 export function Header() {
   const { theme, toggle } = useTheme();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { toggle: toggleSidebar } = useSidebarContext();
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
 
   const { data: user } = useQuery({
     queryKey: ["currentUser"],
@@ -23,25 +25,54 @@ export function Header() {
     await navigate({ to: "/auth", replace: true });
   };
 
-  return (
-    <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
-        <Link to="/" className="flex items-center gap-2">
-          <div className="grid h-9 w-9 place-items-center rounded-xl bg-pastel-teal">
-            <Users className="h-5 w-5 text-primary" />
-          </div>
-          <div className="text-lg font-semibold">PeopleLens</div>
-          <span className="ml-2 hidden text-xs text-muted-foreground sm:inline">HR Management</span>
-        </Link>
+  const pageTitle =
+    pathname === "/chatbot"
+      ? "Assistant"
+      : pathname === "/employees"
+        ? "Employees"
+        : pathname.startsWith("/employee/")
+          ? "Employee Profile"
+          : "HR Insights";
 
+  return (
+    <header className="sticky top-0 z-20 border-b bg-background/80 backdrop-blur">
+      <div className="flex h-16 w-full items-center justify-between px-6">
+        <div className="flex items-center gap-3">
+          {/* Mobile pull-out trigger: only visible on mobile screen sizes */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={toggleSidebar}
+            className="flex items-center gap-2 rounded-xl border-border/80 px-2.5 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground shadow-xs cursor-pointer md:hidden"
+            aria-label="Navigation menu"
+            title="Open navigation"
+          >
+            <Menu className="h-4 w-4" />
+            <span>Navigation</span>
+          </Button>
+
+          {/* Mobile-only brand header */}
+          <Link to="/" className="flex items-center gap-2 md:hidden">
+            <div className="grid h-8 w-8 place-items-center rounded-xl bg-pastel-teal shadow-xs">
+              <Users className="h-4 w-4 text-primary" />
+            </div>
+            <div className="text-base font-semibold text-foreground">PeopleLens</div>
+          </Link>
+
+          {/* Desktop breadcrumb / section indicator */}
+          <div className="hidden md:flex items-center gap-2 text-sm font-medium">
+            <span className="text-muted-foreground">PeopleLens</span>
+            <span className="text-muted-foreground/40">/</span>
+            <span className="font-semibold text-foreground">{pageTitle}</span>
+          </div>
+        </div>
+
+        {/* The rest of the navbar kept intact: user session info, theme toggle, sign out */}
         <nav className="flex items-center gap-1">
-          <NavTab to="/" icon={<BarChart3 className="h-4 w-4" />} label="HR Insights" />
-          <NavTab to="/chatbot" icon={<MessageSquare className="h-4 w-4" />} label="Assistant" />
-          
           {user && (
             <div className="ml-4 mr-2 flex items-center gap-2 rounded-full border px-3 py-1 text-sm text-muted-foreground">
               <UserIcon className="h-4 w-4" />
-              <span className="hidden md:inline">{user.email}</span>
+              <span className="hidden sm:inline">{user.email}</span>
             </div>
           )}
 
@@ -68,18 +99,3 @@ export function Header() {
     </header>
   );
 }
-
-function NavTab({ to, icon, label }: { to: string; icon: React.ReactNode; label: string }) {
-  return (
-    <Link
-      to={to}
-      className="flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-      activeProps={{ className: cn("bg-pastel-teal/60 text-foreground") }}
-      activeOptions={{ exact: true }}
-    >
-      {icon}
-      <span className="hidden sm:inline">{label}</span>
-    </Link>
-  );
-}
-

@@ -17,6 +17,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedChatbotRouteImport } from './routes/_authenticated/chatbot'
+import { Route as AuthenticatedEmployeesRouteImport } from './routes/_authenticated/employees'
 import { Route as ApiAttritionRouteImport } from './routes/api/attrition'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiPerformanceRouteImport } from './routes/api/performance'
@@ -63,6 +64,11 @@ const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
 const AuthenticatedChatbotRoute = AuthenticatedChatbotRouteImport.update({
   id: '/chatbot',
   path: '/chatbot',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedEmployeesRoute = AuthenticatedEmployeesRouteImport.update({
+  id: '/employees',
+  path: '/employees',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const ApiAttritionRoute = ApiAttritionRouteImport.update({
@@ -115,6 +121,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/chatbot': typeof AuthenticatedChatbotRoute
+  '/employees': typeof AuthenticatedEmployeesRoute
   '/api/attrition': typeof ApiAttritionRoute
   '/api/chat': typeof ApiChatRoute
   '/api/performance': typeof ApiPerformanceRoute
@@ -131,6 +138,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/chatbot': typeof AuthenticatedChatbotRoute
+  '/employees': typeof AuthenticatedEmployeesRoute
   '/api/attrition': typeof ApiAttritionRoute
   '/api/chat': typeof ApiChatRoute
   '/api/performance': typeof ApiPerformanceRoute
@@ -150,6 +158,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/_authenticated/chatbot': typeof AuthenticatedChatbotRoute
+  '/_authenticated/employees': typeof AuthenticatedEmployeesRoute
   '/api/attrition': typeof ApiAttritionRoute
   '/api/chat': typeof ApiChatRoute
   '/api/performance': typeof ApiPerformanceRoute
@@ -170,6 +179,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/chatbot'
+    | '/employees'
     | '/api/attrition'
     | '/api/chat'
     | '/api/performance'
@@ -186,6 +196,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/chatbot'
+    | '/employees'
     | '/api/attrition'
     | '/api/chat'
     | '/api/performance'
@@ -204,6 +215,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/_authenticated/chatbot'
+    | '/_authenticated/employees'
     | '/api/attrition'
     | '/api/chat'
     | '/api/performance'
@@ -289,6 +301,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedChatbotRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/employees': {
+      id: '/_authenticated/employees'
+      path: '/employees'
+      fullPath: '/employees'
+      preLoaderRoute: typeof AuthenticatedEmployeesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/attrition': {
       id: '/api/attrition'
       path: '/api/attrition'
@@ -350,12 +369,14 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedChatbotRoute: typeof AuthenticatedChatbotRoute
+  AuthenticatedEmployeesRoute: typeof AuthenticatedEmployeesRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedEmployeeEmployeeIdRoute: typeof AuthenticatedEmployeeEmployeeIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedChatbotRoute: AuthenticatedChatbotRoute,
+  AuthenticatedEmployeesRoute: AuthenticatedEmployeesRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedEmployeeEmployeeIdRoute: AuthenticatedEmployeeEmployeeIdRoute,
 }
