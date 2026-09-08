@@ -30,7 +30,7 @@ export function CenterPanel({
         <DialogPrimitive.Content
           className={cn(
             "panel-content pointer-events-auto w-full",
-            "max-h-[86vh] overflow-y-auto rounded-3xl border bg-card p-6 shadow-2xl",
+            "max-h-[86vh] overflow-y-auto rounded-2xl border bg-card p-6 shadow-2xl",
             size === "lg" ? "max-w-4xl" : "max-w-2xl",
           )}
         >

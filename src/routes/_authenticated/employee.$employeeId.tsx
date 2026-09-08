@@ -201,7 +201,7 @@ function EmployeePage() {
 
 function ProfileHeader({ employee }: { employee: Employee }) {
   return (
-    <div className="relative overflow-hidden rounded-[28px] border bg-card shadow-sm">
+    <div className="relative overflow-hidden rounded-xl border bg-card shadow-sm">
       <div
         aria-hidden
         className="absolute inset-x-0 top-0 h-28 bg-[linear-gradient(120deg,var(--pastel-teal),var(--pastel-sky)_45%,var(--pastel-lavender))] opacity-70"
@@ -213,8 +213,8 @@ function ProfileHeader({ employee }: { employee: Employee }) {
       <div className="relative px-6 pb-6 pt-14 sm:px-8">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div className="flex items-end gap-5">
-            <div className="grid h-24 w-24 shrink-0 place-items-center rounded-3xl bg-card text-2xl font-semibold shadow-md ring-4 ring-card">
-              <span className="grid h-[84px] w-[84px] place-items-center rounded-2xl bg-pastel-teal">
+            <div className="grid h-24 w-24 shrink-0 place-items-center rounded-full bg-card text-2xl font-semibold shadow-md ring-4 ring-card">
+              <span className="grid h-[84px] w-[84px] place-items-center rounded-full bg-pastel-teal">
                 {initials(employee.name)}
               </span>
             </div>
@@ -256,7 +256,7 @@ function ProfileHeader({ employee }: { employee: Employee }) {
 
 function QuickFact({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl bg-muted/40 px-3 py-2">
+    <div className="rounded-lg bg-muted/40 px-3 py-2">
       <div className="text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground">{label}</div>
       <div className="mt-0.5 text-sm font-semibold">{value}</div>
     </div>
@@ -284,7 +284,7 @@ function GaugeCard({
   const circumference = 2 * Math.PI * radius;
   const offset = circumference * (1 - Math.min(Math.max(value, 0), 100) / 100);
   return (
-    <div className="group rounded-3xl border bg-card p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md">
+    <div className="group rounded-xl border bg-card p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md">
       <div className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">{label}</div>
       <div className="mt-3 flex items-center gap-4">
         <div className="relative h-[88px] w-[88px] shrink-0">
@@ -321,7 +321,7 @@ function CriticalityCard({ level, title }: { level: Criticality; title: string }
         ? "Replaceable with some planning and a short handover."
         : "Low disruption if this role becomes vacant.";
   return (
-    <div className="relative overflow-hidden rounded-3xl border bg-card p-5 shadow-sm">
+    <div className="relative overflow-hidden rounded-xl border bg-card p-5 shadow-sm">
       <div
         aria-hidden
         className={cn("pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full blur-3xl opacity-60", tint)}
@@ -367,9 +367,9 @@ function InfoGroup({
   children: ReactNode;
 }) {
   return (
-    <div className={cn("rounded-3xl border p-5 shadow-sm", tint)}>
+    <div className={cn("rounded-xl border p-5 shadow-sm", tint)}>
       <div className="mb-4 flex items-center gap-2.5">
-        <span className="grid h-8 w-8 place-items-center rounded-xl bg-card/80 text-foreground/70 shadow-sm">
+        <span className="grid h-8 w-8 place-items-center rounded-lg bg-card/80 text-foreground/70 shadow-sm">
           {icon}
         </span>
         <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
@@ -383,7 +383,7 @@ function InfoGroup({
 
 function InfoRow({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
   return (
-    <div className="flex items-center gap-3 rounded-xl bg-card/75 px-3 py-2.5 text-sm transition-colors hover:bg-card">
+    <div className="flex items-center gap-3 rounded-lg bg-card/75 px-3 py-2.5 text-sm transition-colors hover:bg-card">
       <span className="text-muted-foreground/70">{icon}</span>
       <span className="flex-1 text-muted-foreground">{label}</span>
       <span className="text-right font-semibold">{value}</span>

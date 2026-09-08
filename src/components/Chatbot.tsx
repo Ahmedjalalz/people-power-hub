@@ -290,9 +290,9 @@ export function Chatbot({
   const isListening = voiceState === "listening";
 
   return (
-    <div className={cn("flex flex-col h-full bg-card", compact ? "" : "rounded-2xl border")}>
+    <div className={cn("flex flex-col h-full bg-card", compact ? "" : "rounded-xl border")}>
       {/* ── Header ── */}
-      <div className="flex flex-col border-b bg-pastel-lavender/50 rounded-t-2xl">
+      <div className="flex flex-col border-b bg-pastel-lavender/50 rounded-t-xl">
         <div className="flex items-center gap-2 px-4 py-3">
           <div className="w-8 h-8 rounded-full bg-primary/20 grid place-items-center">
             <Sparkles className="w-4 h-4 text-primary" />
@@ -439,7 +439,7 @@ function MessageBubble({ message }: { message: ChatMessage }) {
     return (
       <div className="flex gap-2 items-start">
         <BotAvatar />
-        <div className="rounded-2xl rounded-tl-sm bg-pastel-lavender/40 px-4 py-3 max-w-[85%]">
+        <div className="rounded-xl rounded-tl-sm bg-pastel-lavender/40 px-4 py-3 max-w-[85%]">
           <div className="text-xs italic text-muted-foreground flex items-center gap-1">
             <span>{message.statusText}</span>
             <span className="thinking-dot">.</span>
@@ -454,7 +454,7 @@ function MessageBubble({ message }: { message: ChatMessage }) {
       {!isUser && <BotAvatar />}
       <div
         className={cn(
-          "rounded-2xl px-4 py-3 max-w-[85%] text-sm whitespace-pre-wrap leading-relaxed",
+          "rounded-xl px-4 py-3 max-w-[85%] text-sm whitespace-pre-wrap leading-relaxed",
           isUser
             ? "bg-primary text-primary-foreground rounded-tr-sm"
             : "bg-pastel-lavender/40 text-foreground rounded-tl-sm w-full",

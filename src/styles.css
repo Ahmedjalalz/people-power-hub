@@ -8,8 +8,9 @@
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-xl: calc(var(--radius) + 2px);
+  --radius-2xl: calc(var(--radius) + 4px);
+  --radius-3xl: calc(var(--radius) + 6px);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -54,7 +55,7 @@
 }
 
 :root {
-  --radius: 1rem;
+  --radius: 0.75rem;
   --background: oklch(0.99 0.005 90);
   --foreground: oklch(0.25 0.03 280);
   --card: oklch(1 0 0);
@@ -200,7 +201,7 @@
   place-items: center;
   width: 2.75rem;
   height: 2.75rem;
-  border-radius: 0.9rem;
+  border-radius: 0.65rem;
   color: var(--foreground);
   background: linear-gradient(135deg,
     color-mix(in oklab, var(--tile) 95%, white 20%) 0%,

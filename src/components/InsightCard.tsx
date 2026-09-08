@@ -28,7 +28,7 @@ export function InsightCard({
       onClick={onClick}
       style={{ ["--tile" as string]: `var(${tintVar})` }}
       className={cn(
-        "group relative flex h-[280px] flex-col overflow-hidden rounded-2xl border bg-card p-5 text-left transition-all",
+        "group relative flex h-[280px] flex-col overflow-hidden rounded-xl border bg-card p-5 text-left transition-all",
         "hover:shadow-[0_20px_40px_-24px_color-mix(in_oklab,var(--tile)_70%,transparent)]",
         "hover:-translate-y-0.5 hover:border-primary/40",
         className,
@@ -55,5 +55,5 @@ export function InsightCard({
 }
 
 export function Callout({ children, tint }: { children: ReactNode; tint: string }) {
-  return <div className={cn("mt-4 rounded-xl p-4 text-sm", tint)}>{children}</div>;
+  return <div className={cn("mt-4 rounded-lg p-4 text-sm", tint)}>{children}</div>;
 }

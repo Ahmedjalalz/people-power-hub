@@ -43,7 +43,7 @@ export function Header() {
             variant="outline"
             size="sm"
             onClick={toggleSidebar}
-            className="flex items-center gap-2 rounded-xl border-border/80 px-2.5 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground shadow-xs cursor-pointer md:hidden"
+            className="flex items-center gap-2 rounded-full border-border/80 px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground shadow-xs cursor-pointer md:hidden"
             aria-label="Navigation menu"
             title="Open navigation"
           >
@@ -53,7 +53,7 @@ export function Header() {
 
           {/* Mobile-only brand header */}
           <Link to="/" className="flex items-center gap-2 md:hidden">
-            <div className="grid h-8 w-8 place-items-center rounded-xl bg-pastel-teal shadow-xs">
+            <div className="grid h-8 w-8 place-items-center rounded-lg bg-pastel-teal shadow-xs">
               <Users className="h-4 w-4 text-primary" />
             </div>
             <div className="text-base font-semibold text-foreground">PeopleLens</div>

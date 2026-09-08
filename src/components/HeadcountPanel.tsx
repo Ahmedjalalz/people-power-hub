@@ -274,7 +274,7 @@ export function HeadcountPanel({
       </div>
 
       {/* Global filters */}
-      <div className="mb-6 rounded-2xl border bg-muted/30 p-4">
+      <div className="mb-6 rounded-xl border bg-muted/30 p-4">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <Select label="Department" value={draft.department} options={departmentOptions} onChange={(v) => setDraft({ ...draft, department: v })} />
           <Select label="Business unit" value={draft.businessUnit} options={businessUnitOptions} onChange={(v) => setDraft({ ...draft, businessUnit: v })} />
@@ -282,13 +282,13 @@ export function HeadcountPanel({
           <div className="flex items-end gap-2 sm:col-span-2 lg:col-span-3 justify-end">
             <button
               onClick={() => { setDraft(emptyFilters); setApplied(emptyFilters); }}
-              className="inline-flex items-center gap-1.5 rounded-xl border bg-card px-4 py-2 text-sm transition-colors hover:bg-muted"
+              className="inline-flex items-center gap-1.5 rounded-full border bg-card px-4 py-2 text-sm transition-colors hover:bg-muted"
             >
               <RotateCcw className="h-3.5 w-3.5" /> Clear Filters
             </button>
             <button
               onClick={() => setApplied(draft)}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
+              className="inline-flex items-center gap-1.5 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
             >
               <Check className="h-3.5 w-3.5" /> Apply Scope
             </button>
@@ -310,7 +310,7 @@ export function HeadcountPanel({
           {realKpiCards.map((kpi) => {
             const Icon = kpi.icon;
             return (
-              <div key={kpi.key} className="rounded-2xl border bg-card p-4">
+              <div key={kpi.key} className="rounded-xl border bg-card p-4">
                 <div className="flex items-center justify-between">
                   <span className={cn("grid h-9 w-9 place-items-center rounded-full", kpi.tint)}>
                     <Icon className="h-4 w-4" />
@@ -352,7 +352,7 @@ export function HeadcountPanel({
 
       {/* Section 6 — Department budget utilization */}
       <SectionTitle>Department Budget Utilization</SectionTitle>
-      <div className="space-y-2 rounded-2xl border bg-card p-4">
+      <div className="space-y-2 rounded-xl border bg-card p-4">
         {budgetRows.map((dept) => {
           const tone = dept.utilization >= 95 ? "bg-rose-400" : dept.utilization >= 90 ? "bg-orange-400" : dept.utilization >= 80 ? "bg-amber-400" : "bg-emerald-400";
           return (
@@ -370,7 +370,7 @@ export function HeadcountPanel({
 
       {/* Section 7 — Critical department snapshot */}
       <SectionTitle>Critical Department Snapshot</SectionTitle>
-      <div className="overflow-x-auto rounded-2xl border bg-card">
+      <div className="overflow-x-auto rounded-xl border bg-card">
         <table className="w-full text-sm">
           <thead className="bg-muted/50 text-left text-xs uppercase tracking-[0.08em] text-muted-foreground">
             <tr>
@@ -405,13 +405,13 @@ export function HeadcountPanel({
       <SectionTitle>Headcount Exceptions & Recommended Actions</SectionTitle>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         {exceptionsList.map((exc) => (
-          <div key={exc.id || exc.title} className={cn("rounded-2xl p-4 border", exc.tint)}>
+          <div key={exc.id || exc.title} className={cn("rounded-xl p-4 border", exc.tint)}>
             <div className="flex items-center justify-between">
               <div className="text-sm font-semibold">{exc.title}</div>
               <span className="text-[11px] font-semibold uppercase opacity-80">{exc.dept}</span>
             </div>
             <p className="mt-1 text-xs leading-relaxed text-foreground/90">{exc.body}</p>
-            <div className="mt-3 rounded-xl bg-background/60 p-2.5 text-xs font-medium border border-border/50">
+            <div className="mt-3 rounded-lg bg-background/60 p-2.5 text-xs font-medium border border-border/50">
               <span className="text-muted-foreground block text-[10px] uppercase font-bold tracking-wider">Recommended Action:</span>
               {exc.action}
             </div>
@@ -419,7 +419,7 @@ export function HeadcountPanel({
         ))}
       </div>
 
-      <div className="mt-4 rounded-2xl border bg-card p-4 flex items-center justify-between">
+      <div className="mt-4 rounded-xl border bg-card p-4 flex items-center justify-between">
         <div>
           <div className="text-sm font-semibold">Need further workforce analysis?</div>
           <div className="text-xs text-muted-foreground">Ask the AI assistant regarding department staffing, exceptions, or hiring forecasts.</div>
@@ -427,14 +427,14 @@ export function HeadcountPanel({
         {onAskAssistant ? (
           <button
             onClick={onAskAssistant}
-            className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 shrink-0"
+            className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 shrink-0"
           >
             <MessageSquare className="h-4 w-4" /> Ask HR Assistant
           </button>
         ) : (
           <Link
             to="/chatbot"
-            className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 shrink-0"
+            className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 shrink-0"
           >
             <MessageSquare className="h-4 w-4" /> Ask HR Assistant
           </Link>
@@ -445,7 +445,7 @@ export function HeadcountPanel({
       <SectionTitle>Today's Workforce Activity</SectionTitle>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {activityList.map((item) => (
-          <div key={item.label} className="rounded-2xl border bg-card p-3">
+          <div key={item.label} className="rounded-xl border bg-card p-3">
             <div className="text-[11px] text-muted-foreground">{item.label}</div>
             <div className="text-xl font-semibold tracking-tight mt-1">{item.value}</div>
           </div>
@@ -472,7 +472,7 @@ function Select({
             value={value}
             onChange={(e) => onChange(e.target.value)}
             placeholder={placeholder}
-            className="w-full rounded-xl border bg-card py-2 pl-9 pr-3 text-sm outline-none focus:border-primary/50"
+            className="w-full rounded-full border bg-card py-2 pl-9 pr-3 text-sm outline-none focus:border-primary/50"
           />
         </span>
       </label>
@@ -484,7 +484,7 @@ function Select({
       <select
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="w-full rounded-xl border bg-card px-3 py-2 text-sm outline-none focus:border-primary/50"
+        className="w-full rounded-lg border bg-card px-3 py-2 text-sm outline-none focus:border-primary/50"
       >
         {allowAll && <option value="All">All</option>}
         {options?.map((option) => (
@@ -505,7 +505,7 @@ function RiskBadge({ level }: { level: string }) {
 function DeptComparison({ rows }: { rows: { name: string; approved: number; budgeted: number; actual: number }[] }) {
   const [view, setView] = useState<"chart" | "table">("chart");
   return (
-    <div className="rounded-2xl border bg-card p-4">
+    <div className="rounded-xl border bg-card p-4">
       <div className="mb-3 flex justify-end gap-1">
         <ToggleButton active={view === "chart"} onClick={() => setView("chart")} icon={<BarChart3 className="h-3.5 w-3.5" />} label="Chart" />
         <ToggleButton active={view === "table"} onClick={() => setView("table")} icon={<Table2 className="h-3.5 w-3.5" />} label="Table" />
@@ -552,7 +552,7 @@ function TrendChart({ data }: { data: { month: string; people: number; approved?
   const first = data[0]?.people ?? 0;
   const growth = first ? ((last - first) / first) * 100 : 0;
   return (
-    <div className="rounded-2xl border bg-card p-4">
+    <div className="rounded-xl border bg-card p-4">
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium">Latest Headcount: {last} employees</span>
@@ -583,7 +583,7 @@ function TrendChart({ data }: { data: { month: string; people: number; approved?
 
 function MovementTrendChart({ data }: { data: { month: string; joiners: number; leavers: number; promotions: number; transfers: number }[] }) {
   return (
-    <div className="rounded-2xl border bg-card p-4">
+    <div className="rounded-xl border bg-card p-4">
       <div className="mb-3 text-sm font-medium">Monthly Workforce Movement</div>
       <div className="h-64">
         <ResponsiveContainer>
@@ -608,7 +608,7 @@ function DonutCard({
 }: { title: string; data: { label: string; value: number; color: string }[]; footer: string }) {
   const total = data.reduce((sum, row) => sum + row.value, 0) || 1;
   return (
-    <div className="rounded-2xl border bg-card p-4">
+    <div className="rounded-xl border bg-card p-4">
       <div className="mb-2 text-sm font-semibold">{title}</div>
       <div className="flex flex-col items-center gap-3 sm:flex-row">
         <div className="h-40 w-40 shrink-0">
@@ -632,7 +632,7 @@ function DonutCard({
           ))}
         </div>
       </div>
-      <div className="mt-3 rounded-xl bg-muted/50 px-3 py-2 text-xs font-medium">{footer}</div>
+      <div className="mt-3 rounded-lg bg-muted/50 px-3 py-2 text-xs font-medium">{footer}</div>
     </div>
   );
 }

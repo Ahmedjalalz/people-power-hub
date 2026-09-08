@@ -76,7 +76,7 @@ export function PerformanceEmployeePanel({
     >
       <div className="space-y-4">
         <AsyncState isPending={summaryQuery.isPending} error={summaryQuery.error} height="h-28">
-          <div className="rounded-2xl border bg-pastel-teal/60 p-4">
+          <div className="rounded-xl border bg-pastel-teal/60 p-4">
             <div className="flex flex-wrap items-center gap-3">
               <div className="grid h-14 w-14 place-items-center rounded-full bg-card text-lg font-semibold ring-2 ring-primary/30">
                 {String(summary["employee_name"] ?? "?").slice(0, 1)}

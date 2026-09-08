@@ -92,7 +92,7 @@ export function AppSidebar() {
             to="/"
             onClick={onItemClick}
             className={cn(
-              "group flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition-all",
+              "group flex items-center justify-between rounded-lg px-3.5 py-2.5 text-sm font-medium transition-all",
               isHrInsightsActive
                 ? "bg-pastel-teal/70 font-semibold text-foreground shadow-xs"
                 : "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -101,7 +101,7 @@ export function AppSidebar() {
             <div className="flex items-center gap-3">
               <div
                 className={cn(
-                  "grid h-8 w-8 place-items-center rounded-lg transition-colors",
+                  "grid h-8 w-8 place-items-center rounded-md transition-colors",
                   isHrInsightsActive
                     ? "bg-primary text-primary-foreground shadow-xs"
                     : "bg-muted text-muted-foreground group-hover:bg-background group-hover:text-foreground"
@@ -127,7 +127,7 @@ export function AppSidebar() {
             to="/employees"
             onClick={onItemClick}
             className={cn(
-              "group flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition-all",
+              "group flex items-center justify-between rounded-lg px-3.5 py-2.5 text-sm font-medium transition-all",
               isEmployeesActive
                 ? "bg-pastel-teal/70 font-semibold text-foreground shadow-xs"
                 : "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -136,7 +136,7 @@ export function AppSidebar() {
             <div className="flex items-center gap-3">
               <div
                 className={cn(
-                  "grid h-8 w-8 place-items-center rounded-lg transition-colors",
+                  "grid h-8 w-8 place-items-center rounded-md transition-colors",
                   isEmployeesActive
                     ? "bg-primary text-primary-foreground shadow-xs"
                     : "bg-muted text-muted-foreground group-hover:bg-background group-hover:text-foreground"
@@ -162,7 +162,7 @@ export function AppSidebar() {
             to="/chatbot"
             onClick={onItemClick}
             className={cn(
-              "group flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition-all",
+              "group flex items-center justify-between rounded-lg px-3.5 py-2.5 text-sm font-medium transition-all",
               isAssistantActive
                 ? "bg-pastel-teal/70 font-semibold text-foreground shadow-xs"
                 : "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -171,7 +171,7 @@ export function AppSidebar() {
             <div className="flex items-center gap-3">
               <div
                 className={cn(
-                  "grid h-8 w-8 place-items-center rounded-lg transition-colors",
+                  "grid h-8 w-8 place-items-center rounded-md transition-colors",
                   isAssistantActive
                     ? "bg-primary text-primary-foreground shadow-xs"
                     : "bg-muted text-muted-foreground group-hover:bg-background group-hover:text-foreground"
@@ -200,7 +200,7 @@ export function AppSidebar() {
           Logged In User
         </div>
 
-        <div className="rounded-xl border border-border bg-card p-3 shadow-xs">
+        <div className="rounded-lg border border-border bg-card p-3 shadow-xs">
           <div className="flex items-center gap-3">
             <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-pastel-teal font-semibold text-primary shadow-xs">
               {userInitial}
@@ -241,7 +241,7 @@ export function AppSidebar() {
               variant="ghost"
               size="sm"
               onClick={toggleTheme}
-              className="h-8 gap-1.5 rounded-lg px-2 text-xs text-muted-foreground hover:text-foreground"
+              className="h-8 gap-1.5 rounded-full px-3 text-xs text-muted-foreground hover:text-foreground"
               aria-label="Toggle theme"
             >
               {theme === "light" ? (
@@ -261,7 +261,7 @@ export function AppSidebar() {
               variant="ghost"
               size="sm"
               onClick={signOut}
-              className="h-8 gap-1.5 rounded-lg px-2 text-xs text-destructive hover:bg-destructive/10 hover:text-destructive"
+              className="h-8 gap-1.5 rounded-full px-3 text-xs text-destructive hover:bg-destructive/10 hover:text-destructive"
               aria-label="Sign out"
             >
               <LogOut className="h-3.5 w-3.5" />
@@ -282,7 +282,7 @@ export function AppSidebar() {
             to="/"
             className="flex items-center gap-2.5 transition-opacity hover:opacity-90"
           >
-            <div className="grid h-9 w-9 place-items-center rounded-xl bg-pastel-teal shadow-xs">
+            <div className="grid h-9 w-9 place-items-center rounded-lg bg-pastel-teal shadow-xs">
               <Users className="h-5 w-5 text-primary" />
             </div>
             <div className="text-left">
@@ -315,7 +315,7 @@ export function AppSidebar() {
                 onClick={close}
                 className="flex items-center gap-2.5 transition-opacity hover:opacity-90"
               >
-                <div className="grid h-9 w-9 place-items-center rounded-xl bg-pastel-teal shadow-xs">
+                <div className="grid h-9 w-9 place-items-center rounded-lg bg-pastel-teal shadow-xs">
                   <Users className="h-5 w-5 text-primary" />
                 </div>
                 <div className="text-left">

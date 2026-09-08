@@ -89,7 +89,7 @@ export function AttritionPanel({ open, onClose }: { open: boolean; onClose: () =
         : peopleQuery.isError ? <StateMessage error>{peopleQuery.error.message}</StateMessage>
           : <div className="space-y-3">{peopleQuery.data?.employees.map((employee) => (
             <button key={employee.employee_id} onClick={() => setPersonId(employee.employee_id)}
-              className="group w-full rounded-2xl border bg-card p-4 text-left transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg">
+              className="group w-full rounded-xl border bg-card p-4 text-left transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg">
               <div className="flex items-start gap-3">
                 <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-pastel-teal text-sm font-semibold">{initials(employee.employee_name)}</div>
                 <div className="min-w-0 flex-1"><div className="font-medium">{employee.employee_name}</div>
@@ -118,7 +118,7 @@ export function AttritionPanel({ open, onClose }: { open: boolean; onClose: () =
       {attritionRateQuery.isPending ? <StateMessage>Loading attrition rate...</StateMessage>
         : attritionRateQuery.isError ? <StateMessage error>{attritionRateQuery.error.message}</StateMessage>
           : attritionRateQuery.data ? <div className="space-y-4">
-            <div className="flex items-center justify-between rounded-2xl border bg-card/70 p-4">
+            <div className="flex items-center justify-between rounded-xl border bg-card/70 p-4">
               <div>
                 <div className="text-sm font-semibold">{attritionRateQuery.data.card.value_percent.toFixed(1)}%</div>
                 <div className="text-xs text-muted-foreground">{attritionRateQuery.data.card.supporting_text}</div>
@@ -130,7 +130,7 @@ export function AttritionPanel({ open, onClose }: { open: boolean; onClose: () =
             </div>
             <div className="h-64"><ResponsiveContainer><PieChart><Pie data={attritionRateQuery.data.chart.segments} dataKey="employee_count" nameKey="risk_status" innerRadius={50} outerRadius={90}>{attritionRateQuery.data.chart.segments.map((segment, index) => <Cell key={segment.risk_status} fill={segment.risk_status === "At Risk" ? "var(--chart-2)" : "var(--chart-5)"} />)}</Pie><Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} /></PieChart></ResponsiveContainer></div>
             <div className="space-y-2 text-sm">
-              {attritionRateQuery.data.chart.segments.map((segment) => <div key={segment.risk_status} className="flex items-center justify-between rounded-2xl border bg-card/70 px-3 py-2"><span>{segment.risk_status}</span><span className="font-medium">{segment.employee_count} ({segment.percentage.toFixed(1)}%)</span></div>)}
+              {attritionRateQuery.data.chart.segments.map((segment) => <div key={segment.risk_status} className="flex items-center justify-between rounded-lg border bg-card/70 px-3 py-2"><span>{segment.risk_status}</span><span className="font-medium">{segment.employee_count} ({segment.percentage.toFixed(1)}%)</span></div>)}
             </div>
             <p className="text-xs text-muted-foreground">{attritionRateQuery.data.interpretation_note}</p>
           </div> : null}
@@ -140,7 +140,7 @@ export function AttritionPanel({ open, onClose }: { open: boolean; onClose: () =
         : topRiskDriversQuery.isError ? <StateMessage error>{topRiskDriversQuery.error.message}</StateMessage>
           : topRiskDriversQuery.data ? <div className="space-y-4">
             <div className="h-64"><ResponsiveContainer><PieChart><Pie data={topRiskDriversQuery.data.chart_segments} dataKey="value" nameKey="label" innerRadius={50} outerRadius={90}>{topRiskDriversQuery.data.chart_segments.map((segment, index) => <Cell key={segment.label} fill={index === topRiskDriversQuery.data.chart_segments.length - 1 ? "var(--muted-foreground)" : ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--chart-4)"][index % 4]} />)}</Pie><Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} /></PieChart></ResponsiveContainer></div>
-            <div className="space-y-2">{topRiskDriversQuery.data.drivers.map((driver) => <div key={driver.feature_key} className="rounded-2xl border bg-card/70 p-3"><div className="flex items-center justify-between"><span className="font-medium">{driver.label}</span><span className="text-sm text-muted-foreground">{driver.share_percent.toFixed(2)}%</span></div><p className="mt-1 text-xs text-muted-foreground">Mentioned in {driver.mention_count} model signals · {driver.employee_share_percent.toFixed(2)}% of at-risk employees</p></div>)}</div>
+            <div className="space-y-2">{topRiskDriversQuery.data.drivers.map((driver) => <div key={driver.feature_key} className="rounded-lg border bg-card/70 p-3"><div className="flex items-center justify-between"><span className="font-medium">{driver.label}</span><span className="text-sm text-muted-foreground">{driver.share_percent.toFixed(2)}%</span></div><p className="mt-1 text-xs text-muted-foreground">Mentioned in {driver.mention_count} model signals · {driver.employee_share_percent.toFixed(2)}% of at-risk employees</p></div>)}</div>
           </div> : null}
     </ChartPanel>
     <ChartPanel open={sub === "departments"} onClose={() => setSub(null)} title="Attrition risk by department" description="How many people are currently flagged in each team.">
@@ -179,8 +179,8 @@ function PersonPanel({
     {isLoading ? <StateMessage>Loading employee risk details...</StateMessage>
       : error ? <StateMessage error>{error}</StateMessage>
         : detail && <div className="space-y-4">
-          <section className="rounded-2xl bg-pastel-peach/60 p-4"><div className="mb-2 text-xs uppercase tracking-wide text-muted-foreground">Contributing signals</div><ul className="space-y-2 text-sm">{detail.attrition.factors.map((factor) => <li key={factor.feature_key}><span className="font-medium">{factor.rank}. {factor.label}:</span> {factor.display_value}</li>)}</ul></section>
-          <section className="rounded-2xl bg-pastel-teal/50 p-4">
+          <section className="rounded-xl bg-pastel-peach/60 p-4"><div className="mb-2 text-xs uppercase tracking-wide text-muted-foreground">Contributing signals</div><ul className="space-y-2 text-sm">{detail.attrition.factors.map((factor) => <li key={factor.feature_key}><span className="font-medium">{factor.rank}. {factor.label}:</span> {factor.display_value}</li>)}</ul></section>
+          <section className="rounded-xl bg-pastel-teal/50 p-4">
             <div className="mb-3 text-xs uppercase tracking-wide text-muted-foreground">Employee profile</div>
             {isProfileLoading ? <StateMessage>Loading employee profile...</StateMessage>
               : profileError ? <StateMessage error>{profileError}</StateMessage>
@@ -193,7 +193,7 @@ function PersonPanel({
                   <div><div className="text-muted-foreground">Mobility readiness</div><div className="font-medium">{profile.employee_profile.Internal_Mobility_Readiness}</div></div>
                 </div> : <p className="text-sm text-muted-foreground">Profile details unavailable.</p>}
           </section>
-          <section className="rounded-2xl bg-pastel-teal/50 p-4"><div className="mb-3 text-xs uppercase tracking-wide text-muted-foreground">Recommended replacements</div><div className="space-y-3">{detail.recommended_replacements.map((replacement) => <div key={replacement.employee_id} className="text-sm"><div className="font-medium">{replacement.rank}. <Link to="/employee/$employeeId" params={{ employeeId: replacement.employee_id }} className="text-primary underline decoration-primary/40 underline-offset-4 hover:decoration-primary">{replacement.employee_name}</Link> <span className="text-muted-foreground">({replacement.final_score}%)</span></div><p className="text-muted-foreground">{replacement.current_position} · {replacement.readiness} · {replacement.qualification_status}</p><p className="mt-1 text-xs text-muted-foreground">{replacement.reasons[0]}</p></div>)}</div></section>
+          <section className="rounded-xl bg-pastel-teal/50 p-4"><div className="mb-3 text-xs uppercase tracking-wide text-muted-foreground">Recommended replacements</div><div className="space-y-3">{detail.recommended_replacements.map((replacement) => <div key={replacement.employee_id} className="text-sm"><div className="font-medium">{replacement.rank}. <Link to="/employee/$employeeId" params={{ employeeId: replacement.employee_id }} className="text-primary underline decoration-primary/40 underline-offset-4 hover:decoration-primary">{replacement.employee_name}</Link> <span className="text-muted-foreground">({replacement.final_score}%)</span></div><p className="text-muted-foreground">{replacement.current_position} · {replacement.readiness} · {replacement.qualification_status}</p><p className="mt-1 text-xs text-muted-foreground">{replacement.reasons[0]}</p></div>)}</div></section>
           <p className="text-xs text-muted-foreground">{detail.decision_support_disclaimer}</p>
         </div>}
   </CenterPanel>;
@@ -204,9 +204,9 @@ function ChartPanel({ open, onClose, title, description, children }: { open: boo
 }
 
 function StateMessage({ children, error = false }: { children: React.ReactNode; error?: boolean }) {
-  return <p className={cn("rounded-2xl border p-5 text-sm", error ? "border-destructive/30 bg-destructive/5 text-destructive" : "border-dashed text-muted-foreground")}>{children}</p>;
+  return <p className={cn("rounded-xl border p-5 text-sm", error ? "border-destructive/30 bg-destructive/5 text-destructive" : "border-dashed text-muted-foreground")}>{children}</p>;
 }
 
 function MiniCard({ tint, icon, label, headline, sub, onClick }: { tint: string; icon: React.ReactNode; label: string; headline: string; sub: string; onClick: () => void }) {
-  return <button onClick={onClick} className="group flex items-start gap-3 rounded-2xl border bg-card p-4 text-left transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg"><div className={cn("grid h-10 w-10 shrink-0 place-items-center rounded-xl", tint)}>{icon}</div><div className="min-w-0"><div className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">{label}</div><div className="text-lg font-semibold tracking-tight">{headline}</div><div className="text-xs text-muted-foreground">{sub}</div></div></button>;
+  return <button onClick={onClick} className="group flex items-start gap-3 rounded-xl border bg-card p-4 text-left transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg"><div className={cn("grid h-10 w-10 shrink-0 place-items-center rounded-lg", tint)}>{icon}</div><div className="min-w-0"><div className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">{label}</div><div className="text-lg font-semibold tracking-tight">{headline}</div><div className="text-xs text-muted-foreground">{sub}</div></div></button>;
 }

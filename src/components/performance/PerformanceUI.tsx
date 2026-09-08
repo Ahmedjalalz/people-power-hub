@@ -18,7 +18,7 @@ export function SectionCard({
   className?: string;
 }) {
   return (
-    <section className={cn("rounded-2xl border bg-card p-4", className)}>
+    <section className={cn("rounded-xl border bg-card p-4", className)}>
       <div className="mb-3 flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
@@ -51,7 +51,7 @@ export function AsyncState({
 }) {
   if (isPending) {
     return (
-      <div className={cn("grid place-items-center rounded-xl bg-muted/40 text-xs text-muted-foreground", height)}>
+      <div className={cn("grid place-items-center rounded-lg bg-muted/40 text-xs text-muted-foreground", height)}>
         <span className="flex items-center gap-2">
           <Loader2 className="h-4 w-4 animate-spin" /> Loading…
         </span>
@@ -60,7 +60,7 @@ export function AsyncState({
   }
   if (error) {
     return (
-      <div className={cn("grid place-items-center rounded-xl bg-pastel-rose/50 p-4 text-center text-xs", height)}>
+      <div className={cn("grid place-items-center rounded-lg bg-pastel-rose/50 p-4 text-center text-xs", height)}>
         <span className="flex items-center gap-2">
           <AlertTriangle className="h-4 w-4" />
           {error instanceof Error ? error.message : "Could not load this section."}
@@ -70,7 +70,7 @@ export function AsyncState({
   }
   if (isEmpty) {
     return (
-      <div className={cn("grid place-items-center rounded-xl bg-muted/40 text-xs text-muted-foreground", height)}>
+      <div className={cn("grid place-items-center rounded-lg bg-muted/40 text-xs text-muted-foreground", height)}>
         <span className="flex items-center gap-2">
           <Inbox className="h-4 w-4" /> {emptyLabel}
         </span>
@@ -92,7 +92,7 @@ export function StatTile({
   tint?: string;
 }) {
   return (
-    <div className={cn("rounded-2xl border p-4", tint)}>
+    <div className={cn("rounded-xl border p-4", tint)}>
       <div className="text-[11px] font-medium uppercase tracking-[0.12em] text-foreground/60">{label}</div>
       <div className="mt-1 text-2xl font-semibold tracking-tight">{value}</div>
       {hint && <div className="mt-0.5 text-[11px] text-foreground/60">{hint}</div>}

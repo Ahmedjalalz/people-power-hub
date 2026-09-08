@@ -144,7 +144,7 @@ export function PerformancePanel({ open, onClose }: { open: boolean; onClose: ()
         description="Organization performance scores, department ranking, distribution and employees needing attention."
       >
         <div className="space-y-4">
-          <div className="flex flex-wrap gap-2 rounded-2xl border bg-muted/30 p-3">
+          <div className="flex flex-wrap gap-2 rounded-xl border bg-muted/30 p-3">
             {[
               { key: "month" as const, label: "Month", options: monthOptions },
               { key: "department" as const, label: "Department", options: departmentOptions },
@@ -227,7 +227,7 @@ export function PerformancePanel({ open, onClose }: { open: boolean; onClose: ()
             subtitle="Click a person to open their full performance detail."
             tint="bg-pastel-peach"
             right={
-              <div className="flex items-center gap-1.5 rounded-lg border bg-card px-2 py-1">
+              <div className="flex items-center gap-1.5 rounded-full border bg-card px-3 py-1">
                 <Search className="h-3.5 w-3.5 text-muted-foreground" />
                 <input
                   value={search}
@@ -325,24 +325,24 @@ export function PerformancePanel({ open, onClose }: { open: boolean; onClose: ()
                   if (event.key === "Enter" && question.trim()) ask.mutate(question.trim());
                 }}
                 placeholder="e.g. Which department improved the most this quarter?"
-                className="flex-1 rounded-xl border bg-card px-3 py-2 text-xs outline-none focus:border-primary/50"
+                className="flex-1 rounded-lg border bg-card px-3 py-2 text-xs outline-none focus:border-primary/50"
               />
               <button
                 onClick={() => question.trim() && ask.mutate(question.trim())}
                 disabled={ask.isPending || !question.trim()}
-                className="flex items-center gap-1.5 rounded-xl bg-primary px-3 py-2 text-xs font-medium text-primary-foreground disabled:opacity-50"
+                className="flex items-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-xs font-medium text-primary-foreground disabled:opacity-50"
               >
                 {ask.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
                 Ask
               </button>
             </div>
             {ask.error && (
-              <p className="mt-2 rounded-xl bg-pastel-rose/50 p-3 text-xs">
+              <p className="mt-2 rounded-lg bg-pastel-rose/50 p-3 text-xs">
                 {ask.error instanceof Error ? ask.error.message : "Could not get an answer."}
               </p>
             )}
             {answer && (
-              <div className="mt-2 flex gap-2 rounded-xl bg-card p-3 text-xs">
+              <div className="mt-2 flex gap-2 rounded-lg bg-card p-3 text-xs">
                 <Sparkles className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
                 <p className="whitespace-pre-wrap">{answer}</p>
               </div>

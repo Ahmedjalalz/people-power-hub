@@ -217,16 +217,12 @@ function EmployeesPage() {
       <div className="flex flex-col lg:flex-row gap-6 items-start">
         {/* ── SIDE 1: Departments Filter (takes 20-30% of space, matches height) ── */}
         <aside className="w-full lg:w-72 xl:w-80 shrink-0 self-stretch flex flex-col">
-          <div className="sticky top-20 flex flex-col h-[calc(100vh-11rem)] min-h-[500px] rounded-2xl border border-border bg-card p-4 sm:p-5 shadow-xs">
+          <div className="sticky top-20 flex flex-col h-[calc(100vh-11rem)] min-h-[500px] rounded-xl border border-border bg-card p-4 sm:p-5 shadow-xs">
             {/* Department Panel Header */}
             <div className="flex items-center justify-between pb-3 border-b border-border">
               <div className="flex items-center gap-2">
-                <div className="grid h-7 w-7 place-items-center rounded-lg bg-pastel-teal text-primary">
-                  <Building2 className="h-4 w-4" />
-                </div>
-                <h2 className="text-sm font-bold uppercase tracking-wider text-foreground">
-                  Departments
-                </h2>
+                <Building2 className="h-4 w-4 text-primary" />
+                <span className="font-semibold text-sm">Departments</span>
               </div>
               <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-semibold text-muted-foreground">
                 {departmentsWithCounts.length}
@@ -239,7 +235,7 @@ function EmployeesPage() {
                 type="button"
                 onClick={() => setSelectedDepartment(null)}
                 className={cn(
-                  "w-full flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition-all text-left cursor-pointer",
+                  "w-full flex items-center justify-between rounded-full px-3.5 py-2.5 text-sm font-medium transition-all text-left cursor-pointer",
                   selectedDepartment === null
                     ? "bg-pastel-teal/80 font-bold text-foreground shadow-xs ring-1 ring-primary/30"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -272,7 +268,7 @@ function EmployeesPage() {
                     type="button"
                     onClick={() => setSelectedDepartment(dept.name)}
                     className={cn(
-                      "w-full flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition-all text-left cursor-pointer group",
+                      "w-full flex items-center justify-between rounded-full px-3.5 py-2.5 text-sm font-medium transition-all text-left cursor-pointer group",
                       isSelected
                         ? "bg-pastel-teal/80 font-bold text-foreground shadow-xs ring-1 ring-primary/30"
                         : "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -310,7 +306,7 @@ function EmployeesPage() {
                   variant="outline"
                   size="sm"
                   onClick={() => setSelectedDepartment(null)}
-                  className="w-full gap-2 rounded-xl text-xs font-medium text-muted-foreground hover:text-foreground"
+                  className="w-full gap-2 rounded-full text-xs font-medium text-muted-foreground hover:text-foreground"
                 >
                   <X className="h-3.5 w-3.5" />
                   <span>Clear Department Filter</span>
@@ -323,7 +319,7 @@ function EmployeesPage() {
         {/* ── SIDE 2: Employee Cards Grid (takes remaining 70-80% space) ── */}
         <section className="flex-1 min-w-0 flex flex-col gap-4">
           {/* Controls Bar: Search & Status indicator */}
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-card p-3 sm:px-4 shadow-xs">
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-card p-3 sm:px-4 shadow-xs">
             <div className="relative flex-1 min-w-[220px]">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
@@ -331,16 +327,16 @@ function EmployeesPage() {
                 placeholder="Search employees by name, position, ID..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 pr-8 h-9 rounded-xl border-border bg-background text-sm"
+                className="pl-9 pr-8 h-9 rounded-full border-border bg-background text-sm"
               />
               {searchQuery && (
                 <button
                   type="button"
                   onClick={() => setSearchQuery("")}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 grid h-6 w-6 place-items-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
                   aria-label="Clear search"
                 >
-                  <X className="h-4 w-4" />
+                  <X className="h-3.5 w-3.5" />
                 </button>
               )}
             </div>
@@ -352,7 +348,7 @@ function EmployeesPage() {
                   <button
                     type="button"
                     onClick={() => setSelectedDepartment(null)}
-                    className="hover:opacity-75"
+                    className="grid h-4 w-4 place-items-center rounded-full hover:bg-primary/20 transition-colors"
                     aria-label="Remove filter"
                   >
                     <X className="h-3 w-3" />
@@ -367,8 +363,8 @@ function EmployeesPage() {
 
           {/* Cards Grid */}
           {filteredEmployees.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card/50 p-12 text-center">
-              <div className="grid h-12 w-12 place-items-center rounded-2xl bg-muted text-muted-foreground mb-3">
+            <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-card/50 p-12 text-center">
+              <div className="grid h-12 w-12 place-items-center rounded-full bg-muted text-muted-foreground mb-3">
                 <Search className="h-6 w-6" />
               </div>
               <h3 className="text-base font-semibold text-foreground">No employees found</h3>
@@ -382,7 +378,7 @@ function EmployeesPage() {
                     variant="outline"
                     size="sm"
                     onClick={() => setSelectedDepartment(null)}
-                    className="rounded-xl text-xs"
+                    className="rounded-full text-xs"
                   >
                     Reset Department
                   </Button>
@@ -392,7 +388,7 @@ function EmployeesPage() {
                     variant="outline"
                     size="sm"
                     onClick={() => setSearchQuery("")}
-                    className="rounded-xl text-xs"
+                    className="rounded-full text-xs"
                   >
                     Clear Search
                   </Button>
@@ -409,17 +405,17 @@ function EmployeesPage() {
                     key={employee.id}
                     to="/employee/$employeeId"
                     params={{ employeeId: employee.id }}
-                    className="group relative flex flex-col justify-between rounded-2xl border border-border bg-card p-5 shadow-xs transition-all duration-200 hover:-translate-y-1 hover:border-primary/50 hover:shadow-md cursor-pointer"
+                    className="group relative flex flex-col justify-between rounded-xl border border-border bg-card p-5 shadow-xs transition-all duration-200 hover:-translate-y-1 hover:border-primary/50 hover:shadow-md cursor-pointer"
                   >
                     {/* Top Row: Avatar & Metadata Badges */}
                     <div>
                       <div className="flex items-start justify-between gap-3">
-                        <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-pastel-teal font-bold text-primary shadow-xs text-sm">
+                        <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-pastel-teal font-bold text-primary shadow-xs text-sm">
                           {avatarInitials}
                         </div>
 
                         <div className="flex flex-wrap items-center justify-end gap-1.5">
-                          <span className="font-mono text-[11px] font-semibold text-muted-foreground/80 bg-muted px-2 py-0.5 rounded-md">
+                          <span className="font-mono text-[11px] font-semibold text-muted-foreground/80 bg-muted px-2.5 py-0.5 rounded-full">
                             {employee.id}
                           </span>
 

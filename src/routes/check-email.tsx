@@ -11,7 +11,7 @@ function CheckEmailPage() {
   return (
     <main className="grid min-h-screen place-items-center bg-background px-6 py-12">
       <div className="w-full max-w-md">
-        <div className="relative overflow-hidden rounded-3xl border bg-card p-7 shadow-xl text-center">
+        <div className="relative overflow-hidden rounded-xl border bg-card p-7 shadow-xl text-center">
           <div aria-hidden className="blob pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-pastel-teal opacity-60 blur-3xl" />
           
           <div className="relative flex flex-col items-center">
@@ -25,7 +25,7 @@ function CheckEmailPage() {
             </p>
 
             <div className="mt-8 w-full space-y-3">
-              <Button asChild className="w-full rounded-xl">
+              <Button asChild className="w-full rounded-lg">
                 <Link to="/auth">Return to sign in</Link>
               </Button>
             </div>

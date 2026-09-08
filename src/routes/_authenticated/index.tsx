@@ -102,7 +102,7 @@ function HRInsights() {
             Start with attrition — click a card to open its detail panel.
           </p>
         </div>
-        <Button onClick={() => setScenarioOpen(true)} className="rounded-xl">
+        <Button onClick={() => setScenarioOpen(true)} className="rounded-lg">
           <FlaskConical className="mr-1.5 h-4 w-4" strokeWidth={2.25} />
           Scenario Simulator
         </Button>

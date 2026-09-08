@@ -65,10 +65,10 @@ function ResetPasswordPage() {
     return (
       <main className="grid min-h-screen place-items-center bg-background px-6 py-12">
         <div className="w-full max-w-md">
-          <div className="relative overflow-hidden rounded-3xl border bg-card p-7 shadow-xl text-center">
+          <div className="relative overflow-hidden rounded-xl border bg-card p-7 shadow-xl text-center">
              <h1 className="text-xl font-semibold tracking-tight text-red-500">Invalid Reset Link</h1>
              <p className="mt-2 text-sm text-muted-foreground">The password reset link is invalid or missing the required token.</p>
-             <Button asChild className="w-full mt-6 rounded-xl">
+             <Button asChild className="w-full mt-6 rounded-lg">
                <Link to="/forgot-password">Request a new link</Link>
              </Button>
           </div>
@@ -78,12 +78,12 @@ function ResetPasswordPage() {
   }
 
   return <main className="grid min-h-screen place-items-center bg-background px-6 py-12">
-    <div className="w-full max-w-md"><div className="relative overflow-hidden rounded-3xl border bg-card p-7 shadow-xl">
+    <div className="w-full max-w-md"><div className="relative overflow-hidden rounded-xl border bg-card p-7 shadow-xl">
       <div aria-hidden className="blob pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-pastel-teal opacity-60 blur-3xl" />
       
       <div className="relative">
         <div className="mb-6 flex items-center gap-2">
-          <div className="grid h-10 w-10 place-items-center rounded-xl bg-pastel-teal">
+          <div className="grid h-10 w-10 place-items-center rounded-lg bg-pastel-teal">
             <ShieldCheck className="h-5 w-5 text-primary" />
           </div>
           <div>
@@ -98,7 +98,7 @@ function ResetPasswordPage() {
             <p className="mt-2 text-sm text-muted-foreground">
               Your password has been successfully changed.
             </p>
-            <Button asChild className="w-full mt-6 rounded-xl">
+            <Button asChild className="w-full mt-6 rounded-lg">
               <Link to="/auth">Sign in with new password</Link>
             </Button>
           </div>
@@ -111,14 +111,14 @@ function ResetPasswordPage() {
             <form onSubmit={submit} className="mt-6 space-y-4">
               <div className="space-y-1.5">
                 <Label htmlFor="password">New Password</Label>
-                <PasswordInput id="password" required autoComplete="new-password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="••••••••" className="rounded-xl" />
+                <PasswordInput id="password" required autoComplete="new-password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="••••••••" className="rounded-lg" />
                 <PasswordStrength password={password} />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="confirmPassword">Confirm Password</Label>
-                <PasswordInput id="confirmPassword" required autoComplete="new-password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} placeholder="••••••••" className="rounded-xl" />
+                <PasswordInput id="confirmPassword" required autoComplete="new-password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} placeholder="••••••••" className="rounded-lg" />
               </div>
-              <Button type="submit" className="w-full rounded-xl" disabled={busy || (password !== confirmPassword && confirmPassword.length > 0)}>
+              <Button type="submit" className="w-full rounded-lg" disabled={busy || (password !== confirmPassword && confirmPassword.length > 0)}>
                 {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Reset password
               </Button>

@@ -145,7 +145,7 @@ function ScenarioGrid({
     return (
       <div className="grid gap-3 sm:grid-cols-2">
         {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="h-28 animate-pulse rounded-2xl border bg-muted/40" />
+          <div key={i} className="h-28 animate-pulse rounded-xl border bg-muted/40" />
         ))}
       </div>
     );
@@ -153,7 +153,7 @@ function ScenarioGrid({
 
   if (error) {
     return (
-      <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700 dark:border-rose-800 dark:bg-rose-950/30 dark:text-rose-300">
+      <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700 dark:border-rose-800 dark:bg-rose-950/30 dark:text-rose-300">
         <div className="flex items-center gap-2 font-medium">
           <AlertTriangle className="h-4 w-4" />
           Failed to load scenarios
@@ -176,14 +176,14 @@ function ScenarioGrid({
             key={item.key}
             onClick={() => onSelect(item)}
             className={cn(
-              "group rounded-2xl border p-4 text-left transition-all hover:-translate-y-0.5 hover:shadow-md",
+              "group rounded-xl border p-4 text-left transition-all hover:-translate-y-0.5 hover:shadow-md",
               border,
             )}
           >
             <div className="flex items-start gap-3">
               <span
                 className={cn(
-                  "grid h-9 w-9 shrink-0 place-items-center rounded-xl",
+                  "grid h-9 w-9 shrink-0 place-items-center rounded-lg",
                   tint,
                 )}
               >
@@ -675,7 +675,7 @@ function EmployeeProfile({
   const skillList = Array.isArray(skills) ? (skills as string[]) : [];
 
   return (
-    <div className="rounded-2xl border bg-muted/30 p-4">
+    <div className="rounded-xl border bg-muted/30 p-4">
       <div className="mb-3 flex items-start justify-between gap-2">
         <div className="flex items-center gap-3">
           <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-primary/10 text-primary font-semibold text-sm">
@@ -700,7 +700,7 @@ function EmployeeProfile({
           )}
           <button
             onClick={onClear}
-            className="rounded-lg p-1 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+            className="rounded-full p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
             title="Change employee"
           >
             <X className="h-3.5 w-3.5" />
@@ -786,7 +786,7 @@ function DepartmentSelector({
           </div>
           <button
             onClick={onClear}
-            className="rounded-lg p-1 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+            className="rounded-full p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
             title="Change department"
           >
             <X className="h-3.5 w-3.5" />
@@ -800,7 +800,7 @@ function DepartmentSelector({
               value={query}
               onChange={(e) => onQueryChange(e.target.value)}
               placeholder="Search departments…"
-              className="rounded-xl pl-9"
+              className="rounded-full pl-9"
             />
             {isSearching && (
               <Loader2 className="absolute right-3 h-4 w-4 animate-spin text-muted-foreground" />
@@ -919,7 +919,7 @@ function SimulationResult({
 }) {
   if (isPending) {
     return (
-      <div className="grid h-36 place-items-center rounded-2xl border border-dashed bg-muted/30 text-xs text-muted-foreground">
+      <div className="grid h-36 place-items-center rounded-xl border border-dashed bg-muted/30 text-xs text-muted-foreground">
         <span className="flex flex-col items-center gap-2">
           <Loader2 className="h-5 w-5 animate-spin" />
           Running simulation…
@@ -931,7 +931,7 @@ function SimulationResult({
 
   if (error) {
     return (
-      <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-xs text-rose-700 dark:border-rose-800 dark:bg-rose-950/30 dark:text-rose-300">
+      <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-xs text-rose-700 dark:border-rose-800 dark:bg-rose-950/30 dark:text-rose-300">
         <div className="flex items-center gap-2 font-medium text-sm mb-1">
           <AlertTriangle className="h-4 w-4" />
           Simulation failed

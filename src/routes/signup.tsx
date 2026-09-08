@@ -90,14 +90,14 @@ function SignupPage() {
   };
 
   return <main className="grid min-h-screen place-items-center bg-background px-6 py-12">
-    <div className="w-full max-w-md"><div className="relative overflow-hidden rounded-3xl border bg-card p-7 shadow-xl">
+    <div className="w-full max-w-md"><div className="relative overflow-hidden rounded-xl border bg-card p-7 shadow-xl">
       <div aria-hidden className="blob pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-pastel-teal opacity-60 blur-3xl" />
-      <div className="relative"><div className="mb-6 flex items-center gap-2"><div className="grid h-10 w-10 place-items-center rounded-xl bg-pastel-teal"><Users className="h-5 w-5 text-primary" /></div><div><div className="text-lg font-semibold">PeopleLens</div><div className="text-xs text-muted-foreground">HR Management</div></div></div>
+      <div className="relative"><div className="mb-6 flex items-center gap-2"><div className="grid h-10 w-10 place-items-center rounded-lg bg-pastel-teal"><Users className="h-5 w-5 text-primary" /></div><div><div className="text-lg font-semibold">PeopleLens</div><div className="text-xs text-muted-foreground">HR Management</div></div></div>
         <h1 className="text-2xl font-semibold tracking-tight">Create an account</h1><p className="mt-1 text-sm text-muted-foreground">Sign up to get started with your people dashboard.</p>
 
         {/* Slow / cold-start notice */}
         {slowRequest && (
-          <div className="mt-4 flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/50 dark:text-amber-200">
+          <div className="mt-4 flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/50 dark:text-amber-200">
             <ServerCrash className="mt-0.5 h-4 w-4 shrink-0" />
             <div>
               <p className="font-medium">Server is waking up…</p>
@@ -107,30 +107,30 @@ function SignupPage() {
         )}
         
         {unverifiedEmail && (
-          <div className="mt-4 rounded-xl bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-900/50 p-4 text-sm text-amber-900 dark:text-amber-200">
+          <div className="mt-4 rounded-lg bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-900/50 p-4 text-sm text-amber-900 dark:text-amber-200">
             <p className="mb-2">If you already created an account but haven't verified your email yet, you can resend the verification link.</p>
-            <Button variant="outline" size="sm" onClick={handleResend} disabled={resending} className="w-full bg-white dark:bg-black/20">
+            <Button variant="outline" size="sm" onClick={handleResend} disabled={resending} className="w-full rounded-lg bg-white dark:bg-black/20">
               {resending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Resend verification email
             </Button>
           </div>
         )}
 
         <form onSubmit={submit} className="mt-6 space-y-4">
-          <div className="space-y-1.5"><Label htmlFor="fullName">Full Name</Label><Input id="fullName" type="text" required autoComplete="name" value={fullName} onChange={(event) => setFullName(event.target.value)} placeholder="John Doe" className="rounded-xl" /></div>
-          <div className="space-y-1.5"><Label htmlFor="email">Work email</Label><Input id="email" type="email" required autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@company.com" className="rounded-xl" /></div>
+          <div className="space-y-1.5"><Label htmlFor="fullName">Full Name</Label><Input id="fullName" type="text" required autoComplete="name" value={fullName} onChange={(event) => setFullName(event.target.value)} placeholder="John Doe" className="rounded-lg" /></div>
+          <div className="space-y-1.5"><Label htmlFor="email">Work email</Label><Input id="email" type="email" required autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@company.com" className="rounded-lg" /></div>
           
           <div className="space-y-1.5">
             <Label htmlFor="password">Password</Label>
-            <PasswordInput id="password" required autoComplete="new-password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="••••••••" className="rounded-xl" />
+            <PasswordInput id="password" required autoComplete="new-password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="••••••••" className="rounded-lg" />
             <PasswordStrength password={password} />
           </div>
 
           <div className="space-y-1.5">
             <Label htmlFor="confirmPassword">Confirm Password</Label>
-            <PasswordInput id="confirmPassword" required autoComplete="new-password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} placeholder="••••••••" className="rounded-xl" />
+            <PasswordInput id="confirmPassword" required autoComplete="new-password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} placeholder="••••••••" className="rounded-lg" />
           </div>
 
-          <Button type="submit" className="w-full rounded-xl" disabled={busy || (password !== confirmPassword && confirmPassword.length > 0)}>
+          <Button type="submit" className="w-full rounded-lg" disabled={busy || (password !== confirmPassword && confirmPassword.length > 0)}>
             {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {busy ? (slowRequest ? "Waiting for server…" : "Creating account…") : "Sign up"}
           </Button>
