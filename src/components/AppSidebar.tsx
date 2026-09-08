@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState } from "react";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   BarChart3,
+  CheckSquare,
   MessageSquare,
   Users,
   LogOut,
@@ -72,6 +73,7 @@ export function AppSidebar() {
   };
 
   const isHrInsightsActive = pathname === "/";
+  const isTaskCenterActive = pathname === "/task-center" || pathname.startsWith("/action-center");
   const isAssistantActive = pathname === "/chatbot";
   const isEmployeesActive = pathname === "/employees";
 
@@ -87,7 +89,7 @@ export function AppSidebar() {
           Navigation
         </div>
         <nav className="space-y-1.5">
-          {/* HR Task Center Tab */}
+          {/* HR Insights Tab */}
           <Link
             to="/"
             onClick={onItemClick}
@@ -110,14 +112,49 @@ export function AppSidebar() {
                 <BarChart3 className="h-4 w-4" />
               </div>
               <div>
-                <div className="leading-tight">HR Task Center</div>
+                <div className="leading-tight">HR Insights</div>
                 <div className="text-xs font-normal text-muted-foreground">
-                  Insights & Actions
+                  Workforce Analytics
                 </div>
               </div>
             </div>
 
             {isHrInsightsActive && (
+              <span className="h-2 w-2 rounded-full bg-primary" />
+            )}
+          </Link>
+
+          {/* HR Task Center Tab */}
+          <Link
+            to="/task-center"
+            onClick={onItemClick}
+            className={cn(
+              "group flex items-center justify-between rounded-lg px-3.5 py-2.5 text-sm font-medium transition-all",
+              isTaskCenterActive
+                ? "bg-pastel-teal/70 font-semibold text-foreground shadow-xs"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+            )}
+          >
+            <div className="flex items-center gap-3">
+              <div
+                className={cn(
+                  "grid h-8 w-8 place-items-center rounded-md transition-colors",
+                  isTaskCenterActive
+                    ? "bg-primary text-primary-foreground shadow-xs"
+                    : "bg-muted text-muted-foreground group-hover:bg-background group-hover:text-foreground"
+                )}
+              >
+                <CheckSquare className="h-4 w-4" />
+              </div>
+              <div>
+                <div className="leading-tight">HR Task Center</div>
+                <div className="text-xs font-normal text-muted-foreground">
+                  Action Center & Activity
+                </div>
+              </div>
+            </div>
+
+            {isTaskCenterActive && (
               <span className="h-2 w-2 rounded-full bg-primary" />
             )}
           </Link>

@@ -31,19 +31,30 @@ function NotFoundComponent() {
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   const router = useRouter();
   useEffect(() => {
+    console.error("Root ErrorComponent caught:", error);
     reportLovableError(error, { boundary: "tanstack_root_error_component" });
   }, [error]);
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold">This page didn't load</h1>
-        <p className="mt-2 text-sm text-muted-foreground">Try refreshing.</p>
-        <button
-          onClick={() => { router.invalidate(); reset(); }}
-          className="mt-6 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
-        >
-          Try again
-        </button>
+        <h1 className="text-xl font-semibold text-foreground">This page didn't load</h1>
+        <p className="mt-2 text-sm text-muted-foreground">
+          {error?.message || "An unexpected error occurred. Try refreshing."}
+        </p>
+        <div className="mt-6 flex items-center justify-center gap-3">
+          <button
+            onClick={() => { router.invalidate(); reset(); }}
+            className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+          >
+            Try again
+          </button>
+          <Link
+            to="/task-center"
+            className="rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-foreground hover:bg-muted transition-colors"
+          >
+            Back to Task Center
+          </Link>
+        </div>
       </div>
     </div>
   );

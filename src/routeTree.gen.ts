@@ -18,11 +18,14 @@ import { Route as SignupRouteImport } from './routes/signup'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedChatbotRouteImport } from './routes/_authenticated/chatbot'
 import { Route as AuthenticatedEmployeesRouteImport } from './routes/_authenticated/employees'
+import { Route as AuthenticatedTaskCenterRouteImport } from './routes/_authenticated/task-center'
+import { Route as ApiActionCenterRouteImport } from './routes/api/action-center'
 import { Route as ApiAttritionRouteImport } from './routes/api/attrition'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiPerformanceRouteImport } from './routes/api/performance'
 import { Route as ApiScenarioRouteImport } from './routes/api/scenario'
 import { Route as PipelineHeadcountRouteImport } from './routes/pipeline/headcount'
+import { Route as AuthenticatedActionCenterActionIdRouteImport } from './routes/_authenticated/action-center.$actionId'
 import { Route as AuthenticatedEmployeeEmployeeIdRouteImport } from './routes/_authenticated/employee.$employeeId'
 import { Route as ApiAuthActionRouteImport } from './routes/api/auth.$action'
 import { Route as ApiPipelineHeadcountRouteImport } from './routes/api/pipeline/headcount'
@@ -71,6 +74,16 @@ const AuthenticatedEmployeesRoute = AuthenticatedEmployeesRouteImport.update({
   path: '/employees',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedTaskCenterRoute = AuthenticatedTaskCenterRouteImport.update({
+  id: '/task-center',
+  path: '/task-center',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const ApiActionCenterRoute = ApiActionCenterRouteImport.update({
+  id: '/api/action-center',
+  path: '/api/action-center',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAttritionRoute = ApiAttritionRouteImport.update({
   id: '/api/attrition',
   path: '/api/attrition',
@@ -96,6 +109,12 @@ const PipelineHeadcountRoute = PipelineHeadcountRouteImport.update({
   path: '/pipeline/headcount',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedActionCenterActionIdRoute =
+  AuthenticatedActionCenterActionIdRouteImport.update({
+    id: '/action-center/$actionId',
+    path: '/action-center/$actionId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedEmployeeEmployeeIdRoute =
   AuthenticatedEmployeeEmployeeIdRouteImport.update({
     id: '/employee/$employeeId',
@@ -122,11 +141,14 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/chatbot': typeof AuthenticatedChatbotRoute
   '/employees': typeof AuthenticatedEmployeesRoute
+  '/task-center': typeof AuthenticatedTaskCenterRoute
+  '/api/action-center': typeof ApiActionCenterRoute
   '/api/attrition': typeof ApiAttritionRoute
   '/api/chat': typeof ApiChatRoute
   '/api/performance': typeof ApiPerformanceRoute
   '/api/scenario': typeof ApiScenarioRoute
   '/pipeline/headcount': typeof PipelineHeadcountRoute
+  '/action-center/$actionId': typeof AuthenticatedActionCenterActionIdRoute
   '/employee/$employeeId': typeof AuthenticatedEmployeeEmployeeIdRoute
   '/api/auth/$action': typeof ApiAuthActionRoute
   '/api/pipeline/headcount': typeof ApiPipelineHeadcountRoute
@@ -139,12 +161,15 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/chatbot': typeof AuthenticatedChatbotRoute
   '/employees': typeof AuthenticatedEmployeesRoute
+  '/task-center': typeof AuthenticatedTaskCenterRoute
+  '/api/action-center': typeof ApiActionCenterRoute
   '/api/attrition': typeof ApiAttritionRoute
   '/api/chat': typeof ApiChatRoute
   '/api/performance': typeof ApiPerformanceRoute
   '/api/scenario': typeof ApiScenarioRoute
   '/pipeline/headcount': typeof PipelineHeadcountRoute
   '/': typeof AuthenticatedIndexRoute
+  '/action-center/$actionId': typeof AuthenticatedActionCenterActionIdRoute
   '/employee/$employeeId': typeof AuthenticatedEmployeeEmployeeIdRoute
   '/api/auth/$action': typeof ApiAuthActionRoute
   '/api/pipeline/headcount': typeof ApiPipelineHeadcountRoute
@@ -159,12 +184,15 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/_authenticated/chatbot': typeof AuthenticatedChatbotRoute
   '/_authenticated/employees': typeof AuthenticatedEmployeesRoute
+  '/_authenticated/task-center': typeof AuthenticatedTaskCenterRoute
+  '/api/action-center': typeof ApiActionCenterRoute
   '/api/attrition': typeof ApiAttritionRoute
   '/api/chat': typeof ApiChatRoute
   '/api/performance': typeof ApiPerformanceRoute
   '/api/scenario': typeof ApiScenarioRoute
   '/pipeline/headcount': typeof PipelineHeadcountRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/action-center/$actionId': typeof AuthenticatedActionCenterActionIdRoute
   '/_authenticated/employee/$employeeId': typeof AuthenticatedEmployeeEmployeeIdRoute
   '/api/auth/$action': typeof ApiAuthActionRoute
   '/api/pipeline/headcount': typeof ApiPipelineHeadcountRoute
@@ -180,11 +208,14 @@ export interface FileRouteTypes {
     | '/signup'
     | '/chatbot'
     | '/employees'
+    | '/task-center'
+    | '/api/action-center'
     | '/api/attrition'
     | '/api/chat'
     | '/api/performance'
     | '/api/scenario'
     | '/pipeline/headcount'
+    | '/action-center/$actionId'
     | '/employee/$employeeId'
     | '/api/auth/$action'
     | '/api/pipeline/headcount'
@@ -197,12 +228,15 @@ export interface FileRouteTypes {
     | '/signup'
     | '/chatbot'
     | '/employees'
+    | '/task-center'
+    | '/api/action-center'
     | '/api/attrition'
     | '/api/chat'
     | '/api/performance'
     | '/api/scenario'
     | '/pipeline/headcount'
     | '/'
+    | '/action-center/$actionId'
     | '/employee/$employeeId'
     | '/api/auth/$action'
     | '/api/pipeline/headcount'
@@ -216,12 +250,15 @@ export interface FileRouteTypes {
     | '/signup'
     | '/_authenticated/chatbot'
     | '/_authenticated/employees'
+    | '/_authenticated/task-center'
+    | '/api/action-center'
     | '/api/attrition'
     | '/api/chat'
     | '/api/performance'
     | '/api/scenario'
     | '/pipeline/headcount'
     | '/_authenticated/'
+    | '/_authenticated/action-center/$actionId'
     | '/_authenticated/employee/$employeeId'
     | '/api/auth/$action'
     | '/api/pipeline/headcount'
@@ -234,6 +271,7 @@ export interface RootRouteChildren {
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SignupRoute: typeof SignupRoute
+  ApiActionCenterRoute: typeof ApiActionCenterRoute
   ApiAttritionRoute: typeof ApiAttritionRoute
   ApiChatRoute: typeof ApiChatRoute
   ApiPerformanceRoute: typeof ApiPerformanceRoute
@@ -308,6 +346,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedEmployeesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/task-center': {
+      id: '/_authenticated/task-center'
+      path: '/task-center'
+      fullPath: '/task-center'
+      preLoaderRoute: typeof AuthenticatedTaskCenterRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/action-center': {
+      id: '/api/action-center'
+      path: '/api/action-center'
+      fullPath: '/api/action-center'
+      preLoaderRoute: typeof ApiActionCenterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/attrition': {
       id: '/api/attrition'
       path: '/api/attrition'
@@ -343,6 +395,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PipelineHeadcountRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/action-center/$actionId': {
+      id: '/_authenticated/action-center/$actionId'
+      path: '/action-center/$actionId'
+      fullPath: '/action-center/$actionId'
+      preLoaderRoute: typeof AuthenticatedActionCenterActionIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/employee/$employeeId': {
       id: '/_authenticated/employee/$employeeId'
       path: '/employee/$employeeId'
@@ -370,14 +429,19 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedChatbotRoute: typeof AuthenticatedChatbotRoute
   AuthenticatedEmployeesRoute: typeof AuthenticatedEmployeesRoute
+  AuthenticatedTaskCenterRoute: typeof AuthenticatedTaskCenterRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedActionCenterActionIdRoute: typeof AuthenticatedActionCenterActionIdRoute
   AuthenticatedEmployeeEmployeeIdRoute: typeof AuthenticatedEmployeeEmployeeIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedChatbotRoute: AuthenticatedChatbotRoute,
   AuthenticatedEmployeesRoute: AuthenticatedEmployeesRoute,
+  AuthenticatedTaskCenterRoute: AuthenticatedTaskCenterRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedActionCenterActionIdRoute:
+    AuthenticatedActionCenterActionIdRoute,
   AuthenticatedEmployeeEmployeeIdRoute: AuthenticatedEmployeeEmployeeIdRoute,
 }
 
@@ -391,6 +455,7 @@ const rootRouteChildren: RootRouteChildren = {
   ForgotPasswordRoute: ForgotPasswordRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SignupRoute: SignupRoute,
+  ApiActionCenterRoute: ApiActionCenterRoute,
   ApiAttritionRoute: ApiAttritionRoute,
   ApiChatRoute: ApiChatRoute,
   ApiPerformanceRoute: ApiPerformanceRoute,

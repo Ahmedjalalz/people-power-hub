@@ -1,15 +1,6 @@
 import { useState, useMemo } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import {
-  WalletCards,
-  Award,
-  TrendingUp,
-  Layers,
-  Scale,
-  AlertOctagon,
-  ShieldCheck,
-  AlertTriangle,
-  Coins,
-  Gavel,
   ArrowRight,
   ChevronRight,
   Search,
@@ -17,38 +8,28 @@ import {
   Sparkles,
   UserPlus,
   UserMinus,
-  Network,
-  CalendarDays,
   ArrowLeftRight,
   HelpCircle,
   FileSignature,
-  Briefcase,
   CheckCircle2,
   RotateCcw,
   FileX,
-  Heart,
   Receipt,
   LogOut,
   Sunrise,
   UserX,
-  FileCheck,
-  CalendarCheck,
-  Banknote,
-  CalendarX,
-  Stethoscope,
   Zap,
   TrendingDown,
   Globe,
+  TrendingUp,
   MapPin,
-  MessageSquareWarning,
-  Landmark,
-  FileHeart,
   Undo2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Dialog,
   DialogContent,
@@ -57,6 +38,16 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { employees } from "@/lib/employees";
+import { addActivityLog } from "@/lib/activity-store";
+import { useActionCenterOverview, CARD_TO_PROCESS_CODE } from "@/lib/action-center-api";
 
 export interface ActionCardItem {
   id: string;
@@ -78,115 +69,7 @@ export interface ActionSection {
   items: ActionCardItem[];
 }
 
-const ACTION_SECTIONS: ActionSection[] = [
-  {
-    id: "compensation",
-    title: "Compensation",
-    description:
-      "Manage remuneration adjustments, allowance grants, performance incentives, and salary structures.",
-    icon: Coins,
-    tintClass: "bg-pastel-teal",
-    items: [
-      {
-        id: "allowance-grant-withdrawal",
-        title: "Allowance Grant / Withdrawal",
-        description:
-          "Grant recurring or special allowances and manage employee benefit withdrawal requests.",
-        category: "Compensation",
-        badge: "Allowances",
-        tintClass: "bg-pastel-teal",
-        tintVar: "--pastel-teal",
-        icon: WalletCards,
-      },
-      {
-        id: "bonus-incentive-award",
-        title: "Bonus / Incentive Award",
-        description:
-          "Process performance bonuses, spot incentives, and annual milestone recognitions.",
-        category: "Compensation",
-        badge: "Incentives",
-        tintClass: "bg-pastel-sky",
-        tintVar: "--pastel-sky",
-        icon: Award,
-      },
-      {
-        id: "incremental-annual-special",
-        title: "Incremental (annual/special)",
-        description:
-          "Manage annual increment cycles and process special off-cycle merit salary adjustments.",
-        category: "Compensation",
-        badge: "Increments",
-        tintClass: "bg-pastel-mint",
-        tintVar: "--pastel-mint",
-        icon: TrendingUp,
-      },
-      {
-        id: "salary-revision-redesign",
-        title: "Salary Revision/Re Design",
-        description:
-          "Execute base salary restructuring, grade realignments, and compensation framework redesigns.",
-        category: "Compensation",
-        badge: "Pay Scale",
-        tintClass: "bg-pastel-lavender",
-        tintVar: "--pastel-lavender",
-        icon: Layers,
-      },
-    ],
-  },
-  {
-    id: "discipline",
-    title: "Discipline",
-    description:
-      "Oversee compliance reviews, formal inquiry committees, disciplinary penalties, and reinstatements.",
-    icon: Gavel,
-    tintClass: "bg-pastel-rose",
-    items: [
-      {
-        id: "inquiry-suspension",
-        title: "Inquiry / Suspension",
-        description:
-          "Initiate formal fact-finding inquiries, convene hearings, and administer employee suspensions.",
-        category: "Discipline",
-        badge: "Investigations",
-        tintClass: "bg-pastel-peach",
-        tintVar: "--pastel-peach",
-        icon: Scale,
-      },
-      {
-        id: "penalty",
-        title: "Penalty",
-        description:
-          "Impose sanctioned disciplinary penalties, financial deductions, and record compliance infractions.",
-        category: "Discipline",
-        badge: "Sanctions",
-        tintClass: "bg-pastel-rose",
-        tintVar: "--pastel-rose",
-        icon: AlertOctagon,
-      },
-      {
-        id: "reinstatement",
-        title: "Reinstatement",
-        description:
-          "Process formal employee reinstatements, restore access privileges, and resolve case records.",
-        category: "Discipline",
-        badge: "Restorations",
-        tintClass: "bg-pastel-teal",
-        tintVar: "--pastel-teal",
-        icon: ShieldCheck,
-      },
-      {
-        id: "show-cause-warning",
-        title: "Show cause/ Warning",
-        description:
-          "Issue formal show-cause notices, official written warnings, and record employee explanations.",
-        category: "Discipline",
-        badge: "Notices",
-        tintClass: "bg-pastel-yellow",
-        tintVar: "--pastel-yellow",
-        icon: AlertTriangle,
-      },
-    ],
-  },
+export const ACTION_SECTIONS: ActionSection[] = [
   {
     id: "entry",
     title: "Entry",
@@ -195,28 +78,6 @@ const ACTION_SECTIONS: ActionSection[] = [
     icon: UserPlus,
     tintClass: "bg-pastel-sky",
     items: [
-      {
-        id: "contract-renewal-extension",
-        title: "Contract Renewal / Extension",
-        description:
-          "Extend existing employment terms, renew fixed-term contracts, and issue addendums.",
-        category: "Entry",
-        badge: "Contracts",
-        tintClass: "bg-pastel-sky",
-        tintVar: "--pastel-sky",
-        icon: FileSignature,
-      },
-      {
-        id: "hiring-appointment",
-        title: "Hiring / Appointment",
-        description:
-          "Issue formal offer letters, process new appointments, and initiate employee onboarding.",
-        category: "Entry",
-        badge: "Onboarding",
-        tintClass: "bg-pastel-teal",
-        tintVar: "--pastel-teal",
-        icon: Briefcase,
-      },
       {
         id: "probation-confirmation",
         title: "Probation Confirmation",
@@ -240,6 +101,17 @@ const ACTION_SECTIONS: ActionSection[] = [
         icon: Clock,
       },
       {
+        id: "contract-renewal-extension",
+        title: "Contract Renewal / Extension",
+        description:
+          "Extend existing employment terms, renew fixed-term contracts, and issue addendums.",
+        category: "Entry",
+        badge: "Contracts",
+        tintClass: "bg-pastel-sky",
+        tintVar: "--pastel-sky",
+        icon: FileSignature,
+      },
+      {
         id: "rejoining-rehire",
         title: "Rejoining / Rehire",
         description:
@@ -249,6 +121,71 @@ const ACTION_SECTIONS: ActionSection[] = [
         tintClass: "bg-pastel-lavender",
         tintVar: "--pastel-lavender",
         icon: RotateCcw,
+      },
+    ],
+  },
+  {
+    id: "movement",
+    title: "Movement",
+    description:
+      "Process internal mobility, lateral transfers, promotions, demotions, and deputations.",
+    icon: ArrowLeftRight,
+    tintClass: "bg-pastel-sky",
+    items: [
+      {
+        id: "promotion",
+        title: "Promotion",
+        description:
+          "Advance employee designation, tier levels, and compensation following merit reviews.",
+        category: "Movement",
+        badge: "Advancement",
+        tintClass: "bg-pastel-mint",
+        tintVar: "--pastel-mint",
+        icon: TrendingUp,
+      },
+      {
+        id: "transfer",
+        title: "Transfer",
+        description:
+          "Execute lateral transfers across departments, teams, branch offices, or work locations.",
+        category: "Movement",
+        badge: "Relocation",
+        tintClass: "bg-pastel-sky",
+        tintVar: "--pastel-sky",
+        icon: MapPin,
+      },
+      {
+        id: "acting-additional-charge",
+        title: "Acting / Additional Charge",
+        description:
+          "Assign interim dual responsibilities, temporary charge duties, and acting allowances.",
+        category: "Movement",
+        badge: "Interim Roles",
+        tintClass: "bg-pastel-peach",
+        tintVar: "--pastel-peach",
+        icon: Zap,
+      },
+      {
+        id: "demotion",
+        title: "Demotion",
+        description:
+          "Process grade reclassifications, level reductions, and associated salary realignments.",
+        category: "Movement",
+        badge: "Reclassification",
+        tintClass: "bg-pastel-rose",
+        tintVar: "--pastel-rose",
+        icon: TrendingDown,
+      },
+      {
+        id: "deputation-secondment",
+        title: "Deputation / Secondment",
+        description:
+          "Coordinate inter-agency deputations, international secondments, and host agreements.",
+        category: "Movement",
+        badge: "Secondment",
+        tintClass: "bg-pastel-lavender",
+        tintVar: "--pastel-lavender",
+        icon: Globe,
       },
     ],
   },
@@ -270,17 +207,6 @@ const ACTION_SECTIONS: ActionSection[] = [
         tintClass: "bg-pastel-peach",
         tintVar: "--pastel-peach",
         icon: FileX,
-      },
-      {
-        id: "death-in-service",
-        title: "Death in Service",
-        description:
-          "Administer compassionate statutory bereavement settlements, insurance, and family support.",
-        category: "Exit",
-        badge: "Bereavement",
-        tintClass: "bg-pastel-lavender",
-        tintVar: "--pastel-lavender",
-        icon: Heart,
       },
       {
         id: "final-settlement",
@@ -316,7 +242,7 @@ const ACTION_SECTIONS: ActionSection[] = [
         icon: Sunrise,
       },
       {
-        id: "termination-dismissal",
+        id: "termination",
         title: "Termination / Dismissal",
         description:
           "Execute involuntary separations, severance documentation, and systemic deprovisioning.",
@@ -329,186 +255,13 @@ const ACTION_SECTIONS: ActionSection[] = [
     ],
   },
   {
-    id: "job-architecture",
-    title: "Job Architecture",
-    description:
-      "Manage job profiles, competency frameworks, job family matrices, and formal role descriptions.",
-    icon: Network,
-    tintClass: "bg-pastel-mint",
-    items: [
-      {
-        id: "job-description-approval",
-        title: "Job description approval",
-        description:
-          "Review, standardize, and approve organizational job descriptions and competency levels.",
-        category: "Job Architecture",
-        badge: "Role Profiles",
-        tintClass: "bg-pastel-mint",
-        tintVar: "--pastel-mint",
-        icon: FileCheck,
-      },
-    ],
-  },
-  {
-    id: "leave-absence",
-    title: "Leave & Absence",
-    description:
-      "Manage employee leave requests, encashment, statutory absences, and long-term leave periods.",
-    icon: CalendarDays,
-    tintClass: "bg-pastel-teal",
-    items: [
-      {
-        id: "leave-application",
-        title: "Leave Application",
-        description:
-          "Submit and approve standard annual, casual, and short-term sick leave applications.",
-        category: "Leave & Absence",
-        badge: "Standard Leave",
-        tintClass: "bg-pastel-teal",
-        tintVar: "--pastel-teal",
-        icon: CalendarCheck,
-      },
-      {
-        id: "leave-encashment",
-        title: "Leave Encashment",
-        description:
-          "Process monetary encashment of accumulated earned leave balances per corporate policy.",
-        category: "Leave & Absence",
-        badge: "Encashment",
-        tintClass: "bg-pastel-sky",
-        tintVar: "--pastel-sky",
-        icon: Banknote,
-      },
-      {
-        id: "leave-without-pay",
-        title: "Leave Without Pay",
-        description:
-          "Record and approve unpaid leave requests, updating payroll schedules and service timelines.",
-        category: "Leave & Absence",
-        badge: "Unpaid Leave",
-        tintClass: "bg-pastel-peach",
-        tintVar: "--pastel-peach",
-        icon: CalendarX,
-      },
-      {
-        id: "long-leave",
-        title: "Long Leave (study/maternity/medical)",
-        description:
-          "Manage extended study sabbaticals, maternity/paternity leaves, and protracted medical absences.",
-        category: "Leave & Absence",
-        badge: "Extended Leave",
-        tintClass: "bg-pastel-lavender",
-        tintVar: "--pastel-lavender",
-        icon: Stethoscope,
-      },
-    ],
-  },
-  {
-    id: "movement",
-    title: "Movement",
-    description:
-      "Process internal mobility, lateral transfers, promotions, demotions, and deputations.",
-    icon: ArrowLeftRight,
-    tintClass: "bg-pastel-sky",
-    items: [
-      {
-        id: "acting-additional-charge",
-        title: "Acting / Additional Charge",
-        description:
-          "Assign interim dual responsibilities, temporary charge duties, and acting allowances.",
-        category: "Movement",
-        badge: "Interim Roles",
-        tintClass: "bg-pastel-peach",
-        tintVar: "--pastel-peach",
-        icon: Zap,
-      },
-      {
-        id: "demotion",
-        title: "Demotion",
-        description:
-          "Process grade reclassifications, level reductions, and associated salary realignments.",
-        category: "Movement",
-        badge: "Reclassification",
-        tintClass: "bg-pastel-rose",
-        tintVar: "--pastel-rose",
-        icon: TrendingDown,
-      },
-      {
-        id: "deputation-secondment",
-        title: "Deputation / Secondment",
-        description:
-          "Coordinate inter-agency deputations, international secondments, and host agreements.",
-        category: "Movement",
-        badge: "Secondment",
-        tintClass: "bg-pastel-lavender",
-        tintVar: "--pastel-lavender",
-        icon: Globe,
-      },
-      {
-        id: "promotion",
-        title: "Promotion",
-        description:
-          "Advance employee designation, tier levels, and compensation following merit reviews.",
-        category: "Movement",
-        badge: "Advancement",
-        tintClass: "bg-pastel-mint",
-        tintVar: "--pastel-mint",
-        icon: TrendingUp,
-      },
-      {
-        id: "transfer",
-        title: "Transfer",
-        description:
-          "Execute lateral transfers across departments, teams, branch offices, or work locations.",
-        category: "Movement",
-        badge: "Relocation",
-        tintClass: "bg-pastel-sky",
-        tintVar: "--pastel-sky",
-        icon: MapPin,
-      },
-    ],
-  },
-  {
     id: "other",
     title: "Other",
     description:
-      "Handle employee grievances, corporate loan requests, insurance claims, and resignation retractions.",
+      "Handle post-resignation reviews, retractions, and exception workflows.",
     icon: HelpCircle,
     tintClass: "bg-pastel-lavender",
     items: [
-      {
-        id: "grievance",
-        title: "Grievance",
-        description:
-          "Lodge and track confidential workplace grievances, dispute resolution, and mediation.",
-        category: "Other",
-        badge: "Relations",
-        tintClass: "bg-pastel-rose",
-        tintVar: "--pastel-rose",
-        icon: MessageSquareWarning,
-      },
-      {
-        id: "loan-advance-request",
-        title: "Loan / Advance Request",
-        description:
-          "Apply for company salary advances, personal loans, and manage repayment schedules.",
-        category: "Other",
-        badge: "Financing",
-        tintClass: "bg-pastel-teal",
-        tintVar: "--pastel-teal",
-        icon: Landmark,
-      },
-      {
-        id: "medical-insurance-claim",
-        title: "Medical / Insurance Claim",
-        description:
-          "Submit healthcare reimbursements, insurance coverage claims, and medical documentation.",
-        category: "Other",
-        badge: "Healthcare",
-        tintClass: "bg-pastel-sky",
-        tintVar: "--pastel-sky",
-        icon: FileHeart,
-      },
       {
         id: "resignation-withdrawal",
         title: "Resignation Withdrawal",
@@ -524,10 +277,65 @@ const ACTION_SECTIONS: ActionSection[] = [
   },
 ];
 
-export function ActionCenterTab() {
+export function getActionCardById(id: string): ActionCardItem | undefined {
+  for (const section of ACTION_SECTIONS) {
+    const found = section.items.find((item) => item.id === id);
+    if (found) return found;
+  }
+  return undefined;
+}
+
+export interface ActionCenterTabProps {
+  onNavigateToActivity?: () => void;
+}
+
+export function ActionCenterTab({ onNavigateToActivity }: ActionCenterTabProps = {}) {
+  const navigate = useNavigate();
+  const { summary, processes, isLoading } = useActionCenterOverview();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSectionFilter, setSelectedSectionFilter] = useState<string>("all");
   const [selectedAction, setSelectedAction] = useState<ActionCardItem | null>(null);
+
+  // Form states for executing/logging action
+  const [targetEmployee, setTargetEmployee] = useState<string>("Usman Ali");
+  const [actionSummary, setActionSummary] = useState<string>("");
+  const [actionNotes, setActionNotes] = useState<string>("");
+  const [effectiveDate, setEffectiveDate] = useState<string>(new Date().toISOString().split("T")[0]);
+  const [submitSuccess, setSubmitSuccess] = useState<boolean>(false);
+
+  const handleRecordAction = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedAction) return;
+
+    const matchedEmp = employees.find((emp) => emp.name === targetEmployee);
+    const finalSummary =
+      actionSummary.trim() ||
+      `${selectedAction.title} processed for ${targetEmployee}${effectiveDate ? ` effective ${effectiveDate}` : ""}.`;
+
+    addActivityLog({
+      actionId: selectedAction.id,
+      actionTitle: selectedAction.title,
+      category: selectedAction.category,
+      employeeName: targetEmployee,
+      employeeId: matchedEmp?.id,
+      department: matchedEmp?.department || "Operations",
+      summary: finalSummary,
+      performedBy: "Ahmad Jalal (HR Lead)",
+      status: "Completed",
+      tintClass: selectedAction.tintClass,
+      tintVar: selectedAction.tintVar,
+      effectiveDate,
+      notes: actionNotes.trim() || undefined,
+    });
+
+    setSubmitSuccess(true);
+    setTimeout(() => {
+      setSubmitSuccess(false);
+      setSelectedAction(null);
+      setActionSummary("");
+      setActionNotes("");
+    }, 1200);
+  };
 
   const filteredSections = useMemo(() => {
     let sections = ACTION_SECTIONS;
@@ -567,9 +375,18 @@ export function ActionCenterTab() {
             <span>Operational Workflows</span>
           </div>
           <h2 className="text-3xl font-semibold tracking-tight text-foreground">Action Center</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {ACTION_SECTIONS.length} functional areas · {totalActionsCount} operational action workflows.
-          </p>
+          {isLoading ? (
+            <div className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
+              <span className="h-2 w-2 rounded-full bg-primary animate-ping" />
+              <span>Connecting to live workforce service...</span>
+            </div>
+          ) : (
+            <p className="mt-1 text-sm text-muted-foreground">
+              {summary
+                ? `${summary.total_action_records} operational records logged · ${summary.applied} applied · ${summary.scheduled} scheduled · ${summary.process_count} workflows`
+                : `${ACTION_SECTIONS.length} functional areas · ${totalActionsCount} operational action workflows.`}
+            </p>
+          )}
         </div>
 
         <div className="flex items-center gap-3">
@@ -705,12 +522,19 @@ export function ActionCenterTab() {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {section.items.map((item) => {
                 const ItemIcon = item.icon;
+                const procCode = CARD_TO_PROCESS_CODE[item.id];
+                const procStats = processes.find((p) => p.Process_Code === procCode)?.statistics;
 
                 return (
                   <button
                     key={item.id}
                     type="button"
-                    onClick={() => setSelectedAction(item)}
+                    onClick={() => {
+                      navigate({
+                        to: "/action-center/$actionId" as any,
+                        params: { actionId: item.id } as any,
+                      });
+                    }}
                     style={{ ["--tile" as string]: `var(${item.tintVar})` }}
                     className={cn(
                       "group relative flex min-h-[220px] flex-col justify-between overflow-hidden rounded-xl border bg-card p-5 text-left transition-all duration-200 cursor-pointer",
@@ -754,10 +578,18 @@ export function ActionCenterTab() {
                         <span className="h-1.5 w-1.5 rounded-full bg-primary" />
                         {item.category}
                       </span>
-                      <span className="inline-flex items-center gap-1 font-medium transition-colors group-hover:text-primary">
-                        Configure
-                        <ChevronRight className="h-3 w-3" />
-                      </span>
+                      {isLoading ? (
+                        <Skeleton className="h-4 w-16 rounded-full" />
+                      ) : procStats && procStats.recorded_all_time > 0 ? (
+                        <span className="rounded-full bg-pastel-mint/70 border border-emerald-500/20 px-2 py-0.5 text-[10px] font-semibold text-foreground">
+                          {procStats.recorded_all_time} recorded
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 font-medium transition-colors group-hover:text-primary">
+                          Configure
+                          <ChevronRight className="h-3 w-3" />
+                        </span>
+                      )}
                     </div>
                   </button>
                 );
@@ -767,9 +599,9 @@ export function ActionCenterTab() {
         );
       })}
 
-      {/* ── Detail / Preview Dialog ── */}
+      {/* ── Detail / Action Dialog ── */}
       <Dialog open={!!selectedAction} onOpenChange={(open) => !open && setSelectedAction(null)}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-lg">
           {selectedAction && (
             <>
               <DialogHeader>
@@ -786,28 +618,118 @@ export function ActionCenterTab() {
                     </DialogTitle>
                   </div>
                 </div>
-                <DialogDescription className="pt-3 text-sm leading-relaxed text-muted-foreground">
+                <DialogDescription className="pt-2 text-xs leading-relaxed text-muted-foreground">
                   {selectedAction.description}
                 </DialogDescription>
               </DialogHeader>
 
-              <div className="rounded-xl border bg-muted/30 p-4 space-y-3">
-                <div className="flex items-start gap-2.5 text-xs text-muted-foreground">
-                  <Clock className="h-4 w-4 mt-0.5 text-primary shrink-0" />
-                  <div>
-                    <span className="font-semibold text-foreground">Action Workflow Ready</span>
-                    <p className="mt-0.5">
-                      This action card is configured. You can provide the exact form fields, employee selection criteria, or approval steps to be placed inside.
-                    </p>
+              {submitSuccess ? (
+                <div className="py-6 flex flex-col items-center text-center space-y-3">
+                  <div className="h-12 w-12 rounded-full bg-emerald-500/20 text-emerald-600 flex items-center justify-center animate-in zoom-in-50">
+                    <CheckCircle2 className="h-7 w-7" />
                   </div>
+                  <h4 className="text-lg font-semibold text-foreground">Action Recorded!</h4>
+                  <p className="text-xs text-muted-foreground max-w-xs">
+                    This change has been logged into the <strong>Activity</strong> tab.
+                  </p>
+                  {onNavigateToActivity && (
+                    <Button
+                      size="sm"
+                      className="mt-2"
+                      onClick={() => {
+                        setSelectedAction(null);
+                        setSubmitSuccess(false);
+                        onNavigateToActivity();
+                      }}
+                    >
+                      View in Activity Tab
+                    </Button>
+                  )}
                 </div>
-              </div>
+              ) : (
+                <form onSubmit={handleRecordAction} className="space-y-4 pt-1">
+                  {/* Employee Select */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-foreground">
+                      Target Employee
+                    </label>
+                    <Select value={targetEmployee} onValueChange={setTargetEmployee}>
+                      <SelectTrigger className="h-9 text-xs">
+                        <SelectValue placeholder="Select employee..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {employees.map((emp) => (
+                          <SelectItem key={emp.id} value={emp.name} className="text-xs">
+                            {emp.name} — {emp.positionTitle} ({emp.department})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-              <DialogFooter className="mt-2">
-                <Button variant="outline" onClick={() => setSelectedAction(null)} className="w-full">
-                  Close
-                </Button>
-              </DialogFooter>
+                  {/* Summary / Specific change details */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-foreground">
+                      Change Details / Summary
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder={`e.g. Process ${selectedAction.title} with updated terms`}
+                      value={actionSummary}
+                      onChange={(e) => setActionSummary(e.target.value)}
+                      className="h-9 text-xs"
+                    />
+                  </div>
+
+                  {/* Effective Date & Justification */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-medium text-foreground">
+                        Effective Date
+                      </label>
+                      <Input
+                        type="date"
+                        value={effectiveDate}
+                        onChange={(e) => setEffectiveDate(e.target.value)}
+                        className="h-9 text-xs"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-medium text-foreground">
+                        Notes / Reference (Optional)
+                      </label>
+                      <Input
+                        type="text"
+                        placeholder="e.g. Approved by department head"
+                        value={actionNotes}
+                        onChange={(e) => setActionNotes(e.target.value)}
+                        className="h-9 text-xs"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="rounded-lg bg-muted/40 p-3 text-[11px] text-muted-foreground flex items-center gap-2">
+                    <Clock className="h-4 w-4 text-primary shrink-0" />
+                    <span>
+                      Submitting this action will automatically create an audit record in the <strong>Activity</strong> tab.
+                    </span>
+                  </div>
+
+                  <DialogFooter className="mt-4 flex gap-2 sm:justify-end">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setSelectedAction(null)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button type="submit" size="sm">
+                      Record & Log Action
+                    </Button>
+                  </DialogFooter>
+                </form>
+              )}
             </>
           )}
         </DialogContent>
