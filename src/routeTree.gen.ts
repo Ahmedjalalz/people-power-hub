@@ -26,6 +26,8 @@ import { Route as ApiPerformanceRouteImport } from './routes/api/performance'
 import { Route as ApiScenarioRouteImport } from './routes/api/scenario'
 import { Route as PipelineHeadcountRouteImport } from './routes/pipeline/headcount'
 import { Route as AuthenticatedActionCenterActionIdRouteImport } from './routes/_authenticated/action-center.$actionId'
+import { Route as AuthenticatedAttendanceIndexRouteImport } from './routes/_authenticated/attendance.index'
+import { Route as AuthenticatedAttendanceViewRouteImport } from './routes/_authenticated/attendance.$view'
 import { Route as AuthenticatedEmployeeEmployeeIdRouteImport } from './routes/_authenticated/employee.$employeeId'
 import { Route as ApiAuthActionRouteImport } from './routes/api/auth.$action'
 import { Route as ApiPipelineHeadcountRouteImport } from './routes/api/pipeline/headcount'
@@ -115,6 +117,18 @@ const AuthenticatedActionCenterActionIdRoute =
     path: '/action-center/$actionId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAttendanceIndexRoute =
+  AuthenticatedAttendanceIndexRouteImport.update({
+    id: '/attendance/',
+    path: '/attendance/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAttendanceViewRoute =
+  AuthenticatedAttendanceViewRouteImport.update({
+    id: '/attendance/$view',
+    path: '/attendance/$view',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedEmployeeEmployeeIdRoute =
   AuthenticatedEmployeeEmployeeIdRouteImport.update({
     id: '/employee/$employeeId',
@@ -149,9 +163,11 @@ export interface FileRoutesByFullPath {
   '/api/scenario': typeof ApiScenarioRoute
   '/pipeline/headcount': typeof PipelineHeadcountRoute
   '/action-center/$actionId': typeof AuthenticatedActionCenterActionIdRoute
+  '/attendance/$view': typeof AuthenticatedAttendanceViewRoute
   '/employee/$employeeId': typeof AuthenticatedEmployeeEmployeeIdRoute
   '/api/auth/$action': typeof ApiAuthActionRoute
   '/api/pipeline/headcount': typeof ApiPipelineHeadcountRoute
+  '/attendance/': typeof AuthenticatedAttendanceIndexRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
@@ -170,9 +186,11 @@ export interface FileRoutesByTo {
   '/pipeline/headcount': typeof PipelineHeadcountRoute
   '/': typeof AuthenticatedIndexRoute
   '/action-center/$actionId': typeof AuthenticatedActionCenterActionIdRoute
+  '/attendance/$view': typeof AuthenticatedAttendanceViewRoute
   '/employee/$employeeId': typeof AuthenticatedEmployeeEmployeeIdRoute
   '/api/auth/$action': typeof ApiAuthActionRoute
   '/api/pipeline/headcount': typeof ApiPipelineHeadcountRoute
+  '/attendance': typeof AuthenticatedAttendanceIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -193,9 +211,11 @@ export interface FileRoutesById {
   '/pipeline/headcount': typeof PipelineHeadcountRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/action-center/$actionId': typeof AuthenticatedActionCenterActionIdRoute
+  '/_authenticated/attendance/$view': typeof AuthenticatedAttendanceViewRoute
   '/_authenticated/employee/$employeeId': typeof AuthenticatedEmployeeEmployeeIdRoute
   '/api/auth/$action': typeof ApiAuthActionRoute
   '/api/pipeline/headcount': typeof ApiPipelineHeadcountRoute
+  '/_authenticated/attendance/': typeof AuthenticatedAttendanceIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -216,9 +236,11 @@ export interface FileRouteTypes {
     | '/api/scenario'
     | '/pipeline/headcount'
     | '/action-center/$actionId'
+    | '/attendance/$view'
     | '/employee/$employeeId'
     | '/api/auth/$action'
     | '/api/pipeline/headcount'
+    | '/attendance/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
@@ -237,9 +259,11 @@ export interface FileRouteTypes {
     | '/pipeline/headcount'
     | '/'
     | '/action-center/$actionId'
+    | '/attendance/$view'
     | '/employee/$employeeId'
     | '/api/auth/$action'
     | '/api/pipeline/headcount'
+    | '/attendance'
   id:
     | '__root__'
     | '/_authenticated'
@@ -259,9 +283,11 @@ export interface FileRouteTypes {
     | '/pipeline/headcount'
     | '/_authenticated/'
     | '/_authenticated/action-center/$actionId'
+    | '/_authenticated/attendance/$view'
     | '/_authenticated/employee/$employeeId'
     | '/api/auth/$action'
     | '/api/pipeline/headcount'
+    | '/_authenticated/attendance/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -402,6 +428,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedActionCenterActionIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/attendance/': {
+      id: '/_authenticated/attendance/'
+      path: '/attendance'
+      fullPath: '/attendance/'
+      preLoaderRoute: typeof AuthenticatedAttendanceIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/attendance/$view': {
+      id: '/_authenticated/attendance/$view'
+      path: '/attendance/$view'
+      fullPath: '/attendance/$view'
+      preLoaderRoute: typeof AuthenticatedAttendanceViewRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/employee/$employeeId': {
       id: '/_authenticated/employee/$employeeId'
       path: '/employee/$employeeId'
@@ -432,7 +472,9 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedTaskCenterRoute: typeof AuthenticatedTaskCenterRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedActionCenterActionIdRoute: typeof AuthenticatedActionCenterActionIdRoute
+  AuthenticatedAttendanceViewRoute: typeof AuthenticatedAttendanceViewRoute
   AuthenticatedEmployeeEmployeeIdRoute: typeof AuthenticatedEmployeeEmployeeIdRoute
+  AuthenticatedAttendanceIndexRoute: typeof AuthenticatedAttendanceIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -442,7 +484,9 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedActionCenterActionIdRoute:
     AuthenticatedActionCenterActionIdRoute,
+  AuthenticatedAttendanceViewRoute: AuthenticatedAttendanceViewRoute,
   AuthenticatedEmployeeEmployeeIdRoute: AuthenticatedEmployeeEmployeeIdRoute,
+  AuthenticatedAttendanceIndexRoute: AuthenticatedAttendanceIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

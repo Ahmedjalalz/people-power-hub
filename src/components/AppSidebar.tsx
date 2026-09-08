@@ -2,7 +2,9 @@ import React, { createContext, useContext, useState } from "react";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   BarChart3,
+  Calendar,
   CheckSquare,
+  ChevronDown,
   MessageSquare,
   Users,
   LogOut,
@@ -74,8 +76,26 @@ export function AppSidebar() {
 
   const isHrInsightsActive = pathname === "/";
   const isTaskCenterActive = pathname === "/task-center" || pathname.startsWith("/action-center");
+  const isAttendanceActive = pathname.startsWith("/attendance");
   const isAssistantActive = pathname === "/chatbot";
   const isEmployeesActive = pathname === "/employees";
+
+  const [isAttendanceOpen, setIsAttendanceOpen] = useState(() => pathname.startsWith("/attendance"));
+
+  React.useEffect(() => {
+    if (pathname.startsWith("/attendance")) {
+      setIsAttendanceOpen(true);
+    }
+  }, [pathname]);
+
+  const attendanceSubItems = [
+    { label: "Dashboard", view: "dashboard" },
+    { label: "Register", view: "register" },
+    { label: "Apply Leave", view: "apply-leave" },
+    { label: "Punches", view: "punches" },
+    { label: "Month-End Close", view: "month-end-close" },
+    { label: "Setup", view: "setup" },
+  ];
 
   const userInitial = (user?.full_name?.trim() || user?.email?.trim() || "U")
     .charAt(0)
@@ -158,6 +178,88 @@ export function AppSidebar() {
               <span className="h-2 w-2 rounded-full bg-primary" />
             )}
           </Link>
+
+          {/* Attendance (Collapsible) Tab */}
+          <div className="space-y-1">
+            <button
+              type="button"
+              onClick={() => setIsAttendanceOpen((prev) => !prev)}
+              className={cn(
+                "group flex w-full items-center justify-between rounded-lg px-3.5 py-2.5 text-sm font-medium transition-all text-left cursor-pointer",
+                isAttendanceActive
+                  ? "bg-pastel-teal/70 font-semibold text-foreground shadow-xs"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              )}
+            >
+              <div className="flex items-center gap-3">
+                <div
+                  className={cn(
+                    "grid h-8 w-8 place-items-center rounded-md transition-colors",
+                    isAttendanceActive
+                      ? "bg-primary text-primary-foreground shadow-xs"
+                      : "bg-muted text-muted-foreground group-hover:bg-background group-hover:text-foreground"
+                  )}
+                >
+                  <Calendar className="h-4 w-4" />
+                </div>
+                <div>
+                  <div className="leading-tight">Attendance</div>
+                  <div className="text-xs font-normal text-muted-foreground">
+                    Time & Absence
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                {isAttendanceActive && (
+                  <span className="h-2 w-2 rounded-full bg-primary" />
+                )}
+                <ChevronDown
+                  className={cn(
+                    "h-4 w-4 text-muted-foreground transition-transform duration-200",
+                    isAttendanceOpen ? "rotate-0 text-foreground" : "-rotate-90"
+                  )}
+                />
+              </div>
+            </button>
+
+            {/* Sub-options with vertical guide line & bullet dots */}
+            {isAttendanceOpen && (
+              <div className="ml-5 space-y-1 border-l border-border pl-3.5 pt-1">
+                {attendanceSubItems.map((item) => {
+                  const isItemActive =
+                    item.view === "dashboard"
+                      ? pathname === "/attendance" || pathname === "/attendance/dashboard"
+                      : pathname === `/attendance/${item.view}`;
+
+                  return (
+                    <Link
+                      key={item.view}
+                      to="/attendance/$view"
+                      params={{ view: item.view }}
+                      onClick={onItemClick}
+                      className={cn(
+                        "group flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-sm transition-all",
+                        isItemActive
+                          ? "bg-pastel-teal/50 font-medium text-foreground shadow-2xs"
+                          : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          "h-2 w-2 rounded-full transition-all shrink-0",
+                          isItemActive
+                            ? "bg-primary shadow-xs"
+                            : "bg-muted-foreground/40 group-hover:bg-muted-foreground"
+                        )}
+                      />
+                      <span className="truncate">{item.label}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+          </div>
 
           {/* Employees Tab */}
           <Link
