@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { ShieldAlert, Users2, HeartHandshake, Target, FlaskConical } from "lucide-react";
+import { ShieldAlert, Users2, HeartHandshake, Target, FlaskConical, BarChart3, CheckSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScenarioSimulatorPanel } from "@/components/scenario/ScenarioSimulatorPanel";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from "recharts";
@@ -11,6 +11,8 @@ import { AttritionPanel } from "@/components/AttritionPanel";
 import { HeadcountPanel } from "@/components/HeadcountPanel";
 import { PerformancePanel } from "@/components/performance/PerformancePanel";
 import { getPerformanceOverview, pickObject } from "@/services/performance";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { ActionCenterTab } from "@/components/action-center/ActionCenterTab";
 
 import { attritionOverview } from "@/lib/attrition-data";
 import { atRiskEmployees } from "@/lib/employees";
@@ -20,15 +22,15 @@ import { getHeadcountKPIs, getHeadcountByDepartment } from "@/services/headcount
 export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
     meta: [
-      { title: "HR Insights — PeopleLens" },
+      { title: "HR Task Center — PeopleLens" },
       {
         name: "description",
-        content: "Attrition prediction, headcount and engagement insights in plain language.",
+        content: "Attrition prediction, headcount, engagement insights and HR action center.",
       },
-      { property: "og:title", content: "HR Insights — PeopleLens" },
+      { property: "og:title", content: "HR Task Center — PeopleLens" },
       {
         property: "og:description",
-        content: "Attrition prediction, headcount and engagement insights in plain language.",
+        content: "Attrition prediction, headcount, engagement insights and HR action center.",
       },
     ],
   }),
@@ -91,25 +93,45 @@ function HRInsights() {
 
   return (
     <main className="mx-auto max-w-7xl px-6 py-8">
-      <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-pastel-teal/70 px-3 py-1 text-xs font-medium">
-            <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-            Focus: Attrition
-          </div>
-          <h1 className="text-3xl font-semibold tracking-tight">HR Insights</h1>
-          <p className="mt-1 text-muted-foreground">
-            Start with attrition — click a card to open its detail panel.
-          </p>
+      <Tabs defaultValue="hr-insights" className="w-full space-y-6">
+        <div className="flex items-center justify-between border-b border-border/60 pb-3">
+          <TabsList className="h-10 bg-muted/70 p-1">
+            <TabsTrigger
+              value="hr-insights"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-xs"
+            >
+              <BarChart3 className="h-4 w-4" />
+              HR Insights
+            </TabsTrigger>
+            <TabsTrigger
+              value="action-center"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-xs"
+            >
+              <CheckSquare className="h-4 w-4" />
+              Action Center
+            </TabsTrigger>
+          </TabsList>
         </div>
-        <Button onClick={() => setScenarioOpen(true)} className="rounded-lg">
-          <FlaskConical className="mr-1.5 h-4 w-4" strokeWidth={2.25} />
-          Scenario Simulator
-        </Button>
-      </div>
 
+        <TabsContent value="hr-insights" className="m-0 space-y-8 focus-visible:outline-none focus-visible:ring-0">
+          <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-pastel-teal/70 px-3 py-1 text-xs font-medium">
+                <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                Focus: Attrition
+              </div>
+              <h1 className="text-3xl font-semibold tracking-tight">HR Insights</h1>
+              <p className="mt-1 text-muted-foreground">
+                Start with attrition — click a card to open its detail panel.
+              </p>
+            </div>
+            <Button onClick={() => setScenarioOpen(true)} className="rounded-lg">
+              <FlaskConical className="mr-1.5 h-4 w-4" strokeWidth={2.25} />
+              Scenario Simulator
+            </Button>
+          </div>
 
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         <InsightCard
           onClick={() => setOpenCard("attrition")}
           tint="bg-pastel-teal"
@@ -230,6 +252,12 @@ function HRInsights() {
           }
         />
       </div>
+    </TabsContent>
+
+    <TabsContent value="action-center" className="m-0 focus-visible:outline-none focus-visible:ring-0">
+      <ActionCenterTab />
+    </TabsContent>
+  </Tabs>
 
       <ScenarioSimulatorPanel open={scenarioOpen} onClose={() => setScenarioOpen(false)} />
 

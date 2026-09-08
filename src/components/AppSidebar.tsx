@@ -87,7 +87,7 @@ export function AppSidebar() {
           Navigation
         </div>
         <nav className="space-y-1.5">
-          {/* HR Insights Tab */}
+          {/* HR Task Center Tab */}
           <Link
             to="/"
             onClick={onItemClick}
@@ -110,9 +110,9 @@ export function AppSidebar() {
                 <BarChart3 className="h-4 w-4" />
               </div>
               <div>
-                <div className="leading-tight">HR Insights</div>
+                <div className="leading-tight">HR Task Center</div>
                 <div className="text-xs font-normal text-muted-foreground">
-                  Overview & Attrition
+                  Insights & Actions
                 </div>
               </div>
             </div>
@@ -305,7 +305,7 @@ export function AppSidebar() {
         >
           <SheetHeader className="sr-only">
             <SheetTitle>Navigation Menu</SheetTitle>
-            <SheetDescription>Access HR Insights, Assistant, and user account</SheetDescription>
+            <SheetDescription>Access HR Task Center, Assistant, and user account</SheetDescription>
           </SheetHeader>
 
           <div>
