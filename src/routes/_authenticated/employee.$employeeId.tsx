@@ -88,11 +88,11 @@ function EmployeePage() {
   return (
     <main className="mx-auto max-w-6xl px-6 pb-16 pt-6">
       <Link
-        to="/"
+        to="/employees"
         className="group mb-5 inline-flex items-center gap-2 rounded-full border bg-card/70 px-3 py-1.5 text-sm text-muted-foreground shadow-sm transition-all hover:-translate-y-0.5 hover:text-foreground"
       >
         <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
-        Back to HR Task Center
+        Back to Employees
       </Link>
 
       <ProfileHeader employee={employee} />
