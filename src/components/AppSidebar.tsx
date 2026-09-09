@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState } from "react";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
   BarChart3,
+  FlaskConical,
   MessageSquare,
   Users,
   LogOut,
@@ -73,6 +74,7 @@ export function AppSidebar() {
 
   const isHrInsightsActive = pathname === "/";
   const isEmployeesActive = pathname === "/employees";
+  const isScenarioActive = pathname === "/scenario";
   const isAssistantActive = pathname === "/chatbot";
 
   const userInitial = (user?.full_name?.trim() || user?.email?.trim() || "U")
@@ -153,6 +155,41 @@ export function AppSidebar() {
             </div>
 
             {isEmployeesActive && (
+              <span className="h-2 w-2 rounded-full bg-primary" />
+            )}
+          </Link>
+
+          {/* Assistant Tab */}
+          <Link
+            to="/scenario"
+            onClick={onItemClick}
+            className={cn(
+              "group flex items-center justify-between rounded-lg px-3.5 py-2.5 text-sm font-medium transition-all",
+              isScenarioActive
+                ? "bg-pastel-teal/70 font-semibold text-foreground shadow-xs"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+            )}
+          >
+            <div className="flex items-center gap-3">
+              <div
+                className={cn(
+                  "grid h-8 w-8 place-items-center rounded-md transition-colors",
+                  isScenarioActive
+                    ? "bg-primary text-primary-foreground shadow-xs"
+                    : "bg-muted text-muted-foreground group-hover:bg-background group-hover:text-foreground"
+                )}
+              >
+                <FlaskConical className="h-4 w-4" />
+              </div>
+              <div>
+                <div className="leading-tight">Scenario Simulator</div>
+                <div className="text-xs font-normal text-muted-foreground">
+                  Workforce Modeling
+                </div>
+              </div>
+            </div>
+
+            {isScenarioActive && (
               <span className="h-2 w-2 rounded-full bg-primary" />
             )}
           </Link>

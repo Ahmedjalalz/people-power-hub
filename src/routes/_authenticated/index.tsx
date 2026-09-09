@@ -1,9 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { ShieldAlert, Users2, HeartHandshake, Target, FlaskConical } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { ScenarioSimulatorPanel } from "@/components/scenario/ScenarioSimulatorPanel";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from "recharts";
 import { InsightCard, Callout } from "@/components/InsightCard";
 import { CenterPanel } from "@/components/CenterPanel";
@@ -55,7 +53,6 @@ const engagementData = [
 
 function HRInsights() {
   const [openCard, setOpenCard] = useState<MainCard | null>(null);
-  const [scenarioOpen, setScenarioOpen] = useState(false);
   const summaryQuery = useQuery({ queryKey: ["attrition", "summary"], queryFn: getAttritionSummary });
   const liveRiskCount = summaryQuery.data?.people_at_risk ?? atRiskEmployees().length;
   const liveRiskRate = summaryQuery.data?.attrition_risk_rate_percent ?? attritionOverview.overallRate;
@@ -103,10 +100,10 @@ function HRInsights() {
             Start with attrition — click a card to open its detail panel.
           </p>
         </div>
-        <Button onClick={() => setScenarioOpen(true)} className="rounded-lg shadow-xs cursor-pointer">
+        <Link to="/scenario" className="rounded-lg shadow-xs cursor-pointer inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors">
           <FlaskConical className="mr-1.5 h-4 w-4" strokeWidth={2.25} />
           Scenario Simulator
-        </Button>
+        </Link>
       </div>
 
       {/* ── Insight Cards Grid ── */}
@@ -230,8 +227,6 @@ function HRInsights() {
           }
         />
       </div>
-
-      <ScenarioSimulatorPanel open={scenarioOpen} onClose={() => setScenarioOpen(false)} />
 
       <AttritionPanel open={openCard === "attrition"} onClose={() => setOpenCard(null)} />
 

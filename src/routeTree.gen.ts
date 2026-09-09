@@ -18,6 +18,7 @@ import { Route as SignupRouteImport } from './routes/signup'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedChatbotRouteImport } from './routes/_authenticated/chatbot'
 import { Route as AuthenticatedEmployeesRouteImport } from './routes/_authenticated/employees'
+import { Route as AuthenticatedScenarioRouteImport } from './routes/_authenticated/scenario'
 import { Route as ApiAttritionRouteImport } from './routes/api/attrition'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiPerformanceRouteImport } from './routes/api/performance'
@@ -71,6 +72,11 @@ const AuthenticatedEmployeesRoute = AuthenticatedEmployeesRouteImport.update({
   path: '/employees',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedScenarioRoute = AuthenticatedScenarioRouteImport.update({
+  id: '/scenario',
+  path: '/scenario',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const ApiAttritionRoute = ApiAttritionRouteImport.update({
   id: '/api/attrition',
   path: '/api/attrition',
@@ -122,6 +128,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/chatbot': typeof AuthenticatedChatbotRoute
   '/employees': typeof AuthenticatedEmployeesRoute
+  '/scenario': typeof AuthenticatedScenarioRoute
   '/api/attrition': typeof ApiAttritionRoute
   '/api/chat': typeof ApiChatRoute
   '/api/performance': typeof ApiPerformanceRoute
@@ -139,6 +146,7 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/chatbot': typeof AuthenticatedChatbotRoute
   '/employees': typeof AuthenticatedEmployeesRoute
+  '/scenario': typeof AuthenticatedScenarioRoute
   '/api/attrition': typeof ApiAttritionRoute
   '/api/chat': typeof ApiChatRoute
   '/api/performance': typeof ApiPerformanceRoute
@@ -159,6 +167,7 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/_authenticated/chatbot': typeof AuthenticatedChatbotRoute
   '/_authenticated/employees': typeof AuthenticatedEmployeesRoute
+  '/_authenticated/scenario': typeof AuthenticatedScenarioRoute
   '/api/attrition': typeof ApiAttritionRoute
   '/api/chat': typeof ApiChatRoute
   '/api/performance': typeof ApiPerformanceRoute
@@ -180,6 +189,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/chatbot'
     | '/employees'
+    | '/scenario'
     | '/api/attrition'
     | '/api/chat'
     | '/api/performance'
@@ -197,6 +207,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/chatbot'
     | '/employees'
+    | '/scenario'
     | '/api/attrition'
     | '/api/chat'
     | '/api/performance'
@@ -216,6 +227,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/_authenticated/chatbot'
     | '/_authenticated/employees'
+    | '/_authenticated/scenario'
     | '/api/attrition'
     | '/api/chat'
     | '/api/performance'
@@ -308,6 +320,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedEmployeesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/scenario': {
+      id: '/_authenticated/scenario'
+      path: '/scenario'
+      fullPath: '/scenario'
+      preLoaderRoute: typeof AuthenticatedScenarioRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/attrition': {
       id: '/api/attrition'
       path: '/api/attrition'
@@ -370,6 +389,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedChatbotRoute: typeof AuthenticatedChatbotRoute
   AuthenticatedEmployeesRoute: typeof AuthenticatedEmployeesRoute
+  AuthenticatedScenarioRoute: typeof AuthenticatedScenarioRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedEmployeeEmployeeIdRoute: typeof AuthenticatedEmployeeEmployeeIdRoute
 }
@@ -377,6 +397,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedChatbotRoute: AuthenticatedChatbotRoute,
   AuthenticatedEmployeesRoute: AuthenticatedEmployeesRoute,
+  AuthenticatedScenarioRoute: AuthenticatedScenarioRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedEmployeeEmployeeIdRoute: AuthenticatedEmployeeEmployeeIdRoute,
 }

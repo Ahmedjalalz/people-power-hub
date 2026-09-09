@@ -32,7 +32,9 @@ export function Header() {
         ? "Employees"
         : pathname.startsWith("/employee/")
           ? "Employee Profile"
-          : "HR Insights";
+          : pathname === "/scenario"
+            ? "Scenario Simulator"
+            : "HR Insights";
 
   return (
     <header className="sticky top-0 z-20 border-b bg-background/80 backdrop-blur">
