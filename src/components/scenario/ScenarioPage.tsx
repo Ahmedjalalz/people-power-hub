@@ -356,6 +356,12 @@ function ScenarioInputPanel({ scenario, meta }: { scenario: ScenarioCard; meta: 
         .then(setOptions)
         .catch(() => setOptions([]))
         .finally(() => setLoadingOptions(false));
+    } else if (scenario.key === "employee_transfer") {
+      setLoadingOptions(true);
+      fetchOptions({ scenario_type: "employee_transfer" })
+        .then(setOptions)
+        .catch(() => setOptions([]))
+        .finally(() => setLoadingOptions(false));
     }
   }, [scenario.key]);
 
@@ -388,8 +394,23 @@ function ScenarioInputPanel({ scenario, meta }: { scenario: ScenarioCard; meta: 
     setEmployeeContext(null);
     simulate.reset();
 
-    // Reset option selections when employee changes for promotion or transfer
-    if (scenario.key !== "skill_reskilling") {
+    // Reset option selections when employee changes
+    if (scenario.key === "employee_promotion") {
+      setOptions([]);
+      setSelectedOption(null);
+    } else if (scenario.key === "employee_transfer") {
+      // Keep destination department options, but reset the selected target department and position
+      setSelectedOption(null);
+      setSelectedTargetPosition(null);
+      // Ensure target departments are fetched if not yet loaded
+      if (options.length === 0) {
+        setLoadingOptions(true);
+        fetchOptions({ scenario_type: "employee_transfer" })
+          .then(setOptions)
+          .catch(() => setOptions([]))
+          .finally(() => setLoadingOptions(false));
+      }
+    } else if (scenario.key !== "skill_reskilling") {
       setOptions([]);
       setSelectedOption(null);
     }
@@ -404,17 +425,17 @@ function ScenarioInputPanel({ scenario, meta }: { scenario: ScenarioCard; meta: 
     }
 
     // Load employee-specific options (e.g. eligible target positions for promotion)
-    if (scenario.key === "employee_promotion" || scenario.key === "employee_transfer") {
+    if (scenario.key === "employee_promotion") {
       setLoadingOptions(true);
       try {
-        setOptions(await fetchOptions({ scenario_type: scenario.key as ScenarioType, employee_id: hit.employee_id }));
+        setOptions(await fetchOptions({ scenario_type: "employee_promotion", employee_id: hit.employee_id }));
       } catch {
         setOptions([]);
       } finally {
         setLoadingOptions(false);
       }
     }
-  }, [scenario.key, simulate]);
+  }, [scenario.key, simulate, options.length]);
 
   // Preload departments for department-based scenarios
   useEffect(() => {
@@ -460,11 +481,10 @@ function ScenarioInputPanel({ scenario, meta }: { scenario: ScenarioCard; meta: 
 
   // Nested target positions for transfer
   useEffect(() => {
-    if (scenario.key === "employee_transfer" && selectedEmployee && selectedOption) {
+    if (scenario.key === "employee_transfer" && selectedOption) {
       setLoadingPositions(true);
       fetchOptions({
         scenario_type: "employee_transfer",
-        employee_id: selectedEmployee.employee_id,
         target_department_id: selectedOption.id,
       })
         .then(setTargetPositions)
@@ -474,7 +494,7 @@ function ScenarioInputPanel({ scenario, meta }: { scenario: ScenarioCard; meta: 
       setTargetPositions([]);
       setSelectedTargetPosition(null);
     }
-  }, [scenario.key, selectedEmployee, selectedOption]);
+  }, [scenario.key, selectedOption]);
 
   const canRun = isEmployee
     ? selectedEmployee && (
@@ -546,7 +566,13 @@ function ScenarioInputPanel({ scenario, meta }: { scenario: ScenarioCard; meta: 
             onClear={() => {
               setSelectedEmployee(null);
               setEmployeeContext(null);
-              if (scenario.key !== "skill_reskilling") {
+              if (scenario.key === "employee_promotion") {
+                setOptions([]);
+                setSelectedOption(null);
+              } else if (scenario.key === "employee_transfer") {
+                setSelectedOption(null);
+                setSelectedTargetPosition(null);
+              } else if (scenario.key !== "skill_reskilling") {
                 setOptions([]);
                 setSelectedOption(null);
               }
@@ -584,20 +610,24 @@ function ScenarioInputPanel({ scenario, meta }: { scenario: ScenarioCard; meta: 
             isLoading={loadingOptions}
             scenarioKey={scenario.key}
             meta={meta}
+            label={scenario.key === "employee_transfer" ? "Destination Department" : undefined}
             placeholderText={
               !selectedEmployee
                 ? scenario.key === "employee_promotion"
                   ? "Select an employee above to load eligible target positions"
                   : scenario.key === "employee_transfer"
-                    ? "Select an employee above to load eligible target departments"
+                    ? "Select an employee above to choose a destination department"
                     : "Select an option from the list"
                 : "No available options for this selection"
             }
-            onSelect={setSelectedOption}
+            onSelect={(opt) => {
+              setSelectedOption(opt);
+              setSelectedTargetPosition(null);
+            }}
           />
         )}
 
-        {/* Transfer step 2b: nested target position */}
+        {/* Transfer step 2b: nested target position in destination */}
         {scenario.key === "employee_transfer" && (
           <OptionsPickerCard
             options={targetPositions}
@@ -605,11 +635,11 @@ function ScenarioInputPanel({ scenario, meta }: { scenario: ScenarioCard; meta: 
             isLoading={loadingPositions}
             scenarioKey="employee_promotion"
             meta={meta}
-            label="Target position in destination"
+            label="Target Position in Destination Department"
             placeholderText={
               !selectedOption
-                ? "Select a target department above first"
-                : "Loading positions for destination..."
+                ? "Select a destination department above first to view available positions"
+                : "No available positions found in this department"
             }
             onSelect={setSelectedTargetPosition}
           />
@@ -1132,9 +1162,31 @@ function OptionsPickerCard({
                 >
                   {active && <Check className="h-3 w-3" />}
                 </span>
-                <span className="flex-1 leading-snug">{opt.label}</span>
+                <span className="flex-1 leading-snug">
+                  <span className="font-medium text-foreground block">{opt.label}</span>
+                  {Boolean(
+                    opt["business_unit"] ||
+                    opt["department"] ||
+                    opt["job_level"] ||
+                    opt["position_criticality"] ||
+                    opt["vacancies"] !== undefined
+                  ) && (
+                    <span className="text-[11px] text-muted-foreground block mt-0.5">
+                      {[
+                        opt["business_unit"],
+                        opt["department"],
+                        opt["job_level"],
+                        opt["position_criticality"] ? `${opt["position_criticality"]} criticality` : null,
+                        opt["vacancies"] !== undefined ? `${opt["vacancies"]} vacancies` : null,
+                        opt["position_status"],
+                      ]
+                        .filter(Boolean)
+                        .join(" · ")}
+                    </span>
+                  )}
+                </span>
                 {active && (
-                  <span className={cn("text-[10px] font-semibold rounded-full px-2 py-0.5", meta.badgeColor)}>
+                  <span className={cn("text-[10px] font-semibold rounded-full px-2 py-0.5 shrink-0 self-center", meta.badgeColor)}>
                     Selected
                   </span>
                 )}

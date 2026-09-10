@@ -383,7 +383,11 @@ export interface FetchOptionsParams {
  */
 export async function fetchOptions(params: FetchOptionsParams): Promise<OptionItem[]> {
   const p: Record<string, string> = { scenario_type: params.scenario_type };
-  if (params.employee_id) p["employee_id"] = params.employee_id;
+  // Note: For employee_transfer, the backend options endpoint requires target_department_id to get target positions,
+  // and does NOT accept employee_id (throws 400 if passed).
+  if (params.scenario_type !== "employee_transfer" && params.employee_id) {
+    p["employee_id"] = params.employee_id;
+  }
   if (params.department_id) p["department_id"] = params.department_id;
   if (params.target_department_id) p["target_department_id"] = params.target_department_id;
   if (params.query) p["query"] = params.query;
@@ -395,9 +399,41 @@ export async function fetchOptions(params: FetchOptionsParams): Promise<OptionIt
     raw = data;
   } else {
     const record = (data && typeof data === "object" ? data : {}) as Record<string, unknown>;
-    for (const key of ["options", "positions", "target_positions", "target_departments", "departments", "courses", "results", "data", "items"]) {
-      const list = record[key];
-      if (Array.isArray(list)) { raw = list; break; }
+    if (params.scenario_type === "employee_transfer") {
+      if (params.target_department_id) {
+        if (Array.isArray(record["target_positions"]) && record["target_positions"].length > 0) {
+          raw = record["target_positions"];
+        } else if (Array.isArray(record["positions"])) {
+          raw = record["positions"];
+        }
+      } else {
+        if (Array.isArray(record["target_departments"]) && record["target_departments"].length > 0) {
+          raw = record["target_departments"];
+        } else if (Array.isArray(record["departments"])) {
+          raw = record["departments"];
+        }
+      }
+    }
+
+    // General fallback: prioritize non-empty arrays
+    if (raw.length === 0) {
+      for (const key of ["options", "positions", "target_positions", "target_departments", "departments", "courses", "results", "data", "items"]) {
+        const list = record[key];
+        if (Array.isArray(list) && list.length > 0) {
+          raw = list;
+          break;
+        }
+      }
+    }
+
+    if (raw.length === 0) {
+      for (const key of ["options", "positions", "target_positions", "target_departments", "departments", "courses", "results", "data", "items"]) {
+        const list = record[key];
+        if (Array.isArray(list)) {
+          raw = list;
+          break;
+        }
+      }
     }
   }
   return raw.map(normalizeOptionItem);
