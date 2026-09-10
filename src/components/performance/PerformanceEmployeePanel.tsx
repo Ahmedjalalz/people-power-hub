@@ -286,6 +286,7 @@ export function PerformanceEmployeePanel({
   return (
     <CenterPanel
       open={enabled}
+      onClose={onClose}
       onOpenChange={(next) => !next && onClose()}
       onBack={onBack}
       size="lg"

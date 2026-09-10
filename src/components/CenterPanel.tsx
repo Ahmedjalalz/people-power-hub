@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 type CenterPanelProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onClose?: () => void;
   title: string;
   description?: string;
   onBack?: () => void;
@@ -16,54 +17,79 @@ type CenterPanelProps = {
 export function CenterPanel({
   open,
   onOpenChange,
+  onClose,
   title,
   description,
   onBack,
   size = "md",
   children,
 }: CenterPanelProps) {
-  return (
-    <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
-      <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay className="panel-veil fixed inset-0 z-50 bg-foreground/25 backdrop-blur-md" />
-        <div className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center p-4">
-        <DialogPrimitive.Content
-          className={cn(
-            "panel-content pointer-events-auto w-full",
-            "max-h-[86vh] overflow-y-auto rounded-2xl border bg-card p-6 shadow-2xl",
-            size === "lg" ? "max-w-4xl" : "max-w-2xl",
-          )}
-        >
+  const handleClose = () => {
+    onClose?.();
+    onOpenChange(false);
+  };
 
-          <div className="flex items-start gap-3">
-            {onBack && (
-              <button
-                onClick={onBack}
-                className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-muted text-muted-foreground transition-colors hover:bg-pastel-teal hover:text-foreground"
-                aria-label="Back"
-              >
-                <ArrowLeft className="h-4 w-4" />
-              </button>
+  return (
+    <DialogPrimitive.Root
+      open={open}
+      onOpenChange={(next) => {
+        if (!next) {
+          onClose?.();
+        }
+        onOpenChange(next);
+      }}
+    >
+      <DialogPrimitive.Portal>
+        <DialogPrimitive.Overlay
+          onClick={handleClose}
+          className="panel-veil fixed inset-0 z-50 bg-foreground/25 backdrop-blur-md cursor-pointer"
+        />
+        <div className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center p-4">
+          <DialogPrimitive.Content
+            onEscapeKeyDown={() => {
+              handleClose();
+            }}
+            className={cn(
+              "panel-content pointer-events-auto w-full",
+              "max-h-[86vh] overflow-y-auto rounded-2xl border bg-card p-6 shadow-2xl",
+              size === "lg" ? "max-w-4xl" : "max-w-2xl",
             )}
-            <div className="min-w-0 flex-1">
-              <DialogPrimitive.Title className="text-xl font-semibold tracking-tight">
-                {title}
-              </DialogPrimitive.Title>
-              {description && (
-                <DialogPrimitive.Description className="mt-1 text-sm text-muted-foreground">
-                  {description}
-                </DialogPrimitive.Description>
+          >
+            <div className="flex items-start gap-3">
+              {onBack && (
+                <button
+                  type="button"
+                  onClick={onBack}
+                  className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-muted text-muted-foreground transition-colors hover:bg-pastel-teal hover:text-foreground cursor-pointer"
+                  aria-label="Back"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </button>
               )}
+              <div className="min-w-0 flex-1">
+                <DialogPrimitive.Title className="text-xl font-semibold tracking-tight">
+                  {title}
+                </DialogPrimitive.Title>
+                {description && (
+                  <DialogPrimitive.Description className="mt-1 text-sm text-muted-foreground">
+                    {description}
+                  </DialogPrimitive.Description>
+                )}
+              </div>
+              <DialogPrimitive.Close
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleClose();
+                }}
+                className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-muted text-muted-foreground transition-colors hover:bg-pastel-rose hover:text-foreground cursor-pointer"
+                aria-label="Close"
+              >
+                <X className="h-4 w-4" />
+              </DialogPrimitive.Close>
             </div>
-            <DialogPrimitive.Close
-              className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-muted text-muted-foreground transition-colors hover:bg-pastel-rose hover:text-foreground"
-              aria-label="Close"
-            >
-              <X className="h-4 w-4" />
-            </DialogPrimitive.Close>
-          </div>
-          <div className="mt-5">{children}</div>
-        </DialogPrimitive.Content>
+            <div className="mt-5">{children}</div>
+          </DialogPrimitive.Content>
         </div>
       </DialogPrimitive.Portal>
     </DialogPrimitive.Root>

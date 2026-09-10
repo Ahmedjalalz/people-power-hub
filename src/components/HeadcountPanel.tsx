@@ -259,6 +259,7 @@ export function HeadcountPanel({
   return (
     <CenterPanel
       open={open}
+      onClose={onClose}
       onOpenChange={(next) => !next && onClose()}
       title="Headcount Management Dashboard"
       description="Executive overview of workforce planning, staffing, organizational distribution and budget allocation."

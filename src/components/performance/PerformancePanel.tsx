@@ -33,6 +33,11 @@ export function PerformancePanel({ open, onClose }: { open: boolean; onClose: ()
   const [selected, setSelected] = useState<string | null>(null);
   const [question, setQuestion] = useState("");
 
+  const handleCloseAll = () => {
+    setSelected(null);
+    onClose();
+  };
+
   const overviewQuery = useQuery({ queryKey: ["perf", "overview", filters], queryFn: () => getPerformanceOverview(filters), enabled: open });
   const trendQuery = useQuery({ queryKey: ["perf", "trend", filters], queryFn: () => getPerformanceTrend(12, filters), enabled: open });
   const deptQuery = useQuery({ queryKey: ["perf", "departments", filters], queryFn: () => getPerformanceDepartments(filters), enabled: open });
@@ -138,7 +143,8 @@ export function PerformancePanel({ open, onClose }: { open: boolean; onClose: ()
     <>
       <CenterPanel
         open={open && !selected}
-        onOpenChange={(next) => !next && onClose()}
+        onClose={handleCloseAll}
+        onOpenChange={(next) => !next && handleCloseAll()}
         size="lg"
         title="Employee performance"
         description="Organization performance scores, department ranking, distribution and employees needing attention."
@@ -369,7 +375,7 @@ export function PerformancePanel({ open, onClose }: { open: boolean; onClose: ()
         </div>
       </CenterPanel>
 
-      <PerformanceEmployeePanel employeeId={selected} onClose={onClose} onBack={() => setSelected(null)} />
+      <PerformanceEmployeePanel employeeId={open ? selected : null} onClose={handleCloseAll} onBack={() => setSelected(null)} />
     </>
   );
 }
