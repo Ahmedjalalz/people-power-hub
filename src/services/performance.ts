@@ -19,10 +19,15 @@ export type PerformanceOverview = {
 export type TrendPoint = {
   // PascalCase (API)
   Performance_Month?: string;
+  Final_Performance_Score?: number;
   Average_Performance_Score?: number;
+  Performance_Band?: string;
+  Average_Evidence_Quality?: number;
+  Critical_KPI_Breach_Flag?: string;
   // snake_case fallbacks
   average_performance_score?: number;
   month?: string;
+  score?: number;
   [key: string]: unknown;
 };
 export type DepartmentRow = {
@@ -77,6 +82,29 @@ export type AttentionRow = {
   [key: string]: unknown;
 };
 export type EmployeeKpi = {
+  // PascalCase (from API)
+  KPI_ID?: string;
+  KPI_Name?: string;
+  KPI_Group?: string;
+  Measurement_Scope?: string;
+  Measurement_Unit?: string;
+  Operational_Target_Value?: number;
+  Operational_Actual_Value?: number;
+  Operational_Unit?: string;
+  Actual_KPI_Value?: number;
+  Floor_Value?: number;
+  Target_Value?: number;
+  Stretch_Value?: number;
+  Scoring_Direction?: string;
+  Normalized_KPI_Score?: number;
+  KPI_Weight_pct?: number;
+  Weighted_Score?: number;
+  Evidence_Source_Mode?: string;
+  Production_Replacement_Source?: string;
+  Evidence_Quality_Score?: number;
+  Performance_Month?: string;
+  // snake_case fallbacks
+  kpi_id?: string;
   kpi_name?: string;
   actual_value?: number;
   target_value?: number;
@@ -85,20 +113,85 @@ export type EmployeeKpi = {
   [key: string]: unknown;
 };
 export type Recommendation = {
+  // PascalCase (from API)
+  Recommendation_ID?: string;
+  Employee_ID?: string;
+  Employee_Name?: string;
+  Department_ID?: string;
+  Department?: string;
+  Business_Unit?: string;
+  Position_ID?: string;
+  Position_Title?: string;
+  Role_Band?: string;
+  Latest_Performance_Score?: number;
+  Latest_Performance_Band?: string;
+  Performance_Trend?: string;
+  Three_Month_Change_Points?: number;
+  Recommendation_Trigger?: string;
+  Development_KPI_ID?: string | null;
+  Development_KPI_Name?: string | null;
+  Development_KPI_Score?: number | null;
+  Skill_ID?: string;
+  Skill_Name?: string;
+  Current_Proficiency_Level?: number;
+  Required_Proficiency_Level?: number;
+  Current_Skill_Score?: number;
+  Required_Minimum_Skill_Score?: number;
+  Mandatory_Role_Skill?: string;
+  Position_Skill_Weight_pct?: number;
+  Course_ID?: string;
+  Course_Name?: string;
+  Course_Level?: string;
+  Recommendation_Rank?: number;
+  Priority_Score?: number;
+  Priority?: string;
+  Recommendation_Basis?: string;
+  How_Course_Supports_Performance?: string;
+  Professional_Growth_Insight?: string;
+  Post_Course_Review_Metric?: string;
+  Recommended_Review_Window_Days?: number;
+  Recommendation_Status?: string;
+  Recommendation_Mode?: string;
+  Data_As_Of_Date?: string;
+  // snake_case fallbacks
   course_name?: string;
   course_level?: string;
   priority?: string | number;
   recommendation_reason?: string;
   linked_skill?: string;
   linked_kpi?: string;
-  review_window?: string;
+  review_window?: string | number;
   [key: string]: unknown;
 };
 export type LearningRecord = {
+  // PascalCase (from API)
+  Learning_Record_ID?: string;
+  Employee_ID?: string;
+  Employee_Name?: string;
+  Department_ID?: string;
+  Department?: string;
+  Position_ID?: string;
+  Position_Title?: string;
+  Role_Band?: string;
+  Course_ID?: string;
+  Course_Name?: string;
+  Course_Level?: string;
+  Skill_ID?: string;
+  Skill_Name?: string;
+  Current_Proficiency_Level?: number;
+  Current_Skill_Score?: number;
+  Certification_Status?: string;
+  Learning_Status?: string;
+  Completion_Date?: string;
+  Position_Required_Skill?: string;
+  History_Basis?: string;
+  Record_Source?: string;
+  Is_Actual_LMS_Record?: string;
+  Data_As_Of_Date?: string;
+  // snake_case fallbacks
   course_name?: string;
   completion_date?: string;
   status?: string;
-  Is_Actual_LMS_Record?: string;
   [key: string]: unknown;
 };
 
@@ -150,11 +243,19 @@ export function pickObject<T>(payload: unknown, ...keys: string[]): T | null {
 
   const targetKeys = [
     "average_performance_score",
+    "Average_Performance_Score",
     "total_employees",
+    "Total_Employees",
     "strong_and_exceptional_count",
+    "Strong_And_Exceptional_Count",
+    "strong_or_exceptional_count",
+    "Strong_Or_Exceptional_Count",
     "performance_score",
+    "Performance_Score",
     "employee_name",
-    "latest_performance_score"
+    "Employee_Name",
+    "latest_performance_score",
+    "Latest_Performance_Score",
   ];
 
   // 1. If the root object itself has target keys, use it

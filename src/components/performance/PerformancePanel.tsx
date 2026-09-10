@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip } from "recharts";
-import { ArrowUpDown, Search, Send, Sparkles, Loader2, TrendingDown, TrendingUp } from "lucide-react";
+import { ArrowUpDown, ArrowRight, Search, Send, Sparkles, Loader2, TrendingDown, TrendingUp } from "lucide-react";
 import { CenterPanel } from "@/components/CenterPanel";
 import { AsyncState, SectionCard, StatTile, bandTint, trendTint, num } from "@/components/performance/PerformanceUI";
 import { DepartmentRankingChart, DistributionDonut, PerformanceEmployeePanel } from "@/components/performance/PerformanceEmployeePanel";
@@ -264,6 +264,7 @@ export function PerformancePanel({ open, onClose }: { open: boolean; onClose: ()
                       ))}
                       <th className="px-2 py-2">Trend</th>
                       <th className="px-2 py-2">Development KPIs</th>
+                      <th className="px-2 py-2 text-right">Action</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -281,13 +282,24 @@ export function PerformancePanel({ open, onClose }: { open: boolean; onClose: ()
                           ? row.development_kpis.join(", ")
                           : String(row.development_kpis ?? "—");
                       const employeeId = row.Employee_ID ?? row.employee_id;
+                      const name = String(row.Employee_Name ?? row.employee_name ?? "—");
                       return (
                         <tr
                           key={`${employeeId}-${index}`}
                           onClick={() => employeeId && setSelected(String(employeeId))}
-                          className="cursor-pointer border-t transition-colors hover:bg-muted/50"
+                          className="group cursor-pointer border-t transition-colors hover:bg-muted/60"
                         >
-                          <td className="px-2 py-2 font-medium">{String(row.Employee_Name ?? row.employee_name ?? "—")}</td>
+                          <td className="px-2 py-2">
+                            <div className="flex items-center gap-2">
+                              <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-primary/10 text-[11px] font-bold text-primary">
+                                {name.slice(0, 1).toUpperCase()}
+                              </span>
+                              <div>
+                                <div className="font-semibold text-foreground group-hover:text-primary transition-colors">{name}</div>
+                                {employeeId && <div className="font-mono text-[10px] text-muted-foreground">{employeeId}</div>}
+                              </div>
+                            </div>
+                          </td>
                           <td className="px-2 py-2 text-muted-foreground">{String(row.Department ?? row.department ?? "—")}</td>
                           <td className="px-2 py-2 font-semibold">{num(row.Latest_Performance_Score ?? row.latest_performance_score ?? row.performance_score)}</td>
                           <td className="px-2 py-2">
@@ -306,7 +318,13 @@ export function PerformancePanel({ open, onClose }: { open: boolean; onClose: ()
                               {String(perfTrend ?? "—")}
                             </span>
                           </td>
-                          <td className="max-w-[220px] truncate px-2 py-2 text-muted-foreground">{kpiList}</td>
+                          <td className="max-w-[200px] truncate px-2 py-2 text-muted-foreground">{kpiList}</td>
+                          <td className="px-2 py-2 text-right">
+                            <span className="inline-flex items-center gap-1 rounded-lg border border-border bg-card px-2.5 py-1 text-[11px] font-semibold text-foreground shadow-2xs group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                              <span>Details</span>
+                              <ArrowRight className="h-3 w-3" />
+                            </span>
+                          </td>
                         </tr>
                       );
                     })}
