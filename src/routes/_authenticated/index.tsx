@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { ShieldAlert, Users2, HeartHandshake, Target, FlaskConical } from "lucide-react";
+import { ShieldAlert, Users2, HeartHandshake, Target, FlaskConical, ArrowRight } from "lucide-react";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from "recharts";
+import { getCriticalOpenCount } from "@/lib/trigger-engine";
 import { InsightCard, Callout } from "@/components/InsightCard";
 import { CenterPanel } from "@/components/CenterPanel";
 import { AttritionPanel } from "@/components/AttritionPanel";
@@ -53,6 +54,15 @@ const engagementData = [
 
 function HRInsights() {
   const [openCard, setOpenCard] = useState<MainCard | null>(null);
+  const [criticalTriggers, setCriticalTriggers] = useState(() => getCriticalOpenCount());
+
+  useEffect(() => {
+    function handleUpdate() {
+      setCriticalTriggers(getCriticalOpenCount());
+    }
+    window.addEventListener("trigger-cases-updated", handleUpdate);
+    return () => window.removeEventListener("trigger-cases-updated", handleUpdate);
+  }, []);
   const summaryQuery = useQuery({ queryKey: ["attrition", "summary"], queryFn: getAttritionSummary });
   const liveRiskCount = summaryQuery.data?.people_at_risk ?? atRiskEmployees().length;
   const liveRiskRate = summaryQuery.data?.attrition_risk_rate_percent ?? attritionOverview.overallRate;
@@ -105,6 +115,41 @@ function HRInsights() {
           Scenario Simulator
         </Link>
       </div>
+
+      {/* ── Decision Trigger Engine Active Alert Banner ── */}
+      {criticalTriggers > 0 && (
+        <div className="mb-6 rounded-2xl border border-rose-200/90 bg-gradient-to-r from-rose-50 via-amber-50/40 to-background p-4.5 shadow-xs dark:border-rose-900/60 dark:from-rose-950/30 dark:via-amber-950/15 dark:to-card">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5">
+              <span className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-xl bg-rose-400 opacity-20" />
+                <ShieldAlert className="h-5 w-5" />
+              </span>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-sm text-foreground">
+                    Decision Trigger Engine: {criticalTriggers} Critical Case{criticalTriggers > 1 ? "s" : ""}
+                  </span>
+                  <span className="rounded-full bg-rose-500 px-2 py-0.2 text-[10px] font-bold text-white uppercase tracking-wider">
+                    Immediate Action
+                  </span>
+                </div>
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  Automated rules matched urgent flight risks and unfilled critical roles requiring HR intervention.
+                </p>
+              </div>
+            </div>
+
+            <Link
+              to="/triggers"
+              className="inline-flex items-center gap-2 rounded-xl bg-foreground text-background px-4 py-2 text-xs font-semibold hover:opacity-90 transition-opacity shadow-xs cursor-pointer"
+            >
+              <span>Review Cases ({criticalTriggers})</span>
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* ── Insight Cards Grid ── */}
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">

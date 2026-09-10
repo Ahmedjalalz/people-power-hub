@@ -33,9 +33,10 @@ function ChatbotPage() {
         <Chatbot />
       </div>
       <div className="mt-4 flex flex-wrap justify-center gap-2 text-xs text-muted-foreground">
-        <span className="rounded-full bg-pastel-teal/50 px-3 py-1.5">Try: "Is Usman expected to leave soon?"</span>
+        <span className="rounded-full bg-pastel-teal/50 px-3 py-1.5">Try: "What are today's critical cases?"</span>
+        <span className="rounded-full bg-pastel-rose/60 px-3 py-1.5">Try: "Why was Usman Ali flagged?"</span>
+        <span className="rounded-full bg-pastel-amber/60 px-3 py-1.5">Try: "Which cases are overdue?"</span>
         <span className="rounded-full bg-pastel-sky/60 px-3 py-1.5">Try: "Who is at highest risk?"</span>
-        <span className="rounded-full bg-pastel-lavender/60 px-3 py-1.5">Try: "Why did people leave?"</span>
       </div>
     </main>
   );

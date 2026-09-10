@@ -19,6 +19,7 @@ import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedChatbotRouteImport } from './routes/_authenticated/chatbot'
 import { Route as AuthenticatedEmployeesRouteImport } from './routes/_authenticated/employees'
 import { Route as AuthenticatedScenarioRouteImport } from './routes/_authenticated/scenario'
+import { Route as AuthenticatedTriggersRouteImport } from './routes/_authenticated/triggers'
 import { Route as ApiAttritionRouteImport } from './routes/api/attrition'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiPerformanceRouteImport } from './routes/api/performance'
@@ -77,6 +78,11 @@ const AuthenticatedScenarioRoute = AuthenticatedScenarioRouteImport.update({
   path: '/scenario',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedTriggersRoute = AuthenticatedTriggersRouteImport.update({
+  id: '/triggers',
+  path: '/triggers',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const ApiAttritionRoute = ApiAttritionRouteImport.update({
   id: '/api/attrition',
   path: '/api/attrition',
@@ -129,6 +135,7 @@ export interface FileRoutesByFullPath {
   '/chatbot': typeof AuthenticatedChatbotRoute
   '/employees': typeof AuthenticatedEmployeesRoute
   '/scenario': typeof AuthenticatedScenarioRoute
+  '/triggers': typeof AuthenticatedTriggersRoute
   '/api/attrition': typeof ApiAttritionRoute
   '/api/chat': typeof ApiChatRoute
   '/api/performance': typeof ApiPerformanceRoute
@@ -147,6 +154,7 @@ export interface FileRoutesByTo {
   '/chatbot': typeof AuthenticatedChatbotRoute
   '/employees': typeof AuthenticatedEmployeesRoute
   '/scenario': typeof AuthenticatedScenarioRoute
+  '/triggers': typeof AuthenticatedTriggersRoute
   '/api/attrition': typeof ApiAttritionRoute
   '/api/chat': typeof ApiChatRoute
   '/api/performance': typeof ApiPerformanceRoute
@@ -168,6 +176,7 @@ export interface FileRoutesById {
   '/_authenticated/chatbot': typeof AuthenticatedChatbotRoute
   '/_authenticated/employees': typeof AuthenticatedEmployeesRoute
   '/_authenticated/scenario': typeof AuthenticatedScenarioRoute
+  '/_authenticated/triggers': typeof AuthenticatedTriggersRoute
   '/api/attrition': typeof ApiAttritionRoute
   '/api/chat': typeof ApiChatRoute
   '/api/performance': typeof ApiPerformanceRoute
@@ -190,6 +199,7 @@ export interface FileRouteTypes {
     | '/chatbot'
     | '/employees'
     | '/scenario'
+    | '/triggers'
     | '/api/attrition'
     | '/api/chat'
     | '/api/performance'
@@ -208,6 +218,7 @@ export interface FileRouteTypes {
     | '/chatbot'
     | '/employees'
     | '/scenario'
+    | '/triggers'
     | '/api/attrition'
     | '/api/chat'
     | '/api/performance'
@@ -228,6 +239,7 @@ export interface FileRouteTypes {
     | '/_authenticated/chatbot'
     | '/_authenticated/employees'
     | '/_authenticated/scenario'
+    | '/_authenticated/triggers'
     | '/api/attrition'
     | '/api/chat'
     | '/api/performance'
@@ -327,6 +339,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedScenarioRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/triggers': {
+      id: '/_authenticated/triggers'
+      path: '/triggers'
+      fullPath: '/triggers'
+      preLoaderRoute: typeof AuthenticatedTriggersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/attrition': {
       id: '/api/attrition'
       path: '/api/attrition'
@@ -390,6 +409,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedChatbotRoute: typeof AuthenticatedChatbotRoute
   AuthenticatedEmployeesRoute: typeof AuthenticatedEmployeesRoute
   AuthenticatedScenarioRoute: typeof AuthenticatedScenarioRoute
+  AuthenticatedTriggersRoute: typeof AuthenticatedTriggersRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedEmployeeEmployeeIdRoute: typeof AuthenticatedEmployeeEmployeeIdRoute
 }
@@ -398,6 +418,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedChatbotRoute: AuthenticatedChatbotRoute,
   AuthenticatedEmployeesRoute: AuthenticatedEmployeesRoute,
   AuthenticatedScenarioRoute: AuthenticatedScenarioRoute,
+  AuthenticatedTriggersRoute: AuthenticatedTriggersRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedEmployeeEmployeeIdRoute: AuthenticatedEmployeeEmployeeIdRoute,
 }

@@ -34,7 +34,9 @@ export function Header() {
           ? "Employee Profile"
           : pathname === "/scenario"
             ? "Scenario Simulator"
-            : "HR Insights";
+            : pathname === "/triggers"
+              ? "Decision Triggers"
+              : "HR Insights";
 
   return (
     <header className="sticky top-0 z-20 border-b bg-background/80 backdrop-blur">

@@ -4,6 +4,7 @@ import {
   BarChart3,
   FlaskConical,
   MessageSquare,
+  ShieldAlert,
   Users,
   LogOut,
   Moon,
@@ -13,6 +14,7 @@ import {
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTheme } from "@/lib/theme";
 import { getCurrentUser, logout as clearLocalSession } from "@/lib/auth";
+import { getCriticalOpenCount } from "@/lib/trigger-engine";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -75,7 +77,18 @@ export function AppSidebar() {
   const isHrInsightsActive = pathname === "/";
   const isEmployeesActive = pathname === "/employees";
   const isScenarioActive = pathname === "/scenario";
+  const isTriggersActive = pathname === "/triggers";
   const isAssistantActive = pathname === "/chatbot";
+
+  const [criticalCount, setCriticalCount] = useState(() => getCriticalOpenCount());
+
+  React.useEffect(() => {
+    function handleUpdate() {
+      setCriticalCount(getCriticalOpenCount());
+    }
+    window.addEventListener("trigger-cases-updated", handleUpdate);
+    return () => window.removeEventListener("trigger-cases-updated", handleUpdate);
+  }, []);
 
   const userInitial = (user?.full_name?.trim() || user?.email?.trim() || "U")
     .charAt(0)
@@ -192,6 +205,48 @@ export function AppSidebar() {
             {isScenarioActive && (
               <span className="h-2 w-2 rounded-full bg-primary" />
             )}
+          </Link>
+
+          {/* Decision Triggers Tab */}
+          <Link
+            to="/triggers"
+            onClick={onItemClick}
+            className={cn(
+              "group flex items-center justify-between rounded-lg px-3.5 py-2.5 text-sm font-medium transition-all",
+              isTriggersActive
+                ? "bg-pastel-teal/70 font-semibold text-foreground shadow-xs"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+            )}
+          >
+            <div className="flex items-center gap-3">
+              <div
+                className={cn(
+                  "grid h-8 w-8 place-items-center rounded-md transition-colors",
+                  isTriggersActive
+                    ? "bg-primary text-primary-foreground shadow-xs"
+                    : "bg-muted text-muted-foreground group-hover:bg-background group-hover:text-foreground"
+                )}
+              >
+                <ShieldAlert className="h-4 w-4" />
+              </div>
+              <div>
+                <div className="leading-tight">Decision Triggers</div>
+                <div className="text-xs font-normal text-muted-foreground">
+                  Case Monitoring
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              {criticalCount > 0 && (
+                <span className="rounded-full bg-rose-500 px-1.5 py-0.5 text-[10px] font-bold text-white shadow-xs">
+                  {criticalCount}
+                </span>
+              )}
+              {isTriggersActive && (
+                <span className="h-2 w-2 rounded-full bg-primary" />
+              )}
+            </div>
           </Link>
 
           {/* Assistant Tab */}
