@@ -248,6 +248,7 @@ type ChatbotProps = {
   subtitle?: string;
   placeholder?: string;
   welcomeMessage?: string;
+  onClose?: () => void;
 };
 
 export function Chatbot({
@@ -257,6 +258,7 @@ export function Chatbot({
   subtitle = "Ask about attrition, risk & retention",
   placeholder = "Ask about an employee or risk...",
   welcomeMessage = "Hi! I'm your HR Insights assistant. Ask me things like *\"Is Usman expected to leave soon?\"* or *\"Who is at highest risk this quarter?\"*",
+  onClose,
 }: ChatbotProps) {
   const { messages, isStreaming, sendMessage, injectMockMessage } = useChat({ welcomeMessage });
   const [input, setInput] = useState("");
@@ -293,14 +295,26 @@ export function Chatbot({
     <div className={cn("flex flex-col h-full bg-card", compact ? "" : "rounded-xl border")}>
       {/* ── Header ── */}
       <div className="flex flex-col border-b bg-pastel-lavender/50 rounded-t-xl">
-        <div className="flex items-center gap-2 px-4 py-3">
-          <div className="w-8 h-8 rounded-full bg-primary/20 grid place-items-center">
-            <Sparkles className="w-4 h-4 text-primary" />
+        <div className="flex items-center justify-between px-4 py-3">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-primary/20 grid place-items-center">
+              <Sparkles className="w-4 h-4 text-primary" />
+            </div>
+            <div>
+              <div className="font-semibold text-sm">{title}</div>
+              <div className="text-xs text-muted-foreground">{subtitle}</div>
+            </div>
           </div>
-          <div>
-            <div className="font-semibold text-sm">{title}</div>
-            <div className="text-xs text-muted-foreground">{subtitle}</div>
-          </div>
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="w-8 h-8 rounded-full grid place-items-center text-muted-foreground hover:bg-muted/70 hover:text-foreground transition-colors"
+              aria-label="Close chat"
+              title="Close chat"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
         </div>
         <div className="flex items-center gap-2 px-4 pb-3 overflow-x-auto no-scrollbar">
           <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground whitespace-nowrap">
@@ -672,7 +686,7 @@ function ChatVisualizer({ type, data, reason, url }: ChatVisualizerProps) {
   const ChartIcon = isBar ? BarChart3 : isPie ? PieChartIcon : isLine ? Activity : TableProperties;
 
   return (
-    <div className="w-full max-w-[440px] bg-card rounded-xl border border-border/80 shadow-xs overflow-hidden text-xs">
+    <div className="w-full max-w-2xl bg-card rounded-xl border border-border/80 shadow-xs overflow-hidden text-xs">
       {/* Visualizer header */}
       <div className="px-4 py-3 border-b bg-muted/40 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">

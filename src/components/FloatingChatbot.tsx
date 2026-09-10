@@ -25,8 +25,8 @@ export function FloatingChatbot() {
             className="fixed inset-0 z-40 bg-background/50 backdrop-blur-sm animate-in fade-in duration-200" 
             onClick={() => setOpen(false)} 
           />
-          <div className="fixed bottom-24 left-6 right-6 z-50 h-[80vh] max-h-[calc(100vh-8rem)] rounded-xl shadow-2xl border bg-card/95 backdrop-blur overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-200">
-            <Chatbot autoFocus />
+          <div className="fixed bottom-24 left-4 right-4 md:left-auto md:right-6 md:w-[70%] z-50 h-[80vh] max-h-[calc(100vh-8rem)] rounded-xl shadow-2xl border bg-card/95 backdrop-blur overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-200">
+            <Chatbot autoFocus compact onClose={() => setOpen(false)} />
           </div>
         </>
       )}
