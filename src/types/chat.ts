@@ -2,6 +2,14 @@ export type ChatRole = "user" | "assistant";
 
 export type ChartType = "bar" | "line" | "pie" | "table" | "area";
 
+export type ActiveVisual = {
+  id: string;
+  type: ChartType | string;
+  data: unknown;
+  reason?: string | null;
+  url?: string | null;
+};
+
 export type ChatResponse = {
   reply: string;
   visualization: boolean;

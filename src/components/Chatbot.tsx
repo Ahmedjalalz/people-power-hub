@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useChat } from "@/hooks/use-chat";
 import { cn } from "@/lib/utils";
-import type { ChatMessage } from "@/types/chat";
+import type { ActiveVisual, ChatMessage } from "@/types/chat";
 import { Link } from "@tanstack/react-router";
 import { employees } from "@/lib/employees";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, AreaChart, Area, LineChart, Line, PieChart, Pie, Cell } from "recharts";
@@ -249,6 +249,9 @@ type ChatbotProps = {
   placeholder?: string;
   welcomeMessage?: string;
   onClose?: () => void;
+  activeVisual?: ActiveVisual | null;
+  onActiveVisualChange?: (visual: ActiveVisual | null) => void;
+  isExternalVisualOpen?: boolean;
 };
 
 export function Chatbot({
@@ -259,11 +262,15 @@ export function Chatbot({
   placeholder = "Ask about an employee or risk...",
   welcomeMessage = "Hi! I'm your HR Insights assistant. Ask me things like *\"Is Usman expected to leave soon?\"* or *\"Who is at highest risk this quarter?\"*",
   onClose,
+  activeVisual,
+  onActiveVisualChange,
+  isExternalVisualOpen = false,
 }: ChatbotProps) {
   const { messages, isStreaming, sendMessage, injectMockMessage } = useChat({ welcomeMessage });
   const [input, setInput] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const latestVisualRef = useRef<string | null>(null);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -272,6 +279,24 @@ export function Chatbot({
   useEffect(() => {
     if (autoFocus) inputRef.current?.focus();
   }, [autoFocus]);
+
+  // When a new assistant message arrives with visualization, automatically open on stage
+  useEffect(() => {
+    if (!onActiveVisualChange) return;
+    const lastVisualMessage = [...messages].reverse().find(
+      (m) => m.role === "assistant" && (m.visualization || m.visual) && m.status === "done",
+    );
+    if (lastVisualMessage && lastVisualMessage.id !== latestVisualRef.current) {
+      latestVisualRef.current = lastVisualMessage.id;
+      onActiveVisualChange({
+        id: lastVisualMessage.id,
+        type: lastVisualMessage.chartType ?? lastVisualMessage.visual ?? "bar",
+        data: lastVisualMessage.chartData,
+        reason: lastVisualMessage.visualizationReason,
+        url: lastVisualMessage.chartUrl,
+      });
+    }
+  }, [messages, onActiveVisualChange]);
 
   const send = () => {
     const trimmed = input.trim();
@@ -308,7 +333,7 @@ export function Chatbot({
           {onClose && (
             <button
               onClick={onClose}
-              className="w-8 h-8 rounded-full grid place-items-center text-muted-foreground hover:bg-muted/70 hover:text-foreground transition-colors"
+              className="w-8 h-8 rounded-lg grid place-items-center text-muted-foreground hover:bg-muted/70 hover:text-foreground transition-colors"
               aria-label="Close chat"
               title="Close chat"
             >
@@ -338,7 +363,21 @@ export function Chatbot({
       {/* ── Messages ── */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((message) => (
-          <MessageBubble key={message.id} message={message} />
+          <MessageBubble
+            key={message.id}
+            message={message}
+            isExternalVisualOpen={isExternalVisualOpen}
+            isActiveVisualOnStage={activeVisual?.id === message.id}
+            onSelectVisual={() => {
+              onActiveVisualChange?.({
+                id: message.id,
+                type: message.chartType ?? message.visual ?? "bar",
+                data: message.chartData,
+                reason: message.visualizationReason,
+                url: message.chartUrl,
+              });
+            }}
+          />
         ))}
       </div>
 
@@ -447,7 +486,17 @@ export function Chatbot({
   );
 }
 
-function MessageBubble({ message }: { message: ChatMessage }) {
+function MessageBubble({
+  message,
+  isExternalVisualOpen = false,
+  isActiveVisualOnStage = false,
+  onSelectVisual,
+}: {
+  message: ChatMessage;
+  isExternalVisualOpen?: boolean;
+  isActiveVisualOnStage?: boolean;
+  onSelectVisual?: () => void;
+}) {
   const isUser = message.role === "user";
   if (message.role === "assistant" && message.status === "thinking")
     return (
@@ -463,26 +512,94 @@ function MessageBubble({ message }: { message: ChatMessage }) {
         </div>
       </div>
     );
+
+  const hasVisual = Boolean(message.visualization || message.visual);
+  const visualType = message.chartType ?? message.visual ?? "bar";
+
   return (
     <div className={cn("flex gap-2 items-start", isUser && "flex-row-reverse")}>
       {!isUser && <BotAvatar />}
       <div
         className={cn(
-          "rounded-xl px-4 py-3 max-w-[85%] text-sm whitespace-pre-wrap leading-relaxed",
+          "rounded-xl px-4 py-3 max-w-[88%] text-sm whitespace-pre-wrap leading-relaxed",
           isUser
             ? "bg-primary text-primary-foreground rounded-tr-sm"
             : "bg-pastel-lavender/40 text-foreground rounded-tl-sm w-full",
         )}
       >
         <FormattedText text={message.content} />
-        {(message.visualization || message.visual) && (
+        {hasVisual && (
           <div className="mt-4">
-            <ChatVisualizer
-              type={message.chartType ?? message.visual}
-              data={message.chartData}
-              reason={message.visualizationReason}
-              url={message.chartUrl}
-            />
+            {isExternalVisualOpen ? (
+              <>
+                {/* On desktop when visual stage is open, show interactive pill */}
+                <div className="hidden md:block p-3 rounded-xl border border-primary/20 bg-background/90 shadow-2xs">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <span className="w-7 h-7 rounded-lg bg-primary/10 grid place-items-center shrink-0">
+                        <BarChart3 className="w-3.5 h-3.5 text-primary" />
+                      </span>
+                      <div className="min-w-0">
+                        <div className="text-xs font-semibold text-foreground truncate">
+                          {message.visualizationReason || "Data Visualization"}
+                        </div>
+                        <div className="text-[10px] text-muted-foreground capitalize">
+                          {visualType} view rendered on canvas
+                        </div>
+                      </div>
+                    </div>
+                    {isActiveVisualOnStage ? (
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 shrink-0">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        On Canvas
+                      </span>
+                    ) : (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={onSelectVisual}
+                        className="h-6 px-2 text-[11px] rounded-full gap-1 shrink-0"
+                      >
+                        <span>View on Stage</span>
+                        <ExternalLink className="w-2.5 h-2.5" />
+                      </Button>
+                    )}
+                  </div>
+                </div>
+
+                {/* On mobile screens, render inline so mobile users see chart */}
+                <div className="md:hidden">
+                  <ChatVisualizer
+                    type={visualType}
+                    data={message.chartData}
+                    reason={message.visualizationReason}
+                    url={message.chartUrl}
+                  />
+                </div>
+              </>
+            ) : (
+              <div className="space-y-2">
+                {onSelectVisual && (
+                  <div className="hidden md:flex justify-end">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={onSelectVisual}
+                      className="h-6 px-2 text-[10px] text-primary hover:bg-primary/10 rounded-full gap-1"
+                    >
+                      <span>Open on Visual Stage</span>
+                      <ExternalLink className="w-2.5 h-2.5" />
+                    </Button>
+                  </div>
+                )}
+                <ChatVisualizer
+                  type={visualType}
+                  data={message.chartData}
+                  reason={message.visualizationReason}
+                  url={message.chartUrl}
+                />
+              </div>
+            )}
           </div>
         )}
         {message.role === "assistant" && message.status === "typing" && (
