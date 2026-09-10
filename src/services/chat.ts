@@ -1,17 +1,12 @@
 import type { ChatResponse, ChatStreamEvent } from "@/types/chat";
 import { getAuthHeader } from "@/lib/auth";
 
+import { safeUnwrapJson } from "@/lib/visual-extractor";
+
 const CHAT_TIMEOUT_MS = 60_000;
 
 export function safeParseChartData(raw: unknown): unknown {
-  if (typeof raw === "string") {
-    try {
-      return JSON.parse(raw);
-    } catch {
-      return raw;
-    }
-  }
-  return raw;
+  return safeUnwrapJson(raw);
 }
 
 export async function sendChatMessage({

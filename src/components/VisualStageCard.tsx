@@ -24,7 +24,7 @@ import {
   CartesianGrid,
 } from "recharts";
 import type { ActiveVisual } from "@/types/chat";
-import { parseVisualData } from "@/lib/visual-extractor";
+import { parseVisualData, analyzeDataStructure } from "@/lib/visual-extractor";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 
@@ -51,36 +51,6 @@ function formatHeaderKey(key: string): string {
   return key
     .replace(/_/g, " ")
     .replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
-function analyzeDataStructure(items: Record<string, any>[]) {
-  if (items.length === 0) {
-    return { categoryKey: "name", metricKeys: ["value"], columns: [] };
-  }
-
-  const columns = Object.keys(items[0]);
-
-  const categoryKeyCandidate =
-    columns.find((c) => {
-      const val = items[0][c];
-      return typeof val === "string" && isNaN(Number(val));
-    }) ||
-    columns.find((c) =>
-      /name|dept|department|label|category|month|date|period|role|title|status|type/i.test(c),
-    ) ||
-    columns[0];
-
-  const metricKeys = columns.filter((c) => {
-    if (c === categoryKeyCandidate) return false;
-    const val = items[0][c];
-    return typeof val === "number" || (typeof val === "string" && !isNaN(Number(val)) && val.trim() !== "");
-  });
-
-  return {
-    categoryKey: categoryKeyCandidate,
-    metricKeys: metricKeys.length > 0 ? metricKeys : columns.filter((c) => c !== categoryKeyCandidate),
-    columns,
-  };
 }
 
 export function VisualStageCard({
@@ -252,8 +222,21 @@ export function VisualStageCard({
                       fontSize={11}
                       tickLine={false}
                       axisLine={false}
+                      domain={[(dataMin: number) => (dataMin > 40 ? Math.max(0, Math.floor(dataMin - 5)) : 0), "auto"]}
                     />
-                    <Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} />
+                    <Tooltip
+                      contentStyle={chartTooltip}
+                      itemStyle={{ color: "var(--foreground)" }}
+                      formatter={(value: any, name: any) => [value, formatHeaderKey(String(name))]}
+                      labelFormatter={(label: any, payload: any) => {
+                        const row = payload?.[0]?.payload;
+                        if (row && (row["Department"] || row["Position"])) {
+                          const sub = [row["Department"], row["Position"]].filter(Boolean).join(" · ");
+                          return `${label} (${sub})`;
+                        }
+                        return label;
+                      }}
+                    />
                     {metricKeys.slice(0, 3).map((key, i) => (
                       <Bar
                         key={key}

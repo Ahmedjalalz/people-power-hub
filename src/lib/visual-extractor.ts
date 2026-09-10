@@ -1,19 +1,28 @@
-export function parseVisualData(raw: unknown): Record<string, any>[] {
-  if (!raw) return [];
+export function safeUnwrapJson(raw: unknown): unknown {
+  if (!raw) return raw;
   let parsed = raw;
-  if (typeof raw === "string") {
+  while (typeof parsed === "string") {
     try {
-      parsed = JSON.parse(raw);
+      const next = JSON.parse(parsed);
+      if (next === parsed) break;
+      parsed = next;
     } catch {
-      // Not valid JSON, try extracting if it's markdown
-      return extractTableFromMarkdown(raw) || extractListMetricsFromMarkdown(raw) || [];
+      break;
     }
   }
+  return parsed;
+}
+
+export function parseVisualData(raw: unknown): Record<string, any>[] {
+  if (!raw) return [];
+  const parsed = safeUnwrapJson(raw);
+
   if (Array.isArray(parsed)) {
     return parsed.filter(
       (item): item is Record<string, any> => item != null && typeof item === "object",
     );
   }
+
   if (typeof parsed === "object" && parsed !== null) {
     const record = parsed as Record<string, any>;
     for (const key of ["data", "items", "rows", "records", "results", "chart_data"]) {
@@ -33,6 +42,12 @@ export function parseVisualData(raw: unknown): Record<string, any>[] {
       }));
     }
   }
+
+  // If raw was a string that wasn't JSON, attempt extracting table or list
+  if (typeof raw === "string") {
+    return extractTableFromMarkdown(raw) || extractRankedOrMetricList(raw) || [];
+  }
+
   return [];
 }
 
@@ -92,36 +107,114 @@ export function extractTableFromMarkdown(text: string): Record<string, any>[] | 
 }
 
 /**
- * Extracts key-metric pairs from formatted bulleted lists (e.g., "- **HR**: 45 employees").
+ * Extracts structured records from numbered ranked lists or metric bullet lists.
+ * E.g., "1. Asad Malik (EMP156) - Engineering, Software Engineer II - Score: 94.68"
+ * E.g., "1. **Asad Malik (EMP156)** - Engineering, Software Engineer II - Score 94.68, Exceptional"
+ * E.g., "- **HR**: 45 employees"
  */
-export function extractListMetricsFromMarkdown(text: string): Record<string, any>[] | null {
+export function extractRankedOrMetricList(text: string): Record<string, any>[] | null {
   if (!text) return null;
-  const lines = text.split(/\r?\n/).map((l) => l.trim());
+  const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
   const items: Record<string, any>[] = [];
 
-  // Match: - **Category**: 45 employees or - Category: $50,000
-  const regex = /^[-*•]\s*(?:\*\*)?([A-Za-z0-9&/ ._-]+?)(?:\*\*)?\s*[:–—-]\s*([$€£]?\s*[\d,]+(?:\.\d+)?%?(?:\s+[A-Za-z]+)?)/;
+  // Pattern A: Numbered or bulleted employee ranking line
+  const complexRankingRegex =
+    /^(?:(\d+)[\.\)]|[-*•])\s*(?:\*\*)?([A-Za-z\s.'-]+?)(?:\*\*)?(?:\s*\(([A-Z0-9_-]+)\))?(?:\*\*)?\s*(?:[-–—:]\s*(.*?))?\s*[-–—:]\s*(?:Score|Rating|Performance|Value)?[:\s]*([$€£]?\s*[\d,]+(?:\.\d+)?%?)(?:[\s,]+(?:Band:?\s*)?\(?([A-Za-z\s]+)\)?)?$/i;
 
   for (const line of lines) {
-    const match = line.match(regex);
-    if (match) {
-      const label = match[1].trim();
-      const rawVal = match[2].trim();
-      // Extract numeric portion
+    const m = line.match(complexRankingRegex);
+    if (m) {
+      const rank = m[1] ? Number(m[1]) : undefined;
+      const rawName = m[2]?.trim().replace(/^\*\*|\*\*$/g, "");
+      const empId = m[3]?.trim();
+      const middleDetails = m[4]?.trim();
+      const rawScore = m[5]?.trim().replace(/[$€£,%]/g, "");
+      const band = m[6]?.trim().replace(/^\(|\)$/g, "");
+
+      const scoreNum = Number(rawScore);
+      if (rawName && !isNaN(scoreNum)) {
+        const record: Record<string, any> = {};
+        if (rank !== undefined) record["Rank"] = rank;
+        record["Employee_Name"] = rawName;
+        if (empId) record["Employee_ID"] = empId;
+        if (middleDetails) {
+          const parts = middleDetails.split(/[,–—]\s*/);
+          if (parts.length >= 2) {
+            record["Department"] = parts[0].trim();
+            record["Position"] = parts.slice(1).join(", ").trim();
+          } else if (parts.length === 1) {
+            record["Department"] = parts[0].trim();
+          }
+        }
+        record["Score"] = scoreNum;
+        if (band && band.toLowerCase() !== "score") record["Performance_Band"] = band;
+        items.push(record);
+        continue;
+      }
+    }
+
+    // Pattern B: Simple Key - Value line (e.g. "- **HR**: 45 employees" or "1. Engineering: 80")
+    const simpleRegex =
+      /^(?:(?:\d+)[\.\)]|[-*•])\s*(?:\*\*)?([A-Za-z0-9&/ ._-]+?)(?:\*\*)?\s*[:–—-]\s*(?:Score:?\s*)?([$€£]?\s*[\d,]+(?:\.\d+)?%?(?:\s+[A-Za-z]+)?)/i;
+    const sm = line.match(simpleRegex);
+    if (sm) {
+      const label = sm[1].trim();
+      const rawVal = sm[2].trim();
       const numMatch = rawVal.match(/[\d,]+(?:\.\d+)?/);
-      if (numMatch && label.length > 0 && label.length < 50) {
+      if (numMatch && label.length > 0 && label.length < 60) {
         const num = Number(numMatch[0].replace(/,/g, ""));
         if (!isNaN(num)) {
           items.push({
-            department: label,
-            count: num,
+            name: label,
+            value: num,
           });
         }
       }
     }
   }
 
-  return items.length >= 3 ? items : null;
+  return items.length >= 2 ? items : null;
+}
+
+/**
+ * Common data structure analyzer that determines category key and metric keys.
+ * Intelligently excludes identifiers like Rank, ID, EmpId from metric keys,
+ * and prioritizes Employee_Name / Name as the primary category key.
+ */
+export function analyzeDataStructure(items: Record<string, any>[]): {
+  categoryKey: string;
+  metricKeys: string[];
+  columns: string[];
+} {
+  if (items.length === 0) {
+    return { categoryKey: "name", metricKeys: ["value"], columns: [] };
+  }
+
+  const columns = Object.keys(items[0]);
+
+  // Preferred category key candidate: name > dept > category > string column
+  const categoryKeyCandidate =
+    columns.find((c) => /^(?:employee_?)?name|full_?name$/i.test(c)) ||
+    columns.find((c) => /name|dept|department|category|label|role|title|month|date/i.test(c)) ||
+    columns.find((c) => {
+      const val = items[0][c];
+      return typeof val === "string" && isNaN(Number(val));
+    }) ||
+    columns[0];
+
+  // Metric keys: numeric columns excluding identifier / rank columns
+  const metricKeys = columns.filter((c) => {
+    if (c === categoryKeyCandidate) return false;
+    if (/^(?:id|rank|index|#|_id)$/i.test(c) || /_id$/i.test(c)) return false;
+    const val = items[0][c];
+    return typeof val === "number" || (typeof val === "string" && !isNaN(Number(val)) && val.trim() !== "");
+  });
+
+  return {
+    categoryKey: categoryKeyCandidate,
+    metricKeys: metricKeys.length > 0 ? metricKeys : columns.filter((c) => c !== categoryKeyCandidate),
+    columns,
+  };
 }
 
 /**
@@ -146,7 +239,7 @@ export function extractVisualDataFromResponse(
     const resolvedType =
       rawType === "pie" || rawType === "line" || rawType === "area" || rawType === "table" || rawType === "bar"
         ? (rawType as "bar" | "line" | "pie" | "table" | "area")
-        : parsedExisting.length > 8
+        : parsedExisting.length > 10
           ? "table"
           : "bar";
 
@@ -178,14 +271,16 @@ export function extractVisualDataFromResponse(
     };
   }
 
-  // 3. Check if the response reply contains a structured list of metrics
-  const listData = extractListMetricsFromMarkdown(reply);
-  if (listData && listData.length >= 3) {
+  // 3. Check if the response reply contains a ranked employee list or metric list
+  const listData = extractRankedOrMetricList(reply);
+  if (listData && listData.length >= 2) {
+    const hasRank = listData.some((item) => "Rank" in item || "Score" in item);
     return {
       visualization: true,
       chartType: (existingType as any) || "bar",
       chartData: listData,
-      visualizationReason: existingReason || "Workforce Breakdown",
+      visualizationReason:
+        existingReason || (hasRank ? "Top Performers Ranking" : "Workforce Breakdown"),
     };
   }
 
