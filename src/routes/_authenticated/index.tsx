@@ -1,11 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
-import { ShieldAlert, Users2, HeartHandshake, Target, FlaskConical, ArrowRight } from "lucide-react";
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from "recharts";
+import { ShieldAlert, Users2, Target, FlaskConical, ArrowRight } from "lucide-react";
 import { getCriticalOpenCount } from "@/lib/trigger-engine";
-import { InsightCard, Callout } from "@/components/InsightCard";
-import { CenterPanel } from "@/components/CenterPanel";
+import { InsightCard } from "@/components/InsightCard";
 import { AttritionPanel } from "@/components/AttritionPanel";
 import { HeadcountPanel } from "@/components/HeadcountPanel";
 import { PerformancePanel } from "@/components/performance/PerformancePanel";
@@ -22,35 +20,19 @@ export const Route = createFileRoute("/_authenticated/")({
       { title: "HR Insights — PeopleLens" },
       {
         name: "description",
-        content: "Attrition prediction, headcount, and engagement workforce insights.",
+        content: "Attrition prediction, headcount, and workforce performance insights.",
       },
       { property: "og:title", content: "HR Insights — PeopleLens" },
       {
         property: "og:description",
-        content: "Attrition prediction, headcount, and engagement workforce insights.",
+        content: "Attrition prediction, headcount, and workforce performance insights.",
       },
     ],
   }),
   component: HRInsights,
 });
 
-type MainCard = "attrition" | "headcount" | "engagement" | "performance";
-
-const headcountData = [
-  { dept: "Engineering", people: 54 },
-  { dept: "Operations", people: 45 },
-  { dept: "Support", people: 32 },
-  { dept: "Sales", people: 29 },
-  { dept: "Finance", people: 22 },
-];
-
-const engagementData = [
-  { dept: "Engineering", score: 74 },
-  { dept: "Operations", score: 61 },
-  { dept: "Support", score: 68 },
-  { dept: "Sales", score: 72 },
-  { dept: "Finance", score: 79 },
-];
+type MainCard = "attrition" | "headcount" | "performance";
 
 function HRInsights() {
   const [openCard, setOpenCard] = useState<MainCard | null>(null);
@@ -206,30 +188,6 @@ function HRInsights() {
           }
         />
 
-        <InsightCard
-          onClick={() => setOpenCard("engagement")}
-          tint="bg-pastel-lavender"
-          tintVar="--pastel-lavender"
-          icon={<HeartHandshake className="h-5 w-5" strokeWidth={2.25} />}
-          label="Engagement"
-          headline="71 / 100"
-          sub="Company-wide pulse score"
-          visual={
-            <div className="flex items-end justify-between gap-1.5">
-              {engagementData.map((row) => (
-                <div key={row.dept} className="flex flex-1 flex-col items-center gap-1">
-                  <div className="flex h-16 w-full items-end rounded-md bg-foreground/5">
-                    <div
-                      className="w-full rounded-md bg-primary/60"
-                      style={{ height: `${row.score}%` }}
-                    />
-                  </div>
-                  <div className="text-[9px] text-muted-foreground">{row.dept.slice(0, 4)}</div>
-                </div>
-              ))}
-            </div>
-          }
-        />
 
         <InsightCard
           onClick={() => setOpenCard("performance")}
@@ -278,29 +236,6 @@ function HRInsights() {
       <HeadcountPanel open={openCard === "headcount"} onClose={() => setOpenCard(null)} />
 
       <PerformancePanel open={openCard === "performance"} onClose={() => setOpenCard(null)} />
-
-      <CenterPanel
-        open={openCard === "engagement"}
-        onOpenChange={(next) => !next && setOpenCard(null)}
-        title="Engagement pulse"
-        description="Average pulse survey score per department (out of 100)."
-      >
-        <div className="h-64">
-          <ResponsiveContainer>
-            <BarChart data={engagementData}>
-              <XAxis dataKey="dept" stroke="var(--muted-foreground)" fontSize={12} />
-              <YAxis stroke="var(--muted-foreground)" fontSize={12} domain={[0, 100]} />
-              <Tooltip
-                contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12 }}
-              />
-              <Bar dataKey="score" fill="var(--chart-5)" radius={[8, 8, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-        <Callout tint="bg-pastel-lavender/60">
-          Operations scores lowest at 61 — the same team carrying the highest attrition risk.
-        </Callout>
-      </CenterPanel>
     </main>
   );
 }
