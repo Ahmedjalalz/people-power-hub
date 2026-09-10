@@ -8,7 +8,7 @@ import type { ActiveVisual, ChatMessage } from "@/types/chat";
 import { Link } from "@tanstack/react-router";
 import { employees } from "@/lib/employees";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, AreaChart, Area, LineChart, Line, PieChart, Pie, Cell } from "recharts";
-import { departments, jobLevelMix, headcountTrend } from "@/lib/headcount-data";
+import { parseVisualData } from "@/lib/visual-extractor";
 
 const chartTooltip = { background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12 };
 
@@ -687,37 +687,6 @@ function formatHeaderKey(key: string): string {
     .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-function parseVisualData(raw: unknown): Record<string, any>[] {
-  if (!raw) return [];
-  let parsed = raw;
-  if (typeof raw === "string") {
-    try {
-      parsed = JSON.parse(raw);
-    } catch {
-      return [];
-    }
-  }
-  if (Array.isArray(parsed)) {
-    return parsed.filter((item): item is Record<string, any> => item != null && typeof item === "object");
-  }
-  if (typeof parsed === "object" && parsed !== null) {
-    const record = parsed as Record<string, any>;
-    for (const key of ["data", "items", "rows", "records", "results", "chart_data"]) {
-      if (Array.isArray(record[key])) {
-        return record[key].filter((item): item is Record<string, any> => item != null && typeof item === "object");
-      }
-    }
-    const entries = Object.entries(record).filter(([, v]) => typeof v === "number" || typeof v === "string");
-    if (entries.length > 0) {
-      return entries.map(([name, value]) => ({
-        name,
-        value: typeof value === "number" ? value : Number(value) || value,
-      }));
-    }
-  }
-  return [];
-}
-
 function analyzeDataStructure(items: Record<string, any>[]) {
   if (items.length === 0) {
     return { categoryKey: "name", metricKeys: ["value"], columns: [] };
@@ -762,19 +731,25 @@ function ChatVisualizer({ type, data, reason, url }: ChatVisualizerProps) {
   const isLine = normalizedType === "line" || normalizedType === "area";
   const isBar = normalizedType === "bar" || (!isTable && !isPie && !isLine);
 
-  const rawItems = parseVisualData(data);
+  const items = parseVisualData(data);
 
-  // Fallback data if items are empty
-  const hasDynamicData = rawItems.length > 0;
-  const items = hasDynamicData
-    ? rawItems
-    : isBar
-      ? departments.slice(0, 5)
-      : isPie
-        ? jobLevelMix.slice(0, 5)
-        : isLine
-          ? headcountTrend.slice(-6)
-          : departments.slice(0, 4);
+  if (items.length === 0) {
+    if (url) {
+      return (
+        <div className="w-full max-w-2xl bg-card rounded-xl border border-border/80 shadow-xs overflow-hidden text-xs p-4">
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-xs text-primary font-medium hover:underline"
+          >
+            <ExternalLink className="w-3.5 h-3.5" /> View visualization artifact
+          </a>
+        </div>
+      );
+    }
+    return null;
+  }
 
   const { categoryKey, metricKeys, columns } = analyzeDataStructure(items);
 

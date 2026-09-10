@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { sendChatMessage } from "@/services/chat";
 import type { ChatMetadata, ChatMessage } from "@/types/chat";
+import { extractVisualDataFromResponse } from "@/lib/visual-extractor";
 
 type UseChatOptions = { welcomeMessage: string };
 const FRIENDLY_ERROR = "Sorry, I couldn't reach the assistant right now. Please try again in a moment.";
@@ -112,15 +113,22 @@ export function useChat({ welcomeMessage }: UseChatOptions) {
         elapsed_ms: res.elapsed_ms ?? undefined,
       });
 
+      const visualInfo = extractVisualDataFromResponse(
+        res.reply || "",
+        res.chart_data,
+        res.chart_type,
+        res.visualization_reason,
+      );
+
       updateAssistant({
         content: res.reply || "",
         status: "done",
         statusText: undefined,
-        visualization: Boolean(res.visualization),
-        chartType: res.chart_type ?? null,
-        chartData: res.chart_data ?? null,
+        visualization: visualInfo.visualization,
+        chartType: visualInfo.chartType,
+        chartData: visualInfo.chartData,
         chartUrl: res.chart_url ?? null,
-        visualizationReason: res.visualization_reason ?? null,
+        visualizationReason: visualInfo.visualizationReason,
       });
     } catch {
       updateAssistant({

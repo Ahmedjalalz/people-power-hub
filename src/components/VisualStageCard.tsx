@@ -24,7 +24,7 @@ import {
   CartesianGrid,
 } from "recharts";
 import type { ActiveVisual } from "@/types/chat";
-import { departments, jobLevelMix, headcountTrend } from "@/lib/headcount-data";
+import { parseVisualData } from "@/lib/visual-extractor";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 
@@ -51,43 +51,6 @@ function formatHeaderKey(key: string): string {
   return key
     .replace(/_/g, " ")
     .replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
-function parseVisualData(raw: unknown): Record<string, any>[] {
-  if (!raw) return [];
-  let parsed = raw;
-  if (typeof raw === "string") {
-    try {
-      parsed = JSON.parse(raw);
-    } catch {
-      return [];
-    }
-  }
-  if (Array.isArray(parsed)) {
-    return parsed.filter(
-      (item): item is Record<string, any> => item != null && typeof item === "object",
-    );
-  }
-  if (typeof parsed === "object" && parsed !== null) {
-    const record = parsed as Record<string, any>;
-    for (const key of ["data", "items", "rows", "records", "results", "chart_data"]) {
-      if (Array.isArray(record[key])) {
-        return record[key].filter(
-          (item): item is Record<string, any> => item != null && typeof item === "object",
-        );
-      }
-    }
-    const entries = Object.entries(record).filter(
-      ([, v]) => typeof v === "number" || typeof v === "string",
-    );
-    if (entries.length > 0) {
-      return entries.map(([name, value]) => ({
-        name,
-        value: typeof value === "number" ? value : Number(value) || value,
-      }));
-    }
-  }
-  return [];
 }
 
 function analyzeDataStructure(items: Record<string, any>[]) {
@@ -132,16 +95,30 @@ export function VisualStageCard({
   const [viewMode, setViewMode] = useState<"chart" | "table">(isInitialTable ? "table" : "chart");
   const [tableSearch, setTableSearch] = useState("");
 
-  const rawItems = useMemo(() => parseVisualData(visual.data), [visual.data]);
+  const items = useMemo(() => parseVisualData(visual.data), [visual.data]);
 
-  const hasDynamicData = rawItems.length > 0;
-  const items = useMemo(() => {
-    if (hasDynamicData) return rawItems;
-    if (normalizedType === "pie") return jobLevelMix.slice(0, 5);
-    if (normalizedType === "line" || normalizedType === "area") return headcountTrend.slice(-6);
-    if (normalizedType === "table") return departments.slice(0, 6);
-    return departments.slice(0, 6);
-  }, [hasDynamicData, rawItems, normalizedType]);
+  if (items.length === 0) {
+    if (visual.url) {
+      return (
+        <div className="flex flex-col h-full bg-card/95 backdrop-blur-md p-6 items-center justify-center text-center">
+          <div className="w-12 h-12 rounded-2xl bg-primary/10 grid place-items-center mb-3">
+            <Sparkles className="w-6 h-6 text-primary" />
+          </div>
+          <h3 className="text-sm font-semibold mb-1">Visualization Artifact Ready</h3>
+          <p className="text-xs text-muted-foreground mb-4">Click below to open the full visual artifact.</p>
+          <a
+            href={visual.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-medium hover:bg-primary/90 transition-colors"
+          >
+            <ExternalLink className="w-3.5 h-3.5" /> Open visualization
+          </a>
+        </div>
+      );
+    }
+    return null;
+  }
 
   const { categoryKey, metricKeys, columns } = useMemo(() => analyzeDataStructure(items), [items]);
 
