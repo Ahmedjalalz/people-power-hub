@@ -8,7 +8,7 @@ const API_BASE =
 
 const chatRequestSchema = z.object({
   message: z.string().trim().min(1).max(2_000),
-  thread_id: z.string().trim().min(1).max(200),
+  thread_id: z.string().trim().min(1).max(200).optional(),
 });
 
 export const Route = createFileRoute("/api/chat")({
@@ -23,11 +23,10 @@ export const Route = createFileRoute("/api/chat")({
         const authorization = request.headers.get("Authorization");
 
         try {
-          const upstream = await fetch(`${API_BASE}/chat/stream`, {
+          const upstream = await fetch(`${API_BASE}/chat`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              Accept: "text/event-stream",
               ...(authorization ? { Authorization: authorization } : {}),
             },
             body: JSON.stringify(result.data),
@@ -39,27 +38,14 @@ export const Route = createFileRoute("/api/chat")({
             console.error(`HR chat request failed [${upstream.status}]: ${errorBody}`);
             return Response.json(
               { error: `Chat service request failed (${upstream.status}).` },
-              { status: 502 },
+              { status: upstream.status },
             );
           }
 
-          if (!upstream.body) {
-            return Response.json(
-              { error: "Chat service returned no response stream." },
-              { status: 502 },
-            );
-          }
-
-          return new Response(upstream.body, {
-            status: 200,
-            headers: {
-              "Content-Type": "text/event-stream; charset=utf-8",
-              "Cache-Control": "no-cache, no-transform",
-              Connection: "keep-alive",
-            },
-          });
+          const data = await upstream.json();
+          return Response.json(data, { status: 200 });
         } catch (error) {
-          if (request.signal.aborted) {
+          if (request.signal?.aborted) {
             return new Response(null, { status: 499 });
           }
           console.error("HR chat request failed:", error);

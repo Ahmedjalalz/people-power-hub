@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { Send, Sparkles, BarChart3, PieChart as PieChartIcon, Activity, TableProperties, Mic, MicOff, X } from "lucide-react";
+import { Send, Sparkles, BarChart3, PieChart as PieChartIcon, Activity, TableProperties, Mic, MicOff, X, LineChart as LineChartIcon, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useChat } from "@/hooks/use-chat";
@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import type { ChatMessage } from "@/types/chat";
 import { Link } from "@tanstack/react-router";
 import { employees } from "@/lib/employees";
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, AreaChart, Area, PieChart, Pie, Cell } from "recharts";
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, AreaChart, Area, LineChart, Line, PieChart, Pie, Cell } from "recharts";
 import { departments, jobLevelMix, headcountTrend } from "@/lib/headcount-data";
 
 const chartTooltip = { background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12 };
@@ -461,9 +461,14 @@ function MessageBubble({ message }: { message: ChatMessage }) {
         )}
       >
         <FormattedText text={message.content} />
-        {message.visual && (
+        {(message.visualization || message.visual) && (
           <div className="mt-4">
-            <ChatVisualizer type={message.visual} />
+            <ChatVisualizer
+              type={message.chartType ?? message.visual}
+              data={message.chartData}
+              reason={message.visualizationReason}
+              url={message.chartUrl}
+            />
           </div>
         )}
         {message.role === "assistant" && message.status === "typing" && (
@@ -533,100 +538,325 @@ function EmployeeLinks({ text }: { text: string }) {
   );
 }
 
-function ChatVisualizer({ type }: { type: "bar" | "pie" | "area" | "table" }) {
-  if (type === "bar") {
-    return (
-      <div className="w-full max-w-[400px] bg-card rounded-xl border overflow-hidden">
-        <div className="px-4 py-3 border-b bg-muted/30">
-          <h4 className="text-sm font-semibold">Headcount Comparison</h4>
-          <p className="text-xs text-muted-foreground mt-0.5">Actual vs Approved across top departments.</p>
+const PALETTE = [
+  "var(--pastel-sky)",
+  "var(--pastel-mint)",
+  "var(--pastel-lavender)",
+  "var(--pastel-peach)",
+  "var(--pastel-pink)",
+  "var(--pastel-yellow)",
+  "var(--pastel-blue)",
+  "var(--pastel-teal)",
+  "var(--pastel-rose)",
+];
+
+function formatHeaderKey(key: string): string {
+  return key
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+function parseVisualData(raw: unknown): Record<string, any>[] {
+  if (!raw) return [];
+  let parsed = raw;
+  if (typeof raw === "string") {
+    try {
+      parsed = JSON.parse(raw);
+    } catch {
+      return [];
+    }
+  }
+  if (Array.isArray(parsed)) {
+    return parsed.filter((item): item is Record<string, any> => item != null && typeof item === "object");
+  }
+  if (typeof parsed === "object" && parsed !== null) {
+    const record = parsed as Record<string, any>;
+    for (const key of ["data", "items", "rows", "records", "results", "chart_data"]) {
+      if (Array.isArray(record[key])) {
+        return record[key].filter((item): item is Record<string, any> => item != null && typeof item === "object");
+      }
+    }
+    const entries = Object.entries(record).filter(([, v]) => typeof v === "number" || typeof v === "string");
+    if (entries.length > 0) {
+      return entries.map(([name, value]) => ({
+        name,
+        value: typeof value === "number" ? value : Number(value) || value,
+      }));
+    }
+  }
+  return [];
+}
+
+function analyzeDataStructure(items: Record<string, any>[]) {
+  if (items.length === 0) {
+    return { categoryKey: "name", metricKeys: ["value"], columns: [] };
+  }
+
+  const columns = Object.keys(items[0]);
+  
+  const categoryKeyCandidate =
+    columns.find((c) => {
+      const val = items[0][c];
+      return typeof val === "string" && isNaN(Number(val));
+    }) ||
+    columns.find((c) =>
+      /name|dept|department|label|category|month|date|period|role|title|status|type/i.test(c),
+    ) ||
+    columns[0];
+
+  const metricKeys = columns.filter((c) => {
+    if (c === categoryKeyCandidate) return false;
+    const val = items[0][c];
+    return typeof val === "number" || (typeof val === "string" && !isNaN(Number(val)) && val.trim() !== "");
+  });
+
+  return {
+    categoryKey: categoryKeyCandidate,
+    metricKeys: metricKeys.length > 0 ? metricKeys : columns.filter((c) => c !== categoryKeyCandidate),
+    columns,
+  };
+}
+
+type ChatVisualizerProps = {
+  type?: "bar" | "line" | "pie" | "table" | "area" | string | null;
+  data?: unknown;
+  reason?: string | null;
+  url?: string | null;
+};
+
+function ChatVisualizer({ type, data, reason, url }: ChatVisualizerProps) {
+  const normalizedType = (type || "").toLowerCase().trim();
+  const isTable = normalizedType === "table";
+  const isPie = normalizedType === "pie";
+  const isLine = normalizedType === "line" || normalizedType === "area";
+  const isBar = normalizedType === "bar" || (!isTable && !isPie && !isLine);
+
+  const rawItems = parseVisualData(data);
+
+  // Fallback data if items are empty
+  const hasDynamicData = rawItems.length > 0;
+  const items = hasDynamicData
+    ? rawItems
+    : isBar
+      ? departments.slice(0, 5)
+      : isPie
+        ? jobLevelMix.slice(0, 5)
+        : isLine
+          ? headcountTrend.slice(-6)
+          : departments.slice(0, 4);
+
+  const { categoryKey, metricKeys, columns } = analyzeDataStructure(items);
+
+  // Convert string numeric values to numbers for recharts
+  const chartItems = items.map((row) => {
+    const copy = { ...row };
+    for (const mk of metricKeys) {
+      const num = Number(copy[mk]);
+      if (!isNaN(num)) copy[mk] = num;
+    }
+    return copy;
+  });
+
+  const chartTitle = reason
+    ? reason
+    : isBar
+      ? "Workforce Comparison"
+      : isPie
+        ? "Workforce Distribution"
+        : isLine
+          ? "Historical Trend"
+          : "Workforce Data Overview";
+
+  const chartBadge = isBar ? "Bar Chart" : isPie ? "Pie Chart" : isLine ? "Line Trend" : "Table View";
+
+  const ChartIcon = isBar ? BarChart3 : isPie ? PieChartIcon : isLine ? Activity : TableProperties;
+
+  return (
+    <div className="w-full max-w-[440px] bg-card rounded-xl border border-border/80 shadow-xs overflow-hidden text-xs">
+      {/* Visualizer header */}
+      <div className="px-4 py-3 border-b bg-muted/40 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="w-6 h-6 rounded-md bg-primary/10 grid place-items-center shrink-0">
+            <ChartIcon className="w-3.5 h-3.5 text-primary" />
+          </span>
+          <div className="min-w-0">
+            <h4 className="text-xs font-semibold text-foreground truncate">{chartTitle}</h4>
+            <p className="text-[10px] text-muted-foreground mt-0.5 truncate">
+              {reason && reason !== chartTitle ? reason : `${items.length} records visualized`}
+            </p>
+          </div>
         </div>
-        <div className="h-48 p-2 pt-4">
-          <ResponsiveContainer>
-            <BarChart data={departments.slice(0, 5)} margin={{ left: -20, right: 10, top: 0, bottom: 0 }}>
-              <XAxis dataKey="name" stroke="var(--muted-foreground)" fontSize={9} interval={0} />
-              <YAxis stroke="var(--muted-foreground)" fontSize={9} />
+        <span className="shrink-0 px-2 py-0.5 rounded-full text-[10px] font-medium bg-background border border-border text-muted-foreground">
+          {chartBadge}
+        </span>
+      </div>
+
+      {/* Chart body */}
+      {isBar && (
+        <div className="h-52 p-2 pt-4">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              data={chartItems}
+              margin={{ left: -15, right: 10, top: 0, bottom: chartItems.length > 5 ? 24 : 0 }}
+            >
+              <XAxis
+                dataKey={categoryKey}
+                stroke="var(--muted-foreground)"
+                fontSize={9}
+                interval={0}
+                angle={chartItems.length > 5 ? -25 : 0}
+                textAnchor={chartItems.length > 5 ? "end" : "middle"}
+                tickLine={false}
+              />
+              <YAxis stroke="var(--muted-foreground)" fontSize={9} tickLine={false} axisLine={false} />
               <Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} />
-              <Bar dataKey="actual" fill="var(--pastel-sky)" radius={[4, 4, 0, 0]} />
+              {metricKeys.slice(0, 2).map((key, i) => (
+                <Bar
+                  key={key}
+                  dataKey={key}
+                  name={formatHeaderKey(key)}
+                  fill={PALETTE[i % PALETTE.length]}
+                  radius={[4, 4, 0, 0]}
+                />
+              ))}
             </BarChart>
           </ResponsiveContainer>
         </div>
-      </div>
-    );
-  }
-  if (type === "pie") {
-    return (
-      <div className="w-full max-w-[400px] bg-card rounded-xl border overflow-hidden">
-        <div className="px-4 py-3 border-b bg-muted/30">
-          <h4 className="text-sm font-semibold">Role Distribution</h4>
-          <p className="text-xs text-muted-foreground mt-0.5">Breakdown of employees by job level.</p>
+      )}
+
+      {isPie && (
+        <div className="p-3">
+          <div className="h-44 flex items-center justify-center">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={chartItems}
+                  dataKey={metricKeys[0] || "value"}
+                  nameKey={categoryKey}
+                  innerRadius={34}
+                  outerRadius={62}
+                  paddingAngle={2}
+                >
+                  {chartItems.map((_, i) => (
+                    <Cell key={i} fill={PALETTE[i % PALETTE.length]} stroke="var(--card)" strokeWidth={1.5} />
+                  ))}
+                </Pie>
+                <Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="mt-2 flex flex-wrap gap-2 justify-center max-h-24 overflow-y-auto px-1">
+            {chartItems.slice(0, 8).map((item, i) => (
+              <div key={i} className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                <span
+                  className="w-2 h-2 rounded-full shrink-0"
+                  style={{ backgroundColor: PALETTE[i % PALETTE.length] }}
+                />
+                <span className="truncate max-w-[100px]">{String(item[categoryKey] ?? "")}</span>
+                <span className="font-semibold text-foreground">({String(item[metricKeys[0]] ?? "")})</span>
+              </div>
+            ))}
+          </div>
         </div>
-        <div className="h-48 p-2 flex items-center justify-center">
-          <ResponsiveContainer>
-            <PieChart>
-              <Pie data={jobLevelMix.slice(0, 5)} dataKey="count" nameKey="level" innerRadius={35} outerRadius={60} paddingAngle={2}>
-                {jobLevelMix.slice(0, 5).map((row) => (
-                  <Cell key={row.level} fill={row.color} stroke="var(--card)" />
-                ))}
-              </Pie>
+      )}
+
+      {isLine && (
+        <div className="h-52 p-2 pt-4">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart
+              data={chartItems}
+              margin={{ left: -15, right: 10, top: 0, bottom: chartItems.length > 5 ? 24 : 0 }}
+            >
+              <defs>
+                <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.35} />
+                  <stop offset="95%" stopColor="var(--primary)" stopOpacity={0.0} />
+                </linearGradient>
+              </defs>
+              <XAxis
+                dataKey={categoryKey}
+                stroke="var(--muted-foreground)"
+                fontSize={9}
+                interval={0}
+                angle={chartItems.length > 5 ? -25 : 0}
+                textAnchor={chartItems.length > 5 ? "end" : "middle"}
+                tickLine={false}
+              />
+              <YAxis stroke="var(--muted-foreground)" fontSize={9} tickLine={false} axisLine={false} />
               <Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-    );
-  }
-  if (type === "area") {
-    return (
-      <div className="w-full max-w-[400px] bg-card rounded-xl border overflow-hidden">
-        <div className="px-4 py-3 border-b bg-muted/30">
-          <h4 className="text-sm font-semibold">Staffing Trend</h4>
-          <p className="text-xs text-muted-foreground mt-0.5">Historical headcount over the last 6 months.</p>
-        </div>
-        <div className="h-48 p-2 pt-4">
-          <ResponsiveContainer>
-            <AreaChart data={headcountTrend.slice(-6)} margin={{ left: -20, right: 10, top: 0, bottom: 0 }}>
-              <XAxis dataKey="month" stroke="var(--muted-foreground)" fontSize={9} />
-              <YAxis stroke="var(--muted-foreground)" fontSize={9} domain={["dataMin - 5", "dataMax + 5"]} />
-              <Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} />
-              <Area type="monotone" dataKey="people" stroke="var(--primary)" strokeWidth={2} fill="var(--pastel-lavender)" fillOpacity={0.5} />
+              <Area
+                type="monotone"
+                dataKey={metricKeys[0]}
+                name={formatHeaderKey(metricKeys[0])}
+                stroke="var(--primary)"
+                strokeWidth={2}
+                fill="url(#chartGrad)"
+                dot={{ r: 3, fill: "var(--primary)" }}
+                activeDot={{ r: 5 }}
+              />
             </AreaChart>
           </ResponsiveContainer>
         </div>
-      </div>
-    );
-  }
-  if (type === "table") {
-    return (
-      <div className="w-full max-w-[400px] bg-card rounded-xl border overflow-hidden text-xs">
-        <div className="px-4 py-3 border-b bg-muted/30">
-          <h4 className="text-sm font-semibold">Budget Utilization</h4>
-          <p className="text-xs text-muted-foreground mt-0.5">Current spend against allocated department budgets.</p>
-        </div>
-        <div className="overflow-x-auto p-2">
-          <table className="w-full text-left">
-            <thead className="text-muted-foreground">
-              <tr>
-                <th className="p-2 font-medium">Department</th>
-                <th className="p-2 font-medium">Usage</th>
-              </tr>
-            </thead>
-            <tbody>
-              {departments.slice(0, 4).map((d) => (
-                <tr key={d.name} className="border-t">
-                  <td className="p-2 font-medium">{d.name}</td>
-                  <td className="p-2">
-                    <div className="h-2 w-full bg-foreground/5 rounded-full overflow-hidden flex items-center">
-                      <div className="h-full bg-pastel-mint" style={{ width: `${d.utilization}%` }} />
-                    </div>
-                  </td>
+      )}
+
+      {isTable && (
+        <div className="p-2">
+          <div className="overflow-x-auto max-h-60 overflow-y-auto rounded-lg border border-border/50">
+            <table className="w-full text-left border-collapse">
+              <thead className="bg-muted/60 sticky top-0 z-10">
+                <tr>
+                  {columns.map((col) => (
+                    <th
+                      key={col}
+                      className="p-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap"
+                    >
+                      {formatHeaderKey(col)}
+                    </th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-border/40">
+                {items.map((row, rIdx) => (
+                  <tr key={rIdx} className="hover:bg-muted/30 transition-colors">
+                    {columns.map((col) => {
+                      const val = row[col];
+                      const isNum =
+                        typeof val === "number" ||
+                        (!isNaN(Number(val)) && typeof val === "string" && val.trim() !== "");
+                      return (
+                        <td
+                          key={col}
+                          className={cn(
+                            "p-2 text-[11px]",
+                            isNum ? "tabular-nums font-medium text-foreground" : "text-muted-foreground",
+                          )}
+                        >
+                          {val != null ? String(val) : "—"}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
-    );
-  }
-  return null;
+      )}
+
+      {/* External chart link or image url if provided */}
+      {url && (
+        <div className="px-3 py-2 border-t bg-muted/20 flex items-center justify-between">
+          <span className="text-[10px] text-muted-foreground">Original visualization:</span>
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-[10px] font-medium text-primary hover:underline"
+          >
+            <ExternalLink className="w-3 h-3" /> View artifact
+          </a>
+        </div>
+      )}
+    </div>
+  );
 }

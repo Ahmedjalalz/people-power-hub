@@ -1,7 +1,63 @@
-import type { ChatStreamEvent } from "@/types/chat";
+import type { ChatResponse, ChatStreamEvent } from "@/types/chat";
 import { getAuthHeader } from "@/lib/auth";
 
-const STREAM_TIMEOUT_MS = 60_000;
+const CHAT_TIMEOUT_MS = 60_000;
+
+export function safeParseChartData(raw: unknown): unknown {
+  if (typeof raw === "string") {
+    try {
+      return JSON.parse(raw);
+    } catch {
+      return raw;
+    }
+  }
+  return raw;
+}
+
+export async function sendChatMessage({
+  message,
+  threadId,
+  signal,
+}: {
+  message: string;
+  threadId?: string | null;
+  signal?: AbortSignal;
+}): Promise<ChatResponse> {
+  const timeoutController = new AbortController();
+  const timeoutId = window.setTimeout(() => timeoutController.abort(), CHAT_TIMEOUT_MS);
+  const requestSignal = signal
+    ? AbortSignal.any([signal, timeoutController.signal])
+    : timeoutController.signal;
+
+  try {
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeader(),
+      },
+      body: JSON.stringify({ message, thread_id: threadId || undefined }),
+      signal: requestSignal,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Chat request failed (${response.status}).`);
+    }
+
+    const data: ChatResponse = await response.json();
+    if (data.chart_data != null) {
+      data.chart_data = safeParseChartData(data.chart_data);
+    }
+    return data;
+  } catch (error) {
+    if (timeoutController.signal.aborted) {
+      throw new Error("The chat request timed out.");
+    }
+    throw error;
+  } finally {
+    window.clearTimeout(timeoutId);
+  }
+}
 
 function parseEvent(line: string): ChatStreamEvent | null {
   if (!line.startsWith("data:")) return null;
@@ -17,7 +73,7 @@ function parseEvent(line: string): ChatStreamEvent | null {
 
 export async function streamChat({ message, threadId, signal, onEvent }: { message: string; threadId: string; signal?: AbortSignal; onEvent: (event: ChatStreamEvent) => void }): Promise<void> {
   const timeoutController = new AbortController();
-  const timeoutId = window.setTimeout(() => timeoutController.abort(), STREAM_TIMEOUT_MS);
+  const timeoutId = window.setTimeout(() => timeoutController.abort(), CHAT_TIMEOUT_MS);
   const requestSignal = signal ? AbortSignal.any([signal, timeoutController.signal]) : timeoutController.signal;
   try {
     const response = await fetch("/api/chat", {
