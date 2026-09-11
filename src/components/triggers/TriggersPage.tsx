@@ -22,15 +22,12 @@ import {
   ExternalLink,
   RotateCcw,
   SlidersHorizontal,
-  ChevronDown,
-  ChevronUp,
   Info,
   TrendingDown,
   TrendingUp,
   Users,
   AlertCircle,
   Briefcase,
-  Layers,
   Award,
   BookOpen,
   DollarSign,
@@ -159,7 +156,6 @@ export function TriggersPage() {
   const [selectedRuleId, setSelectedRuleId] = useState<string>("All");
   const [scanTimestamp, setScanTimestamp] = useState(() => getLastScanTime());
   const [scanMessage, setScanMessage] = useState<string | null>(null);
-  const [showRulesBanner, setShowRulesBanner] = useState(true);
 
   // 1. Fetch live cases from Backend GET /api/v1/decision-cases
   const {
@@ -478,83 +474,9 @@ export function TriggersPage() {
           </div>
         </div>
 
-        {/* ── 5 Critical Detection Rules Banner ── */}
-        <div className="border-t border-border/60 bg-muted/20">
-          <div className="mx-auto max-w-7xl px-6 py-3">
-            <div className="flex items-center justify-between">
-              <button
-                type="button"
-                onClick={() => setShowRulesBanner((prev) => !prev)}
-                className="flex items-center gap-2 text-xs font-semibold text-foreground hover:text-primary transition-colors cursor-pointer"
-              >
-                <Layers className="h-4 w-4 text-primary" />
-                <span>5 Critical Case Detection Rules</span>
-                <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary">
-                  Engine Active
-                </span>
-                {showRulesBanner ? (
-                  <ChevronUp className="h-3.5 w-3.5 text-muted-foreground" />
-                ) : (
-                  <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
-                )}
-              </button>
-
-              <span className="text-[11px] text-muted-foreground hidden sm:inline">
-                Click a rule to filter matching cases
-              </span>
-            </div>
-
-            {showRulesBanner && (
-              <div className="mt-3 grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-5 animate-in fade-in-0 duration-200">
-                {Object.values(DECISION_RULES).map((rule) => {
-                  const matchCount = cases.filter((c) => c.ruleId === rule.id).length;
-                  const isFiltered = selectedRuleId === rule.id;
-
-                  return (
-                    <button
-                      key={rule.id}
-                      type="button"
-                      onClick={() =>
-                        setSelectedRuleId((curr) => (curr === rule.id ? "All" : rule.id))
-                      }
-                      className={cn(
-                        "rounded-xl border p-3 text-left transition-all cursor-pointer",
-                        isFiltered
-                          ? "border-primary bg-primary/10 shadow-xs ring-1 ring-primary"
-                          : "border-border bg-card hover:border-border/80 hover:bg-muted/40"
-                      )}
-                    >
-                      <div className="flex items-center justify-between gap-1.5 mb-1.5">
-                        <span className="rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-bold text-foreground">
-                          {rule.id}
-                        </span>
-                        <span
-                          className={cn(
-                            "rounded-full px-1.5 py-0.2 text-[10px] font-semibold",
-                            matchCount > 0
-                              ? "bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300"
-                              : "bg-muted text-muted-foreground"
-                          )}
-                        >
-                          {matchCount} active
-                        </span>
-                      </div>
-                      <div className="font-semibold text-xs text-foreground leading-snug line-clamp-1">
-                        {rule.name}
-                      </div>
-                      <p className="mt-1 text-[11px] text-muted-foreground line-clamp-2 leading-relaxed">
-                        {rule.description}
-                      </p>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        </div>
-
         {/* ── Filter Bar ── */}
-        <div className="mx-auto max-w-7xl px-6 py-3">
+        <div className="border-t border-border/60">
+          <div className="mx-auto max-w-7xl px-6 py-3">
           <div className="flex flex-wrap items-center justify-between gap-3">
             {/* Status Queue Tabs */}
             <div className="flex items-center gap-1 rounded-xl border border-border bg-muted/40 p-1">
@@ -635,6 +557,7 @@ export function TriggersPage() {
           </div>
         </div>
       </div>
+    </div>
 
       {/* ── Main Two-Column Workspace ── */}
       <div className="mx-auto max-w-7xl px-6 py-6">
@@ -718,9 +641,22 @@ export function TriggersPage() {
                           </span>
 
                           {c.ruleId && (
-                            <span className="rounded bg-muted px-1.5 py-0.2 text-[9px] font-bold text-muted-foreground">
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedRuleId((curr) => (curr === c.ruleId ? "All" : c.ruleId!));
+                              }}
+                              title={`Filter cases by ${c.ruleId}`}
+                              className={cn(
+                                "rounded px-1.5 py-0.2 text-[9px] font-bold transition-colors cursor-pointer",
+                                selectedRuleId === c.ruleId
+                                  ? "bg-primary text-primary-foreground"
+                                  : "bg-muted text-muted-foreground hover:bg-muted-foreground/20 hover:text-foreground"
+                              )}
+                            >
                               {c.ruleId}
-                            </span>
+                            </button>
                           )}
                         </div>
 

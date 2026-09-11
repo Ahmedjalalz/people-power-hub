@@ -3,9 +3,6 @@ import {
   Send,
   Sparkles,
   BarChart3,
-  PieChart as PieChartIcon,
-  Activity,
-  TableProperties,
   Mic,
   MicOff,
   X,
@@ -320,7 +317,6 @@ export function Chatbot({
     deleteSession,
     renameSession,
     clearAllSessions,
-    injectMockMessage,
   } = useChat({ welcomeMessage });
 
   const [input, setInput] = useState("");
@@ -577,102 +573,61 @@ export function Chatbot({
       {/* ── Main Chat Area ── */}
       <div className="flex flex-col flex-1 min-w-0 h-full">
         {/* ── Header ── */}
-        <div className="flex flex-col border-b border-border bg-pastel-lavender/40 backdrop-blur-sm">
-          <div className="flex items-center justify-between px-4 py-3">
-            <div className="flex items-center gap-2.5">
-              {/* History Toggle Button */}
-              <button
-                onClick={() => setIsHistoryOpen((prev) => !prev)}
-                className={cn(
-                  "grid h-8 w-8 place-items-center rounded-xl border text-muted-foreground transition-colors cursor-pointer",
-                  isHistoryOpen
-                    ? "bg-primary text-primary-foreground border-primary shadow-2xs"
-                    : "border-border/80 bg-background/80 hover:bg-muted hover:text-foreground shadow-2xs"
-                )}
-                aria-label="Toggle chat history"
-                title={isHistoryOpen ? "Hide history" : "Show chat history"}
-              >
-                {isHistoryOpen ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeft className="h-4 w-4" />}
-              </button>
-
-              <div className="w-8 h-8 rounded-xl bg-primary/15 grid place-items-center text-primary shadow-2xs">
-                <Sparkles className="w-4 h-4" />
-              </div>
-              <div className="min-w-0">
-                <div className="font-semibold text-sm text-foreground truncate flex items-center gap-2">
-                  <span>{activeSession ? activeSession.title : title}</span>
-                  {activeSession && (
-                    <span className="rounded-full bg-primary/10 text-primary text-[10px] font-bold px-2 py-0.2 hidden sm:inline">
-                      Saved Chat
-                    </span>
-                  )}
-                </div>
-                <div className="text-xs text-muted-foreground truncate">{subtitle}</div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={startNewChat}
-                className="h-8 gap-1 rounded-xl text-xs text-muted-foreground hover:text-foreground cursor-pointer hidden sm:flex"
-                title="Start a new chat session"
-              >
-                <Plus className="h-3.5 w-3.5" />
-                <span>New Chat</span>
-              </Button>
-
-              {onClose && (
-                <button
-                  onClick={onClose}
-                  className="w-8 h-8 rounded-xl grid place-items-center text-muted-foreground hover:bg-muted/70 hover:text-foreground transition-colors cursor-pointer"
-                  aria-label="Close chat"
-                  title="Close chat"
-                >
-                  <X className="w-4 h-4" />
-                </button>
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-pastel-lavender/40 backdrop-blur-sm">
+          <div className="flex items-center gap-2.5">
+            {/* History Toggle Button */}
+            <button
+              onClick={() => setIsHistoryOpen((prev) => !prev)}
+              className={cn(
+                "grid h-8 w-8 place-items-center rounded-xl border text-muted-foreground transition-colors cursor-pointer",
+                isHistoryOpen
+                  ? "bg-primary text-primary-foreground border-primary shadow-2xs"
+                  : "border-border/80 bg-background/80 hover:bg-muted hover:text-foreground shadow-2xs"
               )}
+              aria-label="Toggle chat history"
+              title={isHistoryOpen ? "Hide history" : "Show chat history"}
+            >
+              {isHistoryOpen ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeft className="h-4 w-4" />}
+            </button>
+
+            <div className="w-8 h-8 rounded-xl bg-primary/15 grid place-items-center text-primary shadow-2xs">
+              <Sparkles className="w-4 h-4" />
+            </div>
+            <div className="min-w-0">
+              <div className="font-semibold text-sm text-foreground truncate flex items-center gap-2">
+                <span>{activeSession ? activeSession.title : title}</span>
+                {activeSession && (
+                  <span className="rounded-full bg-primary/10 text-primary text-[10px] font-bold px-2 py-0.2 hidden sm:inline">
+                    Saved Chat
+                  </span>
+                )}
+              </div>
+              <div className="text-xs text-muted-foreground truncate">{subtitle}</div>
             </div>
           </div>
 
-          {/* Quick Mock Visuals Ribbon */}
-          <div className="flex items-center gap-2 px-4 pb-2.5 overflow-x-auto no-scrollbar">
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap">
-              Test Visuals:
-            </span>
+          <div className="flex items-center gap-1">
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
-              className="h-6.5 text-[11px] rounded-full border-border/80 bg-background/70 hover:bg-muted"
-              onClick={() => injectMockMessage("bar")}
+              onClick={startNewChat}
+              className="h-8 gap-1 rounded-xl text-xs text-muted-foreground hover:text-foreground cursor-pointer hidden sm:flex"
+              title="Start a new chat session"
             >
-              <BarChart3 className="w-3 h-3 mr-1 text-primary" /> Bar
+              <Plus className="h-3.5 w-3.5" />
+              <span>New Chat</span>
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-6.5 text-[11px] rounded-full border-border/80 bg-background/70 hover:bg-muted"
-              onClick={() => injectMockMessage("pie")}
-            >
-              <PieChartIcon className="w-3 h-3 mr-1 text-primary" /> Pie
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-6.5 text-[11px] rounded-full border-border/80 bg-background/70 hover:bg-muted"
-              onClick={() => injectMockMessage("area")}
-            >
-              <Activity className="w-3 h-3 mr-1 text-primary" /> Area
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-6.5 text-[11px] rounded-full border-border/80 bg-background/70 hover:bg-muted"
-              onClick={() => injectMockMessage("table")}
-            >
-              <TableProperties className="w-3 h-3 mr-1 text-primary" /> Table
-            </Button>
+
+            {onClose && (
+              <button
+                onClick={onClose}
+                className="w-8 h-8 rounded-xl grid place-items-center text-muted-foreground hover:bg-muted/70 hover:text-foreground transition-colors cursor-pointer"
+                aria-label="Close chat"
+                title="Close chat"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
           </div>
         </div>
 
