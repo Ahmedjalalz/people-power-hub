@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { MessageCircle, X } from "lucide-react";
 import { Chatbot } from "./Chatbot";
-import { VisualStageCard } from "./VisualStageCard";
+import { ChatVisualSplitLayout } from "./ChatVisualSplitLayout";
 import type { ActiveVisual } from "@/types/chat";
 import { cn } from "@/lib/utils";
 
@@ -39,25 +39,19 @@ export function FloatingChatbot() {
 
           <div
             className={cn(
-              "fixed bottom-24 z-50 h-[80vh] max-h-[calc(100vh-8rem)] flex items-stretch gap-4 pointer-events-none transition-all duration-300",
+              "fixed bottom-24 z-50 h-[80vh] max-h-[calc(100vh-8rem)] pointer-events-none transition-all duration-300",
               activeVisual
                 ? "left-4 right-4 md:left-6 md:right-6"
-                : "left-4 right-4 md:left-auto md:right-6 md:w-[70%]",
+                : "left-4 right-4 md:left-auto md:right-6 md:w-[70%] max-w-4xl",
             )}
           >
-            {/* Visual Stage outside the box in front of the backdrop blur (Desktop screens) */}
-            {activeVisual && (
-              <div className="hidden md:flex flex-1 min-w-0 h-full rounded-2xl border bg-card/95 backdrop-blur-md shadow-2xl overflow-hidden flex-col pointer-events-auto animate-in fade-in slide-in-from-left-4 duration-300">
-                <VisualStageCard visual={activeVisual} onClose={() => setActiveVisual(null)} />
-              </div>
-            )}
-
-            {/* Chat Box (maintains comfortable width ~45% when visual stage is open) */}
-            <div
-              className={cn(
-                "h-full rounded-2xl border bg-card/95 backdrop-blur-md shadow-2xl overflow-hidden pointer-events-auto transition-all duration-300",
-                activeVisual ? "w-full md:w-[48%] lg:w-[45%] xl:w-[42%] md:min-w-[430px] shrink-0" : "w-full",
-              )}
+            <ChatVisualSplitLayout
+              activeVisual={activeVisual}
+              onCloseVisual={() => setActiveVisual(null)}
+              breakpoint="md"
+              defaultSplit={52}
+              isFloating={true}
+              storageKey="peoplelens-floating-split-ratio"
             >
               <Chatbot
                 autoFocus
@@ -67,7 +61,7 @@ export function FloatingChatbot() {
                 onActiveVisualChange={setActiveVisual}
                 isExternalVisualOpen={Boolean(activeVisual)}
               />
-            </div>
+            </ChatVisualSplitLayout>
           </div>
         </>
       )}
