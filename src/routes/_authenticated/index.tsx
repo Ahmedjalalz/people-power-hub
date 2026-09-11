@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { ShieldAlert, Users2, Target, FlaskConical, ArrowRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { getCriticalOpenCount } from "@/lib/trigger-engine";
 import { InsightCard } from "@/components/InsightCard";
 import { AttritionPanel } from "@/components/AttritionPanel";
