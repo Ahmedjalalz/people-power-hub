@@ -659,6 +659,34 @@ export function Chatbot({
               }}
             />
           ))}
+
+          {messages.length === 1 && !isStreaming && (
+            <div className="pt-2 pb-1 space-y-2 animate-in fade-in-0 duration-200">
+              <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-1">
+                Suggested questions
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {[
+                  { q: "who are the top 10 performers this month", tag: "Performance" },
+                  { q: "Why was Usman Ali flagged?", tag: "Risk Analysis" },
+                  { q: "What are today's critical cases?", tag: "Active Alerts" },
+                  { q: "Who is at highest risk?", tag: "Attrition" },
+                ].map((item) => (
+                  <button
+                    key={item.q}
+                    type="button"
+                    onClick={() => sendMessage(item.q)}
+                    className="flex items-center justify-between p-3 rounded-xl border border-border bg-card/60 hover:bg-muted/60 text-xs text-foreground text-left transition-all hover:border-primary/40 hover:shadow-2xs cursor-pointer group"
+                  >
+                    <span className="line-clamp-1">{item.q}</span>
+                    <span className="text-[10px] font-medium text-muted-foreground rounded bg-muted/60 px-1.5 py-0.5 group-hover:bg-primary/10 group-hover:text-primary transition-colors shrink-0 ml-2">
+                      {item.tag}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* ── Input Bar ── */}
