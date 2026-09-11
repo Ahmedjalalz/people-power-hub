@@ -740,6 +740,8 @@ function EmployeePickerCard({
       subtitle="Choose an employee for this simulation"
       icon={<Users className="h-3.5 w-3.5" />}
       meta={meta}
+      overflowVisible
+      className={cn("transition-all", isOpen ? "relative z-30" : "relative z-10")}
     >
       <div className="space-y-4">
         {/* Dropdown Container */}
@@ -792,7 +794,7 @@ function EmployeePickerCard({
 
           {/* ── Dropdown Menu with Embedded Search Bar ── */}
           {isOpen && (
-            <div className="absolute top-full left-0 right-0 z-40 mt-2 rounded-2xl border border-border bg-card shadow-xl overflow-hidden animate-in fade-in-0 zoom-in-95 duration-150">
+            <div className="absolute top-full left-0 right-0 z-50 mt-2 rounded-2xl border border-border bg-card shadow-2xl overflow-hidden animate-in fade-in-0 zoom-in-95 duration-150">
               {/* Search Bar at Top of Dropdown */}
               <div className="p-3 border-b border-border bg-muted/30">
                 <div className="relative">
@@ -823,8 +825,8 @@ function EmployeePickerCard({
                 </div>
               )}
 
-              {/* Scrollable Results List */}
-              <div className="max-h-64 space-y-1 overflow-y-auto p-2">
+              {/* Scrollable Results List (comfortably fits at least 3-5 employees with smooth scrolling) */}
+              <div className="max-h-80 min-h-[190px] space-y-1 overflow-y-auto p-2">
                 {isSearching ? (
                   <div className="flex items-center justify-center gap-2 py-6 text-xs text-muted-foreground">
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -1524,10 +1526,16 @@ function RichResultDisplay({
 }) {
   const [assumOpen, setAssumOpen] = useState(false);
 
-  const allKeys = Array.from(new Set([...Object.keys(data.baseline), ...Object.keys(data.simulated_state)])).filter((k) => {
-    const b = data.baseline[k];
-    const s = data.simulated_state[k];
-    return (b !== null && b !== undefined && typeof b !== "object") || (s !== null && s !== undefined && typeof s !== "object");
+  // Only include comparison metrics where BOTH before (current) AND after (projected) have valid non-empty values
+  const allKeys = Array.from(
+    new Set([
+      ...Object.keys(data.baseline ?? {}),
+      ...Object.keys(data.simulated_state ?? {}),
+    ])
+  ).filter((k) => {
+    const bVal = formatVal(data.baseline?.[k]);
+    const sVal = formatVal(data.simulated_state?.[k]);
+    return bVal !== null && sVal !== null;
   });
 
   const scalarImpact = Object.entries(data.impact ?? {}).filter(([, v]) => v !== null && typeof v !== "object");
@@ -1667,16 +1675,26 @@ function Card({
   icon,
   meta,
   children,
+  className,
+  overflowVisible = false,
 }: {
   title: string;
   subtitle?: string;
   icon?: React.ReactNode;
   meta: ScenarioMeta;
   children: React.ReactNode;
+  className?: string;
+  overflowVisible?: boolean;
 }) {
   return (
-    <div className="rounded-2xl border border-border bg-card shadow-xs overflow-hidden">
-      <div className={cn("px-5 py-3 border-b border-border", meta.accentBg)}>
+    <div
+      className={cn(
+        "rounded-2xl border border-border bg-card shadow-xs",
+        overflowVisible ? "overflow-visible" : "overflow-hidden",
+        className
+      )}
+    >
+      <div className={cn("px-5 py-3 border-b border-border rounded-t-2xl", meta.accentBg)}>
         <div className="flex items-center gap-2">
           {icon && <span className={cn("grid h-7 w-7 place-items-center rounded-lg", meta.badgeColor)}>{icon}</span>}
           <div>
@@ -1722,6 +1740,9 @@ function formatVal(v: unknown): string | null {
   if (v === null || v === undefined) return null;
   if (typeof v === "boolean") return v ? "Yes" : "No";
   if (typeof v === "number") return v.toLocaleString();
-  if (typeof v === "string") return v;
+  if (typeof v === "string") {
+    const trimmed = v.trim();
+    return trimmed.length > 0 ? trimmed : null;
+  }
   return null;
 }
