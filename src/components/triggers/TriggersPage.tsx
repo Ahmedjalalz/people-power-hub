@@ -725,7 +725,7 @@ export function TriggersPage() {
                 onAddNote={handleAddNote}
               />
             ) : (
-              <EmptyCaseDossierPlaceholder totalCases={filteredCases.length} />
+              <EmptyCaseDossierPlaceholder />
             )}
           </div>
         </div>
@@ -736,9 +736,9 @@ export function TriggersPage() {
 
 // ─── Empty Dossier Placeholder ───────────────────────────────────────────────
 
-function EmptyCaseDossierPlaceholder({ totalCases }: { totalCases: number }) {
+function EmptyCaseDossierPlaceholder() {
   return (
-    <div className="rounded-2xl border border-dashed border-border bg-card/60 backdrop-blur-sm p-6 sm:p-8 text-center shadow-xs animate-in fade-in-0 duration-200">
+    <div className="rounded-2xl border border-dashed border-border bg-card/60 backdrop-blur-sm p-8 sm:p-14 text-center shadow-xs animate-in fade-in-0 duration-200">
       <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-pastel-teal text-primary mb-3.5 shadow-2xs">
         <ShieldAlert className="h-7 w-7 text-primary" />
       </div>
@@ -747,63 +747,6 @@ function EmptyCaseDossierPlaceholder({ totalCases }: { totalCases: number }) {
       <p className="mt-1 text-xs text-muted-foreground max-w-sm mx-auto leading-relaxed">
         Choose any case from the queue on the left to inspect its root-cause analysis, action checklist, and live status trail.
       </p>
-
-      <div className="mt-5 border-t border-border/70 pt-5 text-left">
-        <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-2.5 px-0.5">
-          Available once a case is selected
-        </div>
-
-        <div className="space-y-2">
-          <div className="flex items-start gap-2.5 rounded-xl border border-border/70 bg-background/80 p-2.5 shadow-2xs">
-            <div className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 mt-0.5">
-              <AlertTriangle className="h-3.5 w-3.5" />
-            </div>
-            <div className="min-w-0">
-              <div className="text-xs font-semibold text-foreground">Root Cause & Evidence Analysis</div>
-              <div className="text-[11px] text-muted-foreground leading-snug mt-0.5">
-                Detailed detection trigger rationale, threshold breaches, and key quantitative indicators.
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-2.5 rounded-xl border border-border/70 bg-background/80 p-2.5 shadow-2xs">
-            <div className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary mt-0.5">
-              <CheckCircle2 className="h-3.5 w-3.5" />
-            </div>
-            <div className="min-w-0">
-              <div className="text-xs font-semibold text-foreground">Mitigation Action Checklist</div>
-              <div className="text-[11px] text-muted-foreground leading-snug mt-0.5">
-                Prescribed HR action items with interactive checklist completion and progress tracking.
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-2.5 rounded-xl border border-border/70 bg-background/80 p-2.5 shadow-2xs">
-            <div className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-sky-500/10 text-sky-600 dark:text-sky-400 mt-0.5">
-              <Clock className="h-3.5 w-3.5" />
-            </div>
-            <div className="min-w-0">
-              <div className="text-xs font-semibold text-foreground">Status Lifecycle & Audit Trail</div>
-              <div className="text-[11px] text-muted-foreground leading-snug mt-0.5">
-                Update status (Open → Review → Resolved), log manager notes, and track synced audit history.
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-5 flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground bg-muted/40 rounded-xl py-2 px-3">
-        <ArrowRight className="h-3.5 w-3.5 text-primary shrink-0" />
-        <span>
-          {totalCases > 0 ? (
-            <>
-              Click any of the <strong>{totalCases} cases</strong> in the queue to begin
-            </>
-          ) : (
-            "No cases currently match your active filters"
-          )}
-        </span>
-      </div>
     </div>
   );
 }
