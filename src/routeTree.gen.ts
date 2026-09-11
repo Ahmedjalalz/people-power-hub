@@ -22,6 +22,7 @@ import { Route as AuthenticatedScenarioRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedTriggersRouteImport } from './routes/_authenticated/triggers'
 import { Route as ApiAttritionRouteImport } from './routes/api/attrition'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as ApiDecisionCasesRouteImport } from './routes/api/decision-cases'
 import { Route as ApiPerformanceRouteImport } from './routes/api/performance'
 import { Route as ApiScenarioRouteImport } from './routes/api/scenario'
 import { Route as PipelineHeadcountRouteImport } from './routes/pipeline/headcount'
@@ -93,6 +94,11 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiDecisionCasesRoute = ApiDecisionCasesRouteImport.update({
+  id: '/api/decision-cases',
+  path: '/api/decision-cases',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPerformanceRoute = ApiPerformanceRouteImport.update({
   id: '/api/performance',
   path: '/api/performance',
@@ -138,6 +144,7 @@ export interface FileRoutesByFullPath {
   '/triggers': typeof AuthenticatedTriggersRoute
   '/api/attrition': typeof ApiAttritionRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/decision-cases': typeof ApiDecisionCasesRoute
   '/api/performance': typeof ApiPerformanceRoute
   '/api/scenario': typeof ApiScenarioRoute
   '/pipeline/headcount': typeof PipelineHeadcountRoute
@@ -157,6 +164,7 @@ export interface FileRoutesByTo {
   '/triggers': typeof AuthenticatedTriggersRoute
   '/api/attrition': typeof ApiAttritionRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/decision-cases': typeof ApiDecisionCasesRoute
   '/api/performance': typeof ApiPerformanceRoute
   '/api/scenario': typeof ApiScenarioRoute
   '/pipeline/headcount': typeof PipelineHeadcountRoute
@@ -179,6 +187,7 @@ export interface FileRoutesById {
   '/_authenticated/triggers': typeof AuthenticatedTriggersRoute
   '/api/attrition': typeof ApiAttritionRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/decision-cases': typeof ApiDecisionCasesRoute
   '/api/performance': typeof ApiPerformanceRoute
   '/api/scenario': typeof ApiScenarioRoute
   '/pipeline/headcount': typeof PipelineHeadcountRoute
@@ -202,6 +211,7 @@ export interface FileRouteTypes {
     | '/triggers'
     | '/api/attrition'
     | '/api/chat'
+    | '/api/decision-cases'
     | '/api/performance'
     | '/api/scenario'
     | '/pipeline/headcount'
@@ -221,6 +231,7 @@ export interface FileRouteTypes {
     | '/triggers'
     | '/api/attrition'
     | '/api/chat'
+    | '/api/decision-cases'
     | '/api/performance'
     | '/api/scenario'
     | '/pipeline/headcount'
@@ -242,6 +253,7 @@ export interface FileRouteTypes {
     | '/_authenticated/triggers'
     | '/api/attrition'
     | '/api/chat'
+    | '/api/decision-cases'
     | '/api/performance'
     | '/api/scenario'
     | '/pipeline/headcount'
@@ -260,6 +272,7 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   ApiAttritionRoute: typeof ApiAttritionRoute
   ApiChatRoute: typeof ApiChatRoute
+  ApiDecisionCasesRoute: typeof ApiDecisionCasesRoute
   ApiPerformanceRoute: typeof ApiPerformanceRoute
   ApiScenarioRoute: typeof ApiScenarioRoute
   PipelineHeadcountRoute: typeof PipelineHeadcountRoute
@@ -360,6 +373,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/decision-cases': {
+      id: '/api/decision-cases'
+      path: '/api/decision-cases'
+      fullPath: '/api/decision-cases'
+      preLoaderRoute: typeof ApiDecisionCasesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/performance': {
       id: '/api/performance'
       path: '/api/performance'
@@ -435,6 +455,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   ApiAttritionRoute: ApiAttritionRoute,
   ApiChatRoute: ApiChatRoute,
+  ApiDecisionCasesRoute: ApiDecisionCasesRoute,
   ApiPerformanceRoute: ApiPerformanceRoute,
   ApiScenarioRoute: ApiScenarioRoute,
   PipelineHeadcountRoute: PipelineHeadcountRoute,
