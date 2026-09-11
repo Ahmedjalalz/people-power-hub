@@ -142,8 +142,8 @@ function HRInsights() {
         <InsightCard
           className="card-enter stagger-1"
           onClick={() => setOpenCard("attrition")}
-          tint="bg-pastel-teal"
-          tintVar="--pastel-teal"
+          tint="bg-rose-500/10 text-rose-600 dark:text-rose-400"
+          tintVar="--color-viz-5"
           icon={<ShieldAlert className="h-5 w-5" strokeWidth={2.25} />}
           label="Attrition"
           headline={`${liveRiskCount} people may leave`}
@@ -175,8 +175,8 @@ function HRInsights() {
         <InsightCard
           className="card-enter stagger-2"
           onClick={() => setOpenCard("headcount")}
-          tint="bg-pastel-sky"
-          tintVar="--pastel-sky"
+          tint="bg-primary/10 text-primary"
+          tintVar="--primary"
           icon={<Users2 className="h-5 w-5" strokeWidth={2.25} />}
           label="Headcount"
           headline={headcountKPIsQuery.isPending ? "Loading..." : `${totalEmployees} employees`}
@@ -203,8 +203,8 @@ function HRInsights() {
         <InsightCard
           className="card-enter stagger-3"
           onClick={() => setOpenCard("performance")}
-          tint="bg-pastel-mint"
-          tintVar="--pastel-mint"
+          tint="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+          tintVar="--color-viz-2"
           icon={<Target className="h-5 w-5" strokeWidth={2.25} />}
           label="Employee performance"
           headline={perfQuery.isPending ? "Loading..." : `${perfNum(perf["average_performance_score"])} avg score`}

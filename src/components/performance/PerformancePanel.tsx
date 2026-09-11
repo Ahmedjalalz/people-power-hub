@@ -116,18 +116,18 @@ export function PerformancePanel({ open, onClose }: { open: boolean; onClose: ()
     setSort((prev) => ({ key, dir: prev.key === key && prev.dir === "asc" ? "desc" : "asc" }));
 
   const kpis = [
-    { label: "Avg performance score", value: num(avgPerfScore), tint: "bg-pastel-teal" },
-    { label: "Total employees", value: num(totalEmployees, 0), tint: "bg-pastel-sky" },
+    { label: "Avg performance score", value: num(avgPerfScore), tint: "bg-primary/10 text-primary border border-primary/20" },
+    { label: "Total employees", value: num(totalEmployees, 0), tint: "bg-sky-500/10 text-sky-700 dark:text-sky-300 border border-sky-500/20" },
     {
       label: "Strong + exceptional",
       value: num(strongCount, 0),
       hint: Number.isFinite(strongPercentage)
         ? `${strongPercentage.toFixed(1)}% of employees`
         : undefined,
-      tint: "bg-pastel-mint",
+      tint: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20",
     },
-    { label: "Improving", value: num(improvingCount, 0), tint: "bg-pastel-lavender" },
-    { label: "Declining", value: num(decliningCount, 0), tint: "bg-pastel-peach" },
+    { label: "Improving", value: num(improvingCount, 0), tint: "bg-teal-500/10 text-teal-700 dark:text-teal-300 border border-teal-500/20" },
+    { label: "Declining", value: num(decliningCount, 0), tint: "bg-rose-500/10 text-rose-700 dark:text-rose-300 border border-rose-500/20" },
   ];
 
   const answer = ask.data

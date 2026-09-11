@@ -571,7 +571,7 @@ export function Chatbot({
       {/* ── Main Chat Area ── */}
       <div className="flex flex-col flex-1 min-w-0 h-full">
         {/* ── Header ── */}
-        <div className="flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 border-b border-border bg-pastel-lavender/40 backdrop-blur-sm gap-2">
+        <div className="flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 border-b border-border/80 bg-card/90 backdrop-blur-md gap-2">
           {/* Left: History toggle + Sparkles + Title */}
           <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1 mr-1">
             {/* History Toggle Button with eye-catching color and badge */}
@@ -581,7 +581,7 @@ export function Chatbot({
                 "relative flex items-center justify-center h-8.5 w-8.5 shrink-0 rounded-xl transition-all duration-200 cursor-pointer shadow-xs",
                 isHistoryOpen
                   ? "bg-primary text-primary-foreground border border-primary shadow-sm ring-2 ring-primary/20"
-                  : "bg-pastel-teal text-primary border border-primary/30 hover:bg-pastel-teal/80 hover:border-primary/50 hover:scale-105 active:scale-95"
+                  : "bg-primary/10 text-primary border border-primary/25 hover:bg-primary/20 hover:scale-105 active:scale-95"
               )}
               aria-label="Toggle chat history"
               title={
@@ -858,7 +858,7 @@ function MessageBubble({
     return (
       <div className="flex gap-2.5 items-start animate-in fade-in-0 duration-200">
         <BotAvatar />
-        <div className="rounded-2xl rounded-tl-sm bg-pastel-lavender/40 px-4 py-3 max-w-[85%] border border-border/40 shadow-2xs">
+        <div className="rounded-2xl rounded-tl-sm bg-muted/60 px-4 py-3 max-w-[85%] border border-border/80 shadow-xs">
           <div className="text-xs text-muted-foreground flex items-center justify-between gap-3">
             <div className="flex items-center gap-1.5 italic">
               <span>{message.statusText || "Analyzing HR workforce data..."}</span>
@@ -891,10 +891,10 @@ function MessageBubble({
         {/* Message Bubble Card */}
         <div
           className={cn(
-            "rounded-2xl px-4 py-3 text-sm leading-relaxed transition-all shadow-2xs",
+            "rounded-2xl px-4 py-3 text-sm leading-relaxed transition-all shadow-xs",
             isUser
               ? "bg-primary text-primary-foreground rounded-tr-sm"
-              : "bg-pastel-lavender/35 text-foreground rounded-tl-sm w-full border border-border/40"
+              : "bg-card/90 text-foreground rounded-tl-sm w-full border border-border/80 shadow-xs"
           )}
         >
           {/* User Inline Editing Form */}

@@ -347,8 +347,8 @@ export function TriggersPage() {
         <div className="mx-auto max-w-7xl px-6 py-5">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-pastel-teal/70 px-3 py-1 text-xs font-semibold text-foreground">
-                <ShieldAlert className="h-3.5 w-3.5 text-primary" />
+              <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3.5 py-1 text-xs font-semibold text-primary backdrop-blur-sm">
+                <ShieldAlert className="h-3.5 w-3.5" />
                 HR Decision Trigger Engine
               </div>
               <h1 className="text-2xl font-bold tracking-tight text-foreground">

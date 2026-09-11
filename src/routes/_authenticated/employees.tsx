@@ -191,8 +191,8 @@ function EmployeesPage() {
       {/* ── Page Header ── */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-pastel-teal/70 px-3 py-1 text-xs font-semibold text-foreground">
-            <Users className="h-3.5 w-3.5 text-primary" />
+          <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3.5 py-1 text-xs font-semibold text-primary backdrop-blur-sm">
+            <Users className="h-3.5 w-3.5" />
             <span>Staff Directory</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
@@ -204,10 +204,10 @@ function EmployeesPage() {
         </div>
 
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <span className="rounded-full border border-border bg-card px-3 py-1.5 font-medium shadow-xs">
+          <span className="rounded-full border border-border/80 bg-card/90 px-3.5 py-1.5 font-medium shadow-xs">
             Total Staff: <strong className="text-foreground">{allEmployees.length}</strong>
           </span>
-          <span className="rounded-full border border-border bg-card px-3 py-1.5 font-medium shadow-xs">
+          <span className="rounded-full border border-border/80 bg-card/90 px-3.5 py-1.5 font-medium shadow-xs">
             Departments: <strong className="text-foreground">{departmentsWithCounts.length}</strong>
           </span>
         </div>
@@ -215,16 +215,16 @@ function EmployeesPage() {
 
       {/* ── Two-Sided Panel Layout ── */}
       <div className="flex flex-col lg:flex-row gap-6 items-start">
-        {/* ── SIDE 1: Departments Filter (takes 20-30% of space, matches height) ── */}
+        {/* ── SIDE 1: Departments Filter ── */}
         <aside className="w-full lg:w-72 xl:w-80 shrink-0 self-stretch flex flex-col">
-          <div className="sticky top-20 flex flex-col h-[calc(100vh-11rem)] min-h-[500px] rounded-xl border border-border bg-card p-4 sm:p-5 shadow-xs">
+          <div className="sticky top-20 flex flex-col h-[calc(100vh-11rem)] min-h-[500px] rounded-2xl border border-border/80 bg-card/90 backdrop-blur-md p-4 sm:p-5 shadow-xs">
             {/* Department Panel Header */}
-            <div className="flex items-center justify-between pb-3 border-b border-border">
+            <div className="flex items-center justify-between pb-3.5 border-b border-border/80">
               <div className="flex items-center gap-2">
                 <Building2 className="h-4 w-4 text-primary" />
-                <span className="font-semibold text-sm">Departments</span>
+                <span className="font-bold text-sm text-foreground">Departments</span>
               </div>
-              <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-semibold text-muted-foreground">
+              <span className="rounded-full bg-muted/80 px-2.5 py-0.5 text-xs font-semibold text-muted-foreground">
                 {departmentsWithCounts.length}
               </span>
             </div>
@@ -235,10 +235,10 @@ function EmployeesPage() {
                 type="button"
                 onClick={() => setSelectedDepartment(null)}
                 className={cn(
-                  "w-full flex items-center justify-between rounded-full px-3.5 py-2.5 text-sm font-medium transition-all text-left cursor-pointer",
+                  "w-full flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition-all text-left cursor-pointer",
                   selectedDepartment === null
-                    ? "bg-pastel-teal/80 font-bold text-foreground shadow-xs ring-1 ring-primary/30"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    ? "bg-primary text-primary-foreground font-semibold shadow-xs"
+                    : "text-muted-foreground hover:bg-muted/70 hover:text-foreground"
                 )}
               >
                 <div className="flex items-center gap-2.5">
@@ -247,9 +247,9 @@ function EmployeesPage() {
                 </div>
                 <span
                   className={cn(
-                    "rounded-full px-2 py-0.5 text-xs font-semibold",
+                    "rounded-full px-2 py-0.5 text-xs font-semibold transition-colors",
                     selectedDepartment === null
-                      ? "bg-card text-foreground shadow-xs"
+                      ? "bg-primary-foreground/20 text-primary-foreground"
                       : "bg-muted text-muted-foreground"
                   )}
                 >
@@ -258,7 +258,7 @@ function EmployeesPage() {
               </button>
             </div>
 
-            {/* Department List (Scrollable to match height) */}
+            {/* Department List */}
             <div className="flex-1 overflow-y-auto pr-1 space-y-1 mt-1 scrollbar-thin">
               {departmentsWithCounts.map((dept) => {
                 const isSelected = selectedDepartment?.toLowerCase() === dept.name.toLowerCase();
@@ -268,17 +268,17 @@ function EmployeesPage() {
                     type="button"
                     onClick={() => setSelectedDepartment(dept.name)}
                     className={cn(
-                      "w-full flex items-center justify-between rounded-full px-3.5 py-2.5 text-sm font-medium transition-all text-left cursor-pointer group",
+                      "w-full flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition-all text-left cursor-pointer group",
                       isSelected
-                        ? "bg-pastel-teal/80 font-bold text-foreground shadow-xs ring-1 ring-primary/30"
-                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                        ? "bg-primary text-primary-foreground font-semibold shadow-xs"
+                        : "text-muted-foreground hover:bg-muted/70 hover:text-foreground"
                     )}
                   >
                     <div className="flex items-center gap-2.5 truncate">
                       <span
                         className={cn(
                           "h-2 w-2 rounded-full shrink-0 transition-colors",
-                          isSelected ? "bg-primary" : "bg-muted-foreground/40 group-hover:bg-primary/70"
+                          isSelected ? "bg-primary-foreground" : "bg-muted-foreground/30 group-hover:bg-primary/70"
                         )}
                       />
                       <span className="truncate">{dept.name}</span>
@@ -288,8 +288,8 @@ function EmployeesPage() {
                       className={cn(
                         "rounded-full px-2 py-0.5 text-xs font-semibold shrink-0 ml-2 transition-colors",
                         isSelected
-                          ? "bg-card text-foreground shadow-xs"
-                          : "bg-muted/70 text-muted-foreground group-hover:bg-muted"
+                          ? "bg-primary-foreground/20 text-primary-foreground"
+                          : "bg-muted/80 text-muted-foreground group-hover:bg-muted"
                       )}
                     >
                       {dept.count}
@@ -301,12 +301,12 @@ function EmployeesPage() {
 
             {/* Department Filter Footer / Reset */}
             {selectedDepartment && (
-              <div className="pt-3 border-t border-border mt-2">
+              <div className="pt-3 border-t border-border/80 mt-2">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setSelectedDepartment(null)}
-                  className="w-full gap-2 rounded-full text-xs font-medium text-muted-foreground hover:text-foreground"
+                  className="w-full gap-2 rounded-xl text-xs font-medium text-muted-foreground hover:text-foreground"
                 >
                   <X className="h-3.5 w-3.5" />
                   <span>Clear Department Filter</span>
@@ -316,24 +316,24 @@ function EmployeesPage() {
           </div>
         </aside>
 
-        {/* ── SIDE 2: Employee Cards Grid (takes remaining 70-80% space) ── */}
+        {/* ── SIDE 2: Employee Cards Grid ── */}
         <section className="flex-1 min-w-0 flex flex-col gap-4">
           {/* Controls Bar: Search & Status indicator */}
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-card p-3 sm:px-4 shadow-xs">
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border/80 bg-card/90 backdrop-blur-md p-3 sm:px-4 shadow-xs">
             <div className="relative flex-1 min-w-[220px]">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 type="text"
                 placeholder="Search employees by name, position, ID..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 pr-8 h-9 rounded-full border-border bg-background text-sm"
+                className="pl-9 pr-8 h-9 rounded-xl border-border/80 bg-background text-sm"
               />
               {searchQuery && (
                 <button
                   type="button"
                   onClick={() => setSearchQuery("")}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 grid h-6 w-6 place-items-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 grid h-6 w-6 place-items-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer"
                   aria-label="Clear search"
                 >
                   <X className="h-3.5 w-3.5" />
@@ -343,12 +343,12 @@ function EmployeesPage() {
 
             <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
               {selectedDepartment && (
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-pastel-teal/60 px-3 py-1 text-foreground font-semibold">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-primary font-semibold">
                   <span>{selectedDepartment}</span>
                   <button
                     type="button"
                     onClick={() => setSelectedDepartment(null)}
-                    className="grid h-4 w-4 place-items-center rounded-full hover:bg-primary/20 transition-colors"
+                    className="grid h-4 w-4 place-items-center rounded-full hover:bg-primary/20 transition-colors cursor-pointer"
                     aria-label="Remove filter"
                   >
                     <X className="h-3 w-3" />
@@ -363,8 +363,8 @@ function EmployeesPage() {
 
           {/* Cards Grid */}
           {filteredEmployees.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-card/50 p-12 text-center">
-              <div className="grid h-12 w-12 place-items-center rounded-full bg-muted text-muted-foreground mb-3">
+            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card/50 p-12 text-center">
+              <div className="grid h-12 w-12 place-items-center rounded-2xl bg-muted text-muted-foreground mb-3">
                 <Search className="h-6 w-6" />
               </div>
               <h3 className="text-base font-semibold text-foreground">No employees found</h3>
@@ -378,7 +378,7 @@ function EmployeesPage() {
                     variant="outline"
                     size="sm"
                     onClick={() => setSelectedDepartment(null)}
-                    className="rounded-full text-xs"
+                    className="rounded-xl text-xs"
                   >
                     Reset Department
                   </Button>
@@ -388,7 +388,7 @@ function EmployeesPage() {
                     variant="outline"
                     size="sm"
                     onClick={() => setSearchQuery("")}
-                    className="rounded-full text-xs"
+                    className="rounded-xl text-xs"
                   >
                     Clear Search
                   </Button>
@@ -405,22 +405,22 @@ function EmployeesPage() {
                     key={employee.id}
                     to="/employee/$employeeId"
                     params={{ employeeId: employee.id }}
-                    className="group relative flex flex-col justify-between rounded-xl border border-border bg-card p-5 shadow-xs transition-all duration-200 hover:-translate-y-1 hover:border-primary/50 hover:shadow-md cursor-pointer"
+                    className="group relative flex flex-col justify-between rounded-2xl border border-border/80 bg-card/90 backdrop-blur-md p-5 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl cursor-pointer"
                   >
                     {/* Top Row: Avatar & Metadata Badges */}
                     <div>
                       <div className="flex items-start justify-between gap-3">
-                        <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-pastel-teal font-bold text-primary shadow-xs text-sm">
+                        <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-primary/10 font-bold text-primary border border-primary/15 shadow-xs text-sm transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
                           {avatarInitials}
                         </div>
 
                         <div className="flex flex-wrap items-center justify-end gap-1.5">
-                          <span className="font-mono text-[11px] font-semibold text-muted-foreground/80 bg-muted px-2.5 py-0.5 rounded-full">
+                          <span className="font-mono text-[11px] font-medium text-muted-foreground bg-muted/80 px-2.5 py-0.5 rounded-full border border-border/50">
                             {employee.id}
                           </span>
 
                           {employee.riskScore !== undefined && employee.riskScore >= 70 && (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-rose-500/10 px-2 py-0.5 text-[10px] font-bold text-rose-600 dark:text-rose-400 border border-rose-500/20">
+                            <span className="inline-flex items-center gap-1 rounded-full bg-rose-500/10 px-2.5 py-0.5 text-[10px] font-bold text-rose-600 dark:text-rose-400 border border-rose-500/20">
                               <ShieldAlert className="h-3 w-3" />
                               <span>At Risk</span>
                             </span>
@@ -430,18 +430,18 @@ function EmployeesPage() {
 
                       {/* Middle: Name (MAIN THING CLEARLY VISIBLE) */}
                       <div className="mt-3.5">
-                        <h3 className="text-lg font-bold tracking-tight text-foreground group-hover:text-primary transition-colors leading-tight">
+                        <h3 className="text-base font-bold tracking-tight text-foreground group-hover:text-primary transition-colors leading-snug">
                           {employee.name}
                         </h3>
 
                         {/* Second Most Important: Position & Department */}
                         <div className="mt-1">
-                          <p className="text-sm font-semibold text-primary/90 leading-tight">
+                          <p className="text-xs font-medium text-muted-foreground leading-snug">
                             {employee.positionTitle}
                           </p>
 
-                          <div className="mt-2.5 inline-flex items-center gap-1.5 rounded-full bg-pastel-teal/70 px-2.5 py-0.5 text-xs font-semibold text-foreground">
-                            <Building2 className="h-3 w-3 text-primary" />
+                          <div className="mt-2.5 inline-flex items-center gap-1.5 rounded-md border border-border/70 bg-muted/50 px-2.5 py-0.5 text-xs font-medium text-muted-foreground transition-colors group-hover:border-primary/20 group-hover:bg-primary/5 group-hover:text-primary">
+                            <Building2 className="h-3 w-3" />
                             <span>{employee.department}</span>
                           </div>
                         </div>
@@ -449,18 +449,18 @@ function EmployeesPage() {
                     </div>
 
                     {/* Bottom Row: Additional attributes & View profile arrow */}
-                    <div className="mt-4 pt-3 border-t border-border flex items-center justify-between text-xs text-muted-foreground">
-                      <div className="flex items-center gap-2">
+                    <div className="mt-4 pt-3 border-t border-border/80 flex items-center justify-between text-xs text-muted-foreground">
+                      <div className="flex items-center gap-2.5">
                         {employee.workMode && (
                           <span className="inline-flex items-center gap-1 text-[11px]">
-                            <Laptop className="h-3 w-3 text-muted-foreground" />
+                            <Laptop className="h-3 w-3 text-muted-foreground/70" />
                             <span>{employee.workMode}</span>
                           </span>
                         )}
 
                         {employee.yearsInCompany !== undefined && (
                           <span className="inline-flex items-center gap-1 text-[11px]">
-                            <Clock className="h-3 w-3 text-muted-foreground" />
+                            <Clock className="h-3 w-3 text-muted-foreground/70" />
                             <span>{employee.yearsInCompany} yrs</span>
                           </span>
                         )}

@@ -103,20 +103,20 @@ function EmployeePage() {
             label="Engagement score"
             value={employee.engagementScore}
             hint="How positive their recent survey and activity signals are."
-            tint="var(--pastel-teal)"
+            tint="var(--primary)"
           />
           <GaugeCard
             label="Manager relationship"
             value={employee.managerRelationshipScore}
             hint="Quality and frequency of manager check-ins."
-            tint="var(--pastel-sky)"
+            tint="var(--color-viz-2)"
           />
         </div>
         <CriticalityCard level={employee.positionCriticality} title={employee.positionTitle} />
       </div>
 
       <section className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-2">
-        <InfoGroup title="Role & position" tint="bg-pastel-sky/40" icon={<Layers className="h-4 w-4" />}>
+        <InfoGroup title="Role & position" tint="" icon={<Layers className="h-4 w-4" />}>
           <InfoRow icon={<IdCard className="h-4 w-4" />} label="Employee ID" value={employee.id} />
           <InfoRow icon={<Building2 className="h-4 w-4" />} label="Department" value={employee.department} />
           <InfoRow icon={<Layers className="h-4 w-4" />} label="Position ID" value={employee.positionId} />
@@ -125,7 +125,7 @@ function EmployeePage() {
           <InfoRow icon={<Gauge className="h-4 w-4" />} label="Job level" value={employee.jobLevel} />
         </InfoGroup>
 
-        <InfoGroup title="How they work" tint="bg-pastel-teal/40" icon={<Laptop className="h-4 w-4" />}>
+        <InfoGroup title="How they work" tint="" icon={<Laptop className="h-4 w-4" />}>
           <InfoRow icon={<Laptop className="h-4 w-4" />} label="Work mode" value={employee.workMode} />
           <InfoRow icon={<Clock className="h-4 w-4" />} label="Shift type" value={employee.shiftType} />
           <InfoRow icon={<Handshake className="h-4 w-4" />} label="Employment type" value={employee.employmentType} />
@@ -148,7 +148,7 @@ function EmployeePage() {
 
         <InfoGroup
           title="Mobility & succession"
-          tint="bg-pastel-lavender/40"
+          tint=""
           icon={<UserRoundCheck className="h-4 w-4" />}
         >
           <InfoRow
@@ -169,7 +169,7 @@ function EmployeePage() {
           <InfoRow icon={<IdCard className="h-4 w-4" />} label="Reference" value={employee.reference} />
         </InfoGroup>
 
-        <InfoGroup title="Attrition view" tint="bg-pastel-peach/50" icon={<ShieldAlert className="h-4 w-4" />}>
+        <InfoGroup title="Attrition view" tint="" icon={<ShieldAlert className="h-4 w-4" />}>
           <InfoRow
             icon={<ShieldAlert className="h-4 w-4" />}
             label="Attrition label"
@@ -189,7 +189,7 @@ function EmployeePage() {
               />
             </>
           )}
-          <p className="mt-2 rounded-xl bg-card/70 px-3 py-2.5 text-sm leading-relaxed text-muted-foreground">
+          <p className="mt-2 rounded-xl bg-card/70 px-3.5 py-2.5 text-xs leading-relaxed text-muted-foreground border border-border/60">
             {employee.riskSummary ??
               "No active attrition signals. This person looks settled in their current role."}
           </p>
@@ -201,41 +201,41 @@ function EmployeePage() {
 
 function ProfileHeader({ employee }: { employee: Employee }) {
   return (
-    <div className="relative overflow-hidden rounded-xl border bg-card shadow-sm">
+    <div className="relative overflow-hidden rounded-3xl border border-border/80 bg-card/90 backdrop-blur-md shadow-xs">
       <div
         aria-hidden
-        className="absolute inset-x-0 top-0 h-28 bg-[linear-gradient(120deg,var(--pastel-teal),var(--pastel-sky)_45%,var(--pastel-lavender))] opacity-70"
+        className="absolute inset-x-0 top-0 h-28 bg-gradient-to-r from-primary/20 via-primary/10 to-transparent border-b border-border/40"
       />
       <div
         aria-hidden
-        className="blob pointer-events-none absolute -right-20 -top-24 h-64 w-64 rounded-full bg-pastel-mint opacity-50 blur-3xl"
+        className="blob pointer-events-none absolute -right-20 -top-24 h-64 w-64 rounded-full bg-primary/15 opacity-40 blur-3xl"
       />
       <div className="relative px-6 pb-6 pt-14 sm:px-8">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div className="flex items-end gap-5">
-            <div className="grid h-24 w-24 shrink-0 place-items-center rounded-full bg-card text-2xl font-semibold shadow-md ring-4 ring-card">
-              <span className="grid h-[84px] w-[84px] place-items-center rounded-full bg-pastel-teal">
+            <div className="grid h-24 w-24 shrink-0 place-items-center rounded-full bg-card text-2xl font-bold shadow-md ring-4 ring-card">
+              <span className="grid h-[84px] w-[84px] place-items-center rounded-full bg-primary/10 text-primary border border-primary/20">
                 {initials(employee.name)}
               </span>
             </div>
             <div className="min-w-0 pb-1">
-              <h1 className="truncate text-3xl font-semibold tracking-tight">{employee.name}</h1>
-              <p className="mt-0.5 text-sm text-muted-foreground">
+              <h1 className="truncate text-3xl font-bold tracking-tight text-foreground">{employee.name}</h1>
+              <p className="mt-0.5 text-sm font-medium text-muted-foreground">
                 {employee.designation} · {employee.department} · Level {employee.jobLevel}
               </p>
             </div>
           </div>
           <div className="flex flex-wrap gap-2 text-xs">
-            <Pill tint="bg-sky-100 text-sky-800 dark:bg-sky-950/60 dark:text-sky-300 border border-sky-200 dark:border-sky-800/60">{employee.id}</Pill>
-            <Pill tint="bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60">{employee.employeeStatus}</Pill>
-            <Pill tint="bg-violet-100 text-violet-800 dark:bg-violet-950/60 dark:text-violet-300 border border-violet-200 dark:border-violet-800/60">{employee.workMode}</Pill>
+            <Pill tint="bg-sky-500/10 text-sky-700 dark:text-sky-300 border border-sky-500/20">{employee.id}</Pill>
+            <Pill tint="bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20">{employee.employeeStatus}</Pill>
+            <Pill tint="bg-violet-500/10 text-violet-700 dark:text-violet-300 border border-violet-500/20">{employee.workMode}</Pill>
             <Pill
               tint={
                 employee.attritionLabel === "High risk"
-                  ? "bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200 dark:border-rose-800/60"
+                  ? "bg-rose-500/10 text-rose-700 dark:text-rose-300 border border-rose-500/20"
                   : employee.attritionLabel === "Medium risk"
-                    ? "bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60"
-                    : "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60"
+                    ? "bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/20"
+                    : "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20"
               }
             >
               {employee.attritionLabel}
@@ -243,7 +243,7 @@ function ProfileHeader({ employee }: { employee: Employee }) {
           </div>
         </div>
 
-        <div className="mt-6 grid grid-cols-2 gap-3 border-t pt-4 sm:grid-cols-4">
+        <div className="mt-6 grid grid-cols-2 gap-3 border-t border-border/80 pt-4 sm:grid-cols-4">
           <QuickFact label="Tenure" value={`${employee.tenureMonths} mo`} />
           <QuickFact label="In company" value={`${employee.yearsInCompany} yrs`} />
           <QuickFact label="Shift" value={employee.shiftType} />
@@ -383,17 +383,17 @@ function InfoGroup({
   children,
 }: {
   title: string;
-  tint: string;
+  tint?: string;
   icon: ReactNode;
   children: ReactNode;
 }) {
   return (
-    <div className={cn("rounded-xl border p-5 shadow-sm", tint)}>
+    <div className={cn("rounded-2xl border border-border/80 bg-card/90 backdrop-blur-md p-5 shadow-xs transition-all hover:border-primary/30 hover:shadow-md", tint)}>
       <div className="mb-4 flex items-center gap-2.5">
-        <span className="grid h-8 w-8 place-items-center rounded-lg bg-card/80 text-foreground/70 shadow-sm">
+        <span className="grid h-8 w-8 place-items-center rounded-xl bg-primary/10 text-primary shadow-xs">
           {icon}
         </span>
-        <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+        <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
           {title}
         </span>
       </div>
@@ -404,10 +404,10 @@ function InfoGroup({
 
 function InfoRow({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
   return (
-    <div className="flex items-center gap-3 rounded-lg bg-card/75 px-3 py-2.5 text-sm transition-colors hover:bg-card">
+    <div className="flex items-center gap-3 rounded-xl bg-muted/40 px-3.5 py-2 text-xs transition-colors hover:bg-muted/70">
       <span className="text-muted-foreground/70">{icon}</span>
-      <span className="flex-1 text-muted-foreground">{label}</span>
-      <span className="text-right font-semibold">{value}</span>
+      <span className="flex-1 font-medium text-muted-foreground">{label}</span>
+      <span className="text-right font-bold text-foreground">{value}</span>
     </div>
   );
 }

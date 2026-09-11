@@ -188,8 +188,8 @@ export function ScenarioPage() {
     <div className="min-h-screen bg-background">
       <div className="border-b border-border bg-card/60 backdrop-blur-sm">
         <div className="mx-auto max-w-7xl px-6 py-5">
-          <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-pastel-teal/70 px-3 py-1 text-xs font-semibold text-foreground">
-            <FlaskConical className="h-3.5 w-3.5 text-primary" />
+          <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3.5 py-1 text-xs font-semibold text-primary backdrop-blur-sm">
+            <FlaskConical className="h-3.5 w-3.5" />
             Scenario Simulator
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground">Workforce Modeling</h1>

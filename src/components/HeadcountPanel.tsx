@@ -100,13 +100,13 @@ export function HeadcountPanel({
         val = `${m.value.toFixed(1)}%`;
       }
 
-      if (m.metric_name === "actual_employee_count") { tint = "bg-pastel-teal"; icon = Users2; }
-      else if (m.metric_name === "approved_position_count") { tint = "bg-pastel-sky"; icon = BadgeCheck; }
-      else if (m.metric_name === "budgeted_position_count") { tint = "bg-pastel-blue"; icon = Wallet; }
-      else if (m.metric_name === "vacant_approved_position_count") { tint = "bg-pastel-peach"; icon = DoorOpen; }
-      else if (m.metric_name === "vacancy_rate_percentage") { tint = "bg-pastel-yellow"; icon = Percent; }
-      else if (m.metric_name === "budget_utilization_percentage") { tint = "bg-pastel-lavender"; icon = Gauge; }
-      else if (m.metric_name === "workforce_availability_percentage") { tint = "bg-pastel-mint"; icon = Sparkle; }
+      if (m.metric_name === "actual_employee_count") { tint = "bg-primary/10 text-primary"; icon = Users2; }
+      else if (m.metric_name === "approved_position_count") { tint = "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"; icon = BadgeCheck; }
+      else if (m.metric_name === "budgeted_position_count") { tint = "bg-sky-500/10 text-sky-600 dark:text-sky-400"; icon = Wallet; }
+      else if (m.metric_name === "vacant_approved_position_count") { tint = "bg-amber-500/10 text-amber-600 dark:text-amber-400"; icon = DoorOpen; }
+      else if (m.metric_name === "vacancy_rate_percentage") { tint = "bg-rose-500/10 text-rose-600 dark:text-rose-400"; icon = Percent; }
+      else if (m.metric_name === "budget_utilization_percentage") { tint = "bg-violet-500/10 text-violet-600 dark:text-violet-400"; icon = Gauge; }
+      else if (m.metric_name === "workforce_availability_percentage") { tint = "bg-teal-500/10 text-teal-600 dark:text-teal-400"; icon = Sparkle; }
 
       return {
         key: m.metric_name,
@@ -167,7 +167,7 @@ export function HeadcountPanel({
   // Section 5: Composition by Job Level
   const jobLevelData = useMemo(() => {
     if (!jobLevelQuery.data?.records) return [];
-    const colors = ["var(--pastel-teal)", "var(--pastel-sky)", "var(--pastel-blue)", "var(--pastel-lavender)", "var(--pastel-peach)", "var(--pastel-rose)"];
+    const colors = ["#2563eb", "#059669", "#7c3aed", "#d97706", "#0891b2", "#e11d48"];
     return jobLevelQuery.data.records.map((r: any, idx: number) => ({
       label: r.job_level,
       value: r.actual_employee_count,
@@ -179,10 +179,10 @@ export function HeadcountPanel({
   const vacancyAgeingData = useMemo(() => {
     if (!vacancyAgeingQuery.data?.records) return [];
     const buckets = [
-      { label: "0–30 days", value: 0, color: "var(--pastel-mint)" },
-      { label: "31–60 days", color: "var(--pastel-teal)", value: 0 },
-      { label: "61–90 days", color: "var(--pastel-yellow)", value: 0 },
-      { label: "90+ days", color: "var(--pastel-peach)", value: 0 },
+      { label: "0–30 days", value: 0, color: "#059669" },
+      { label: "31–60 days", color: "#2563eb", value: 0 },
+      { label: "61–90 days", color: "#d97706", value: 0 },
+      { label: "90+ days", color: "#e11d48", value: 0 },
     ];
     for (const r of vacancyAgeingQuery.data.records) {
       const days = r.vacancy_age_in_days || 0;
@@ -231,7 +231,7 @@ export function HeadcountPanel({
       body: r.exception_description,
       action: r.recommended_action,
       severity: r.severity,
-      tint: r.severity === "Critical" ? "bg-pastel-peach" : r.severity === "Warning" ? "bg-pastel-yellow" : "bg-pastel-mint",
+      tint: r.severity === "Critical" ? "border-rose-500/25 bg-rose-500/[0.05]" : r.severity === "Warning" ? "border-amber-500/25 bg-amber-500/[0.05]" : "border-emerald-500/25 bg-emerald-500/[0.05]",
     }));
   }, [exceptionsQuery.data]);
 
@@ -266,7 +266,7 @@ export function HeadcountPanel({
       size="lg"
     >
       <div className="mb-5 flex flex-wrap items-center justify-between gap-2">
-        <div className="inline-flex items-center gap-1.5 rounded-full bg-pastel-teal/70 px-3 py-1 text-[11px] font-medium">
+        <div className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-[11px] font-semibold text-primary backdrop-blur-sm">
           <Sparkle className="h-3 w-3" /> Live Backend Data
         </div>
         <div className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -523,9 +523,9 @@ function DeptComparison({ rows }: { rows: { name: string; approved: number; budg
               <YAxis stroke="var(--muted-foreground)" fontSize={11} />
               <Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} labelStyle={{ color: "var(--foreground)" }} />
               <Legend wrapperStyle={{ fontSize: 11 }} />
-              <Bar name="Approved" dataKey="approved" fill="var(--pastel-sky)" radius={[6, 6, 0, 0]} />
-              <Bar name="Budgeted" dataKey="budgeted" fill="var(--pastel-teal)" radius={[6, 6, 0, 0]} />
-              <Bar name="Actual" dataKey="actual" fill="var(--pastel-lavender)" radius={[6, 6, 0, 0]} />
+              <Bar name="Approved" dataKey="approved" fill="#2563eb" radius={[6, 6, 0, 0]} />
+              <Bar name="Budgeted" dataKey="budgeted" fill="#059669" radius={[6, 6, 0, 0]} />
+              <Bar name="Actual" dataKey="actual" fill="#7c3aed" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -597,10 +597,10 @@ function MovementTrendChart({ data }: { data: { month: string; joiners: number; 
             <YAxis stroke="var(--muted-foreground)" fontSize={11} />
             <Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} labelStyle={{ color: "var(--foreground)" }} />
             <Legend wrapperStyle={{ fontSize: 11 }} />
-            <Line type="monotone" name="Joiners" dataKey="joiners" stroke="var(--pastel-mint)" strokeWidth={2.5} dot={false} />
-            <Line type="monotone" name="Leavers" dataKey="leavers" stroke="var(--pastel-rose)" strokeWidth={2.5} dot={false} />
-            <Line type="monotone" name="Promotions" dataKey="promotions" stroke="var(--pastel-teal)" strokeWidth={2.5} dot={false} />
-            <Line type="monotone" name="Transfers" dataKey="transfers" stroke="var(--pastel-sky)" strokeWidth={2.5} dot={false} />
+            <Line type="monotone" name="Joiners" dataKey="joiners" stroke="#059669" strokeWidth={2.5} dot={false} />
+            <Line type="monotone" name="Leavers" dataKey="leavers" stroke="#e11d48" strokeWidth={2.5} dot={false} />
+            <Line type="monotone" name="Promotions" dataKey="promotions" stroke="#2563eb" strokeWidth={2.5} dot={false} />
+            <Line type="monotone" name="Transfers" dataKey="transfers" stroke="#d97706" strokeWidth={2.5} dot={false} />
           </LineChart>
         </ResponsiveContainer>
       </div>

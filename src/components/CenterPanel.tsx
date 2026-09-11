@@ -60,14 +60,14 @@ export function CenterPanel({
                 <button
                   type="button"
                   onClick={onBack}
-                  className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-muted text-muted-foreground transition-colors hover:bg-pastel-teal hover:text-foreground cursor-pointer"
+                  className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-muted/80 text-muted-foreground transition-all hover:bg-muted hover:text-foreground hover:scale-105 active:scale-95 cursor-pointer"
                   aria-label="Back"
                 >
                   <ArrowLeft className="h-4 w-4" />
                 </button>
               )}
               <div className="min-w-0 flex-1">
-                <DialogPrimitive.Title className="text-xl font-semibold tracking-tight">
+                <DialogPrimitive.Title className="text-xl font-bold tracking-tight text-foreground">
                   {title}
                 </DialogPrimitive.Title>
                 {description && (
@@ -82,7 +82,7 @@ export function CenterPanel({
                   e.stopPropagation();
                   handleClose();
                 }}
-                className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-muted text-muted-foreground transition-colors hover:bg-pastel-rose hover:text-foreground cursor-pointer"
+                className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-muted/80 text-muted-foreground transition-all hover:bg-rose-500/15 hover:text-rose-600 dark:hover:text-rose-400 hover:scale-105 active:scale-95 cursor-pointer"
                 aria-label="Close"
               >
                 <X className="h-4 w-4" />

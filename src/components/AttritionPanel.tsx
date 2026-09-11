@@ -76,7 +76,7 @@ export function AttritionPanel({ open, onClose }: { open: boolean; onClose: () =
       >
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <MiniCard
-            tint="bg-pastel-teal"
+            tint="bg-rose-500/10 text-rose-600 dark:text-rose-400"
             icon={<TrendingUp className="h-5 w-5" />}
             label="Attrition rate"
             headline={attritionRateQuery.data ? `${attritionRateQuery.data.card.value_percent.toFixed(1)}%` : `${attritionOverview.overallRate}%`}
@@ -84,7 +84,7 @@ export function AttritionPanel({ open, onClose }: { open: boolean; onClose: () =
             onClick={() => setSub("trend")}
           />
           <MiniCard
-            tint="bg-pastel-peach"
+            tint="bg-amber-500/10 text-amber-600 dark:text-amber-400"
             icon={<ShieldAlert className="h-5 w-5" />}
             label="People at risk"
             headline={summary ? `${summary.people_at_risk} people` : "Loading..."}
@@ -92,7 +92,7 @@ export function AttritionPanel({ open, onClose }: { open: boolean; onClose: () =
             onClick={() => setSub("people")}
           />
           <MiniCard
-            tint="bg-pastel-sky"
+            tint="bg-primary/10 text-primary"
             icon={<Compass className="h-5 w-5" />}
             label="Top reason people leave"
             headline={topReason ? topReason.label : "Loading..."}
@@ -100,7 +100,7 @@ export function AttritionPanel({ open, onClose }: { open: boolean; onClose: () =
             onClick={() => setSub("reasons")}
           />
           <MiniCard
-            tint="bg-pastel-lavender"
+            tint="bg-violet-500/10 text-violet-600 dark:text-violet-400"
             icon={<Network className="h-5 w-5" />}
             label="Department at risk"
             headline="Operations"
@@ -143,7 +143,7 @@ export function AttritionPanel({ open, onClose }: { open: boolean; onClose: () =
                 className="group w-full rounded-xl border bg-card p-4 text-left transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg cursor-pointer"
               >
                 <div className="flex items-start gap-3">
-                  <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-pastel-teal text-sm font-semibold">
+                  <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary font-bold text-sm border border-primary/20 shadow-xs">
                     {initials(employee.employee_name)}
                   </div>
                   <div className="min-w-0 flex-1">
@@ -339,18 +339,18 @@ function PersonPanel({
       ) : (
         detail && (
           <div className="space-y-4">
-            <section className="rounded-xl bg-pastel-peach/60 p-4">
-              <div className="mb-2 text-xs uppercase tracking-wide text-muted-foreground">Contributing signals</div>
+            <section className="rounded-2xl border border-amber-500/25 bg-amber-500/[0.05] p-4">
+              <div className="mb-2 text-xs uppercase tracking-wide text-muted-foreground font-bold">Contributing signals</div>
               <ul className="space-y-2 text-sm">
                 {detail.attrition.factors.map((factor) => (
                   <li key={factor.feature_key}>
-                    <span className="font-medium">{factor.rank}. {factor.label}:</span> {factor.display_value}
+                    <span className="font-semibold text-foreground">{factor.rank}. {factor.label}:</span> {factor.display_value}
                   </li>
                 ))}
               </ul>
             </section>
-            <section className="rounded-xl bg-pastel-teal/50 p-4">
-              <div className="mb-3 text-xs uppercase tracking-wide text-muted-foreground">Employee profile</div>
+            <section className="rounded-2xl border border-border/80 bg-card/90 backdrop-blur-md p-4 shadow-xs">
+              <div className="mb-3 text-xs uppercase tracking-wide text-muted-foreground font-bold">Employee profile</div>
               {isProfileLoading ? (
                 <StateMessage>Loading employee profile...</StateMessage>
               ) : profileError ? (
