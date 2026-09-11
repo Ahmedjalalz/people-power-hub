@@ -28,16 +28,15 @@ export function InsightCard({
       onClick={onClick}
       style={{ ["--tile" as string]: `var(${tintVar})` }}
       className={cn(
-        "group relative flex h-[280px] flex-col overflow-hidden rounded-2xl border border-border/80 bg-card p-5 text-left transition-all duration-200 cursor-pointer",
-        "hover:shadow-lg hover:shadow-primary/5",
-        "hover:-translate-y-1 hover:border-primary/40 active:translate-y-0",
+        "group relative flex h-[290px] flex-col overflow-hidden rounded-3xl border border-border/80 bg-card/90 backdrop-blur-md p-6 text-left transition-all duration-300 cursor-pointer",
+        "hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1 hover:border-primary/40 active:translate-y-0",
         className,
       )}
     >
       <div className="card-glow" />
       <div
         aria-hidden
-        className="blob pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full opacity-40 blur-2xl"
+        className="blob pointer-events-none absolute -right-10 -top-10 h-36 w-36 rounded-full opacity-30 blur-3xl transition-opacity duration-500 group-hover:opacity-60"
         style={{ background: `var(${tintVar})` }}
       />
       <div className="relative mb-3 flex items-center justify-between">

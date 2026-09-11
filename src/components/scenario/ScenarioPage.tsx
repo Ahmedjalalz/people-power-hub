@@ -54,64 +54,72 @@ type ScenarioMeta = {
   badgeColor: string;
   accentBg: string;
   accentText: string;
+  ringGlow: string;
 };
 
 const SCENARIO_META: Record<string, ScenarioMeta> = {
   employee_promotion: {
     icon: <TrendingUp className="h-4 w-4" />,
-    gradient: "from-emerald-500/10 via-teal-500/5 to-transparent",
-    activeTab: "border-emerald-500",
-    badgeColor: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300",
-    accentBg: "bg-emerald-50 dark:bg-emerald-950/20",
+    gradient: "from-emerald-500/12 via-teal-500/6 to-transparent",
+    activeTab: "border-emerald-500 shadow-xs",
+    badgeColor: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30",
+    accentBg: "bg-emerald-50/80 dark:bg-emerald-950/30 border border-emerald-500/20",
     accentText: "text-emerald-700 dark:text-emerald-300",
+    ringGlow: "glow-emerald",
   },
   employee_transfer: {
     icon: <ArrowRightLeft className="h-4 w-4" />,
-    gradient: "from-sky-500/10 via-blue-500/5 to-transparent",
-    activeTab: "border-sky-500",
-    badgeColor: "bg-sky-100 text-sky-700 dark:bg-sky-950/40 dark:text-sky-300",
-    accentBg: "bg-sky-50 dark:bg-sky-950/20",
-    accentText: "text-sky-700 dark:text-sky-300",
+    gradient: "from-blue-500/12 via-sky-500/6 to-transparent",
+    activeTab: "border-blue-500 shadow-xs",
+    badgeColor: "bg-blue-500/15 text-blue-700 dark:text-blue-300 border border-blue-500/30",
+    accentBg: "bg-blue-50/80 dark:bg-blue-950/30 border border-blue-500/20",
+    accentText: "text-blue-700 dark:text-blue-300",
+    ringGlow: "glow-subtle",
   },
   headcount_reduction: {
     icon: <TrendingDown className="h-4 w-4" />,
-    gradient: "from-rose-500/10 via-red-500/5 to-transparent",
-    activeTab: "border-rose-500",
-    badgeColor: "bg-rose-100 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300",
-    accentBg: "bg-rose-50 dark:bg-rose-950/20",
+    gradient: "from-rose-500/12 via-red-500/6 to-transparent",
+    activeTab: "border-rose-500 shadow-xs",
+    badgeColor: "bg-rose-500/15 text-rose-700 dark:text-rose-300 border border-rose-500/30",
+    accentBg: "bg-rose-50/80 dark:bg-rose-950/30 border border-rose-500/20",
     accentText: "text-rose-700 dark:text-rose-300",
+    ringGlow: "glow-rose",
   },
   workforce_expansion: {
     icon: <BadgePlus className="h-4 w-4" />,
-    gradient: "from-teal-500/10 via-cyan-500/5 to-transparent",
-    activeTab: "border-teal-500",
-    badgeColor: "bg-teal-100 text-teal-700 dark:bg-teal-950/40 dark:text-teal-300",
-    accentBg: "bg-teal-50 dark:bg-teal-950/20",
+    gradient: "from-teal-500/12 via-cyan-500/6 to-transparent",
+    activeTab: "border-teal-500 shadow-xs",
+    badgeColor: "bg-teal-500/15 text-teal-700 dark:text-teal-300 border border-teal-500/30",
+    accentBg: "bg-teal-50/80 dark:bg-teal-950/30 border border-teal-500/20",
     accentText: "text-teal-700 dark:text-teal-300",
+    ringGlow: "glow-emerald",
   },
   budget_change: {
     icon: <Wallet className="h-4 w-4" />,
-    gradient: "from-amber-500/10 via-yellow-500/5 to-transparent",
-    activeTab: "border-amber-500",
-    badgeColor: "bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300",
-    accentBg: "bg-amber-50 dark:bg-amber-950/20",
+    gradient: "from-amber-500/12 via-yellow-500/6 to-transparent",
+    activeTab: "border-amber-500 shadow-xs",
+    badgeColor: "bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30",
+    accentBg: "bg-amber-50/80 dark:bg-amber-950/30 border border-amber-500/20",
     accentText: "text-amber-700 dark:text-amber-300",
+    ringGlow: "glow-amber",
   },
   skill_reskilling: {
     icon: <BookOpen className="h-4 w-4" />,
-    gradient: "from-violet-500/10 via-purple-500/5 to-transparent",
-    activeTab: "border-violet-500",
-    badgeColor: "bg-violet-100 text-violet-700 dark:bg-violet-950/40 dark:text-violet-300",
-    accentBg: "bg-violet-50 dark:bg-violet-950/20",
+    gradient: "from-violet-500/12 via-purple-500/6 to-transparent",
+    activeTab: "border-violet-500 shadow-xs",
+    badgeColor: "bg-violet-500/15 text-violet-700 dark:text-violet-300 border border-violet-500/30",
+    accentBg: "bg-violet-50/80 dark:bg-violet-950/30 border border-violet-500/20",
     accentText: "text-violet-700 dark:text-violet-300",
+    ringGlow: "glow-violet",
   },
   business_demand_change: {
     icon: <Zap className="h-4 w-4" />,
-    gradient: "from-orange-500/10 via-amber-500/5 to-transparent",
-    activeTab: "border-orange-500",
-    badgeColor: "bg-orange-100 text-orange-700 dark:bg-orange-950/40 dark:text-orange-300",
-    accentBg: "bg-orange-50 dark:bg-orange-950/20",
+    gradient: "from-orange-500/12 via-amber-500/6 to-transparent",
+    activeTab: "border-orange-500 shadow-xs",
+    badgeColor: "bg-orange-500/15 text-orange-700 dark:text-orange-300 border border-orange-500/30",
+    accentBg: "bg-orange-50/80 dark:bg-orange-950/30 border border-orange-500/20",
     accentText: "text-orange-700 dark:text-orange-300",
+    ringGlow: "glow-amber",
   },
 };
 
@@ -1414,11 +1422,10 @@ function RunButton({
         onClick={onClick}
         disabled={!canRun || isPending}
         className={cn(
-          "group w-full overflow-hidden rounded-2xl px-6 py-4 text-left font-semibold transition-all",
+          "group relative w-full overflow-hidden rounded-2xl px-6 py-4 text-left font-semibold transition-all duration-200",
           canRun && !isPending
-            ? "cursor-pointer shadow-md hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-200"
-            : "cursor-not-allowed opacity-50",
-          meta.badgeColor
+            ? "btn-premium cursor-pointer shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:scale-[0.98]"
+            : "cursor-not-allowed opacity-50 bg-muted text-muted-foreground border border-border"
         )}
       >
         <div className="flex items-center justify-between">
@@ -1428,16 +1435,16 @@ function RunButton({
             ) : (
               <PlayCircle className="h-5 w-5 transition-transform group-hover:scale-110" />
             )}
-            <span className="text-base">{isPending ? "Running simulation..." : "Run Simulation"}</span>
+            <span className="text-base">{isPending ? "Computing Simulation..." : "Run Workforce Simulation"}</span>
           </div>
           {!isPending && canRun && (
-            <ArrowRight className="h-4 w-4 opacity-60 transition-transform group-hover:translate-x-1" />
+            <ArrowRight className="h-4 w-4 opacity-80 transition-transform group-hover:translate-x-1" />
           )}
         </div>
       </button>
 
       {!canRun && !isPending && disabledReason && (
-        <div className="mt-2 text-center text-xs text-muted-foreground">
+        <div className="mt-2 text-center text-xs text-muted-foreground font-medium">
           {disabledReason}
         </div>
       )}
@@ -1464,47 +1471,46 @@ function SimulationResultPanel({
 }) {
   if (!isPending && !data && !error) {
     return (
-      <div className="flex min-h-96 flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-card/50 p-8 text-center">
-        <div className={cn("mb-4 grid h-16 w-16 place-items-center rounded-2xl", meta.badgeColor)}>
-          <BarChart3 className="h-7 w-7" />
+      <div className="flex min-h-[420px] flex-col items-center justify-center rounded-3xl border border-dashed border-border/80 bg-card/40 backdrop-blur-md p-8 text-center relative overflow-hidden">
+        <div className={cn("mb-4 grid h-16 w-16 place-items-center rounded-2xl shadow-sm", meta.badgeColor)}>
+          <BarChart3 className="h-8 w-8 text-primary" />
         </div>
-        <div className="text-base font-semibold text-foreground">Results appear here</div>
-        <p className="mt-2 max-w-48 text-xs text-muted-foreground leading-relaxed">
-          Configure the scenario on the left and click "Run Simulation" to see projected impact.
+        <div className="text-base font-semibold text-foreground">Simulation Engine Ready</div>
+        <p className="mt-1.5 max-w-xs text-xs text-muted-foreground leading-relaxed">
+          Configure employee or department parameters on the left and run the simulation to compute live predictive impact.
         </p>
+
+        <div className="mt-6 flex flex-col gap-2 text-left w-full max-w-xs">
+          <div className="flex items-center gap-2.5 rounded-xl border border-border/60 bg-background/50 px-3.5 py-2 text-xs text-muted-foreground">
+            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-[10px] font-bold text-primary">1</span>
+            <span>Select target employee or department</span>
+          </div>
+          <div className="flex items-center gap-2.5 rounded-xl border border-border/60 bg-background/50 px-3.5 py-2 text-xs text-muted-foreground">
+            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-[10px] font-bold text-primary">2</span>
+            <span>Fine-tune simulation parameters</span>
+          </div>
+          <div className="flex items-center gap-2.5 rounded-xl border border-border/60 bg-background/50 px-3.5 py-2 text-xs text-muted-foreground">
+            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-[10px] font-bold text-primary">3</span>
+            <span>Execute model & review executive deltas</span>
+          </div>
+        </div>
       </div>
     );
   }
 
   if (isPending) {
-    return (
-      <div className="flex min-h-96 flex-col items-center justify-center rounded-2xl border border-border bg-card p-8 text-center">
-        <div className={cn("mb-4 grid h-16 w-16 place-items-center rounded-2xl", meta.badgeColor)}>
-          <FlaskConical className="h-7 w-7 animate-bounce" />
-        </div>
-        <div className="text-base font-semibold text-foreground">Simulating...</div>
-        <p className="mt-2 text-xs text-muted-foreground">Computing impact, risks and recommendations</p>
-        <div className="mt-4 flex gap-1.5">
-          {[0, 1, 2].map((i) => (
-            <div
-              key={i}
-              className={cn("h-2 w-2 rounded-full animate-bounce", meta.badgeColor.split(" ")[0])}
-              style={{ animationDelay: `${i * 150}ms` }}
-            />
-          ))}
-        </div>
-      </div>
-    );
+    return <SimulationRadarHud meta={meta} />;
   }
 
   if (error) {
     return (
-      <div className="rounded-2xl border border-rose-200 bg-rose-50 p-6 dark:border-rose-800 dark:bg-rose-950/30">
-        <div className="flex items-center gap-2 font-semibold text-rose-700 dark:text-rose-300 mb-2">
-          <AlertTriangle className="h-5 w-5" /> Simulation failed
+      <div className="rounded-3xl border border-rose-200/90 bg-rose-50/60 p-6 shadow-md dark:border-rose-900/60 dark:bg-rose-950/30 backdrop-blur-md">
+        <div className="flex items-center gap-2.5 font-semibold text-rose-700 dark:text-rose-300 mb-2">
+          <AlertTriangle className="h-5 w-5 text-rose-600 dark:text-rose-400 shrink-0" />
+          <span>Simulation Computation Error</span>
         </div>
-        <p className="text-sm text-rose-600 dark:text-rose-400">
-          {error instanceof Error ? error.message : "Something went wrong."}
+        <p className="text-sm text-rose-600/90 dark:text-rose-400/90 leading-relaxed">
+          {error instanceof Error ? error.message : "An unexpected error occurred while computing the simulation."}
         </p>
       </div>
     );
@@ -1514,6 +1520,99 @@ function SimulationResultPanel({
 
   return <RichResultDisplay data={data} subjectName={subjectName} meta={meta} />;
 }
+
+// ─── High-Tech Simulation Radar HUD ──────────────────────────────────────────
+
+function SimulationRadarHud({ meta }: { meta: ScenarioMeta }) {
+  const [activeStep, setActiveStep] = useState(0);
+
+  useEffect(() => {
+    const steps = [{ delay: 300 }, { delay: 900 }, { delay: 1700 }, { delay: 2300 }];
+    const timers = steps.map((s, idx) =>
+      setTimeout(() => setActiveStep(idx), s.delay)
+    );
+    return () => timers.forEach(clearTimeout);
+  }, []);
+
+  const stages = [
+    "Retrieving workforce telemetry & baseline",
+    "Running organizational prediction models",
+    "Computing fiscal, retention & capacity deltas",
+    "Synthesizing executive guidance roadmap",
+  ];
+
+  return (
+    <div className="flex min-h-[440px] flex-col items-center justify-center rounded-3xl border border-border/80 bg-card/90 backdrop-blur-xl p-8 text-center relative overflow-hidden shadow-xl">
+      {/* Background ambient radar rings */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40 dark:opacity-30">
+        <div className="absolute h-72 w-72 rounded-full border border-primary/25 pulse-ring" />
+        <div className="absolute h-96 w-96 rounded-full border border-primary/15" />
+        <div className="absolute h-48 w-48 rounded-full border border-primary/35" />
+        <div className="absolute h-72 w-72 rounded-full border-t-2 border-primary/50 radar-sweep" />
+      </div>
+
+      {/* Center glowing core */}
+      <div className="relative mb-5">
+        <div className={cn("relative grid h-20 w-20 place-items-center rounded-3xl shadow-lg border border-primary/30", meta.badgeColor, meta.ringGlow)}>
+          <FlaskConical className="h-9 w-9 text-primary animate-pulse" />
+        </div>
+        <span className="absolute -top-1 -right-1 flex h-4 w-4">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
+          <span className="relative inline-flex rounded-full h-4 w-4 bg-primary" />
+        </span>
+      </div>
+
+      <div className="relative text-lg font-bold tracking-tight text-foreground">
+        Simulating Organizational Impact
+      </div>
+      <p className="relative mt-1 text-xs text-muted-foreground max-w-xs">
+        Predictive intelligence engine is modeling organizational dynamics and evaluating scenario vectors.
+      </p>
+
+      {/* Stages stepper */}
+      <div className="relative mt-6 w-full max-w-sm space-y-2 text-left">
+        {stages.map((stageText, idx) => {
+          const isDone = activeStep > idx;
+          const isCurrent = activeStep === idx;
+          return (
+            <div
+              key={idx}
+              className={cn(
+                "flex items-center gap-3 rounded-xl px-3 py-2 text-xs transition-all duration-300",
+                isCurrent
+                  ? "bg-primary/10 border border-primary/20 font-medium text-foreground"
+                  : isDone
+                  ? "text-muted-foreground opacity-90"
+                  : "text-muted-foreground/50 opacity-40"
+              )}
+            >
+              <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full">
+                {isDone ? (
+                  <Check className="h-3.5 w-3.5 text-emerald-500" />
+                ) : isCurrent ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />
+                ) : (
+                  <span className="h-1.5 w-1.5 rounded-full bg-muted-foreground/40" />
+                )}
+              </div>
+              <span className="truncate">{stageText}</span>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Bottom glowing progress bar */}
+      <div className="relative mt-6 w-full max-w-xs overflow-hidden rounded-full bg-muted/60 h-1.5">
+        <div
+          className="h-full rounded-full bg-gradient-to-r from-primary via-emerald-500 to-primary transition-all duration-500"
+          style={{ width: `${((activeStep + 1) / 4) * 100}%` }}
+        />
+      </div>
+    </div>
+  );
+}
+
+// ─── Executive Rich Result Display ────────────────────────────────────────────
 
 function RichResultDisplay({
   data,
@@ -1542,40 +1641,87 @@ function RichResultDisplay({
   const listImpact = Object.entries(data.impact ?? {}).filter(([, v]) => Array.isArray(v));
 
   return (
-    <div className="space-y-4">
-      <div className={cn("rounded-2xl border border-border p-4", meta.accentBg)}>
-        <div className="flex items-center gap-2">
-          <Sparkles className={cn("h-4 w-4", meta.accentText)} />
-          <div className={cn("text-sm font-semibold", meta.accentText)}>
-            Simulation Result{subjectName ? ` — ${subjectName}` : ""}
+    <div className="space-y-4 result-reveal">
+      {/* ── Executive Result Header ── */}
+      <div className={cn("relative overflow-hidden rounded-3xl border border-border/80 bg-card/90 backdrop-blur-xl p-5 shadow-lg", meta.ringGlow)}>
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-12 -top-12 h-36 w-36 rounded-full opacity-30 blur-2xl"
+          style={{ background: "var(--primary)" }}
+        />
+
+        <div className="relative flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <span className={cn("grid h-10 w-10 place-items-center rounded-2xl shadow-xs", meta.badgeColor)}>
+              <Sparkles className="h-5 w-5 text-primary" />
+            </span>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="font-bold text-base text-foreground tracking-tight">
+                  Executive Impact Analysis
+                </h3>
+                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  {data.status?.toUpperCase().replace(/_/g, " ") || "COMPLETED"}
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {subjectName ? `Target Subject: ${subjectName}` : "Department Simulation Assessment"}
+              </p>
+            </div>
           </div>
-        </div>
-        <div className="mt-0.5 text-xs text-muted-foreground capitalize">
-          Status: <span className="font-medium">{data.status?.replace(/_/g, " ")}</span>
+
+          <span className="text-[11px] font-medium text-muted-foreground bg-muted/60 px-3 py-1 rounded-full border border-border/60">
+            Just modeled
+          </span>
         </div>
       </div>
 
+      {/* ── Scalar Key Performance Deltas Grid ── */}
       {scalarImpact.length > 0 && (
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-3">
           {scalarImpact.map(([key, value]) => {
             const formatted = formatVal(value);
             const isPos = typeof value === "number" && value > 0;
             const isNeg = typeof value === "number" && value < 0;
             const label = key.replace(/_/g, " ");
             const displayVal = (isPos ? "+" : "") + (formatted ?? "—");
+
             return (
-              <div key={key} className="rounded-xl border border-border bg-card p-3 shadow-xs min-w-0 overflow-hidden">
-                <div className="mb-1 text-[10px] uppercase tracking-widest text-muted-foreground truncate" title={label}>
-                  {label}
+              <div
+                key={key}
+                className="relative overflow-hidden rounded-2xl border border-border/80 bg-card/95 backdrop-blur-md p-4 shadow-sm min-w-0 transition-all hover:shadow-md hover:-translate-y-0.5"
+              >
+                <div className="flex items-center justify-between mb-1.5">
+                  <div className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground truncate flex-1 pr-2" title={label}>
+                    {label}
+                  </div>
+                  {isPos ? (
+                    <TrendingUp className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                  ) : isNeg ? (
+                    <TrendingDown className="h-3.5 w-3.5 text-rose-600 dark:text-rose-400 shrink-0" />
+                  ) : (
+                    <Sparkles className="h-3.5 w-3.5 text-primary shrink-0 opacity-70" />
+                  )}
                 </div>
+
                 <div
                   className={cn(
-                    "text-lg sm:text-xl font-bold tabular-nums truncate",
-                    isPos ? "text-emerald-600 dark:text-emerald-400" : isNeg ? "text-rose-600 dark:text-rose-400" : "text-foreground"
+                    "text-xl sm:text-2xl font-black tabular-nums tracking-tight truncate",
+                    isPos
+                      ? "text-emerald-600 dark:text-emerald-400"
+                      : isNeg
+                      ? "text-rose-600 dark:text-rose-400"
+                      : "text-foreground"
                   )}
                   title={displayVal}
                 >
                   {displayVal}
+                </div>
+
+                <div className="mt-1 text-[10px] font-medium text-muted-foreground/80 flex items-center gap-1">
+                  <span className={cn("h-1 w-1 rounded-full", isPos ? "bg-emerald-500" : isNeg ? "bg-rose-500" : "bg-primary")} />
+                  <span>Projected Delta</span>
                 </div>
               </div>
             );
@@ -1583,42 +1729,63 @@ function RichResultDisplay({
         </div>
       )}
 
+      {/* ── Visual Comparison Matrix (Current vs Projected) ── */}
       {allKeys.length > 0 && (
-        <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-xs">
-          <div className="grid grid-cols-3 border-b border-border bg-muted/30 px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground gap-2">
-            <div className="truncate">Metric</div>
-            <div className="text-center truncate">Current</div>
-            <div className="text-center truncate">Projected</div>
+        <div className="rounded-3xl border border-border/80 bg-card overflow-hidden shadow-sm">
+          <div className="border-b border-border bg-muted/40 px-5 py-3.5 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <BarChart3 className="h-4 w-4 text-primary" />
+              <span className="text-xs font-bold uppercase tracking-wider text-foreground">
+                Workforce Metrics Shift Analysis
+              </span>
+            </div>
+            <span className="text-[11px] font-medium text-muted-foreground bg-background px-2.5 py-0.5 rounded-full border border-border">
+              {allKeys.length} Indicators Matched
+            </span>
           </div>
-          <div className="divide-y divide-border">
+
+          <div className="grid grid-cols-3 border-b border-border bg-muted/20 px-5 py-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground gap-2">
+            <div className="truncate">Metric</div>
+            <div className="text-center truncate">Current Baseline</div>
+            <div className="text-center truncate">Projected State</div>
+          </div>
+
+          <div className="divide-y divide-border/60">
             {allKeys.map((key) => {
               const bVal = formatVal(data.baseline[key]) ?? "—";
               const sVal = formatVal(data.simulated_state[key]) ?? "—";
               const changed = bVal !== sVal;
               const metricLabel = key.replace(/_/g, " ");
+
               return (
                 <div
                   key={key}
                   className={cn(
-                    "grid grid-cols-3 px-4 py-3 text-sm items-center gap-2",
-                    changed && "bg-emerald-50/40 dark:bg-emerald-950/10"
+                    "grid grid-cols-3 px-5 py-3 text-sm items-center gap-2 transition-colors",
+                    changed && "bg-emerald-500/5 dark:bg-emerald-950/15"
                   )}
                 >
-                  <div className="text-xs text-muted-foreground truncate min-w-0" title={metricLabel}>
+                  <div className="text-xs font-semibold text-foreground truncate min-w-0" title={metricLabel}>
                     {metricLabel}
                   </div>
-                  <div className="text-center font-medium tabular-nums truncate min-w-0" title={bVal}>
-                    {bVal}
+
+                  <div className="text-center font-medium tabular-nums text-muted-foreground truncate min-w-0" title={bVal}>
+                    <span className="rounded-lg bg-muted/60 px-2.5 py-1 text-xs border border-border/60">
+                      {bVal}
+                    </span>
                   </div>
-                  <div
-                    className={cn(
-                      "flex items-center justify-center gap-1 font-bold tabular-nums min-w-0 overflow-hidden",
-                      changed ? "text-emerald-700 dark:text-emerald-400" : "text-foreground"
+
+                  <div className="flex items-center justify-center gap-1.5 font-bold tabular-nums min-w-0 overflow-hidden" title={sVal}>
+                    {changed ? (
+                      <span className="inline-flex items-center gap-1 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 px-2.5 py-1 text-xs">
+                        <ArrowRight className="h-3 w-3 shrink-0" />
+                        <span className="truncate">{sVal}</span>
+                      </span>
+                    ) : (
+                      <span className="rounded-lg bg-muted/40 px-2.5 py-1 text-xs text-muted-foreground border border-transparent">
+                        {sVal}
+                      </span>
                     )}
-                    title={sVal}
-                  >
-                    {changed && <ArrowRight className="h-3 w-3 shrink-0 opacity-50" />}
-                    <span className="truncate">{sVal}</span>
                   </div>
                 </div>
               );
@@ -1627,53 +1794,65 @@ function RichResultDisplay({
         </div>
       )}
 
+      {/* ── List Impact & Strategic Directives ── */}
       {listImpact.map(([key, value]) => (
-        <div key={key} className="rounded-2xl border border-border bg-card overflow-hidden shadow-xs">
-          <div className={cn("px-4 py-3 border-b border-border text-xs font-bold uppercase tracking-widest truncate", meta.accentBg, meta.accentText)} title={key.replace(/_/g, " ")}>
-            {key.replace(/_/g, " ")}
+        <div key={key} className="rounded-3xl border border-border/80 bg-card overflow-hidden shadow-sm">
+          <div className={cn("px-5 py-3.5 border-b border-border flex items-center gap-2 font-bold text-xs uppercase tracking-wider", meta.accentBg, meta.accentText)}>
+            <Sparkles className="h-4 w-4 shrink-0" />
+            <span className="truncate" title={key.replace(/_/g, " ")}>
+              {key.replace(/_/g, " ")}
+            </span>
           </div>
-          <ul className="divide-y divide-border">
+          <ul className="divide-y divide-border/60 p-2">
             {(value as unknown[]).map((item, i) => (
-              <li key={i} className="flex items-start gap-3 px-4 py-3 text-sm">
-                <Sparkles className={cn("mt-0.5 h-3.5 w-3.5 shrink-0", meta.accentText)} />
-                <span className="min-w-0 flex-1 break-words leading-relaxed">{typeof item === "string" ? item : JSON.stringify(item)}</span>
+              <li key={i} className="flex items-start gap-3 px-3 py-2.5 text-xs text-foreground/90 rounded-xl hover:bg-muted/30 transition-colors">
+                <span className="mt-1 h-2 w-2 rounded-full bg-primary shrink-0" />
+                <span className="min-w-0 flex-1 break-words leading-relaxed font-normal">
+                  {typeof item === "string" ? item : JSON.stringify(item)}
+                </span>
               </li>
             ))}
           </ul>
         </div>
       ))}
 
+      {/* ── Warnings Box ── */}
       {data.warnings && data.warnings.length > 0 && (
-        <div className="rounded-2xl border border-amber-200 bg-amber-50 overflow-hidden dark:border-amber-800 dark:bg-amber-950/20">
-          <div className="flex items-center gap-2 border-b border-amber-200 dark:border-amber-800 px-4 py-3">
+        <div className="rounded-3xl border border-amber-500/30 bg-amber-500/10 p-4.5 shadow-sm dark:border-amber-500/25 dark:bg-amber-950/20 backdrop-blur-md">
+          <div className="flex items-center gap-2 mb-2 font-bold text-xs uppercase tracking-wider text-amber-800 dark:text-amber-300">
             <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0" />
-            <span className="text-xs font-bold uppercase tracking-widest text-amber-700 dark:text-amber-300">Warnings</span>
+            <span>Operational Risk Warnings ({data.warnings.length})</span>
           </div>
-          <ul className="divide-y divide-amber-100 dark:divide-amber-900">
+          <ul className="space-y-1.5 pl-6 list-disc text-xs text-amber-800/90 dark:text-amber-300/90 leading-relaxed">
             {data.warnings.map((w, i) => (
-              <li key={i} className="px-4 py-2.5 text-sm text-amber-700 dark:text-amber-300 break-words">{w}</li>
+              <li key={i} className="break-words">{w}</li>
             ))}
           </ul>
         </div>
       )}
 
+      {/* ── Model Assumptions Accordion ── */}
       {data.assumptions && Object.keys(data.assumptions).length > 0 && (
-        <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-xs">
+        <div className="rounded-3xl border border-border/80 bg-card overflow-hidden shadow-sm">
           <button
             onClick={() => setAssumOpen((v) => !v)}
-            className="flex w-full items-center justify-between px-4 py-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+            className="flex w-full items-center justify-between px-5 py-3.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
           >
-            <span>Model Assumptions</span>
+            <span>Model Assumptions & Constraints</span>
             <ChevronDown className={cn("h-4 w-4 transition-transform", assumOpen && "rotate-180")} />
           </button>
           {assumOpen && (
-            <div className="border-t border-border divide-y divide-border">
+            <div className="border-t border-border divide-y divide-border/60">
               {Object.entries(data.assumptions)
                 .filter(([, v]) => v !== null && typeof v !== "object")
                 .map(([key, value]) => (
-                  <div key={key} className="flex items-baseline justify-between gap-3 px-4 py-2.5 text-xs min-w-0">
-                    <span className="text-muted-foreground truncate min-w-0" title={key.replace(/_/g, " ")}>{key.replace(/_/g, " ")}</span>
-                    <span className="font-semibold text-right break-words min-w-0 max-w-[60%]">{String(value)}</span>
+                  <div key={key} className="flex items-baseline justify-between gap-3 px-5 py-2.5 text-xs min-w-0">
+                    <span className="text-muted-foreground truncate min-w-0" title={key.replace(/_/g, " ")}>
+                      {key.replace(/_/g, " ")}
+                    </span>
+                    <span className="font-semibold text-right break-words min-w-0 max-w-[60%] text-foreground">
+                      {String(value)}
+                    </span>
                   </div>
                 ))}
             </div>
@@ -1706,14 +1885,14 @@ function Card({
   return (
     <div
       className={cn(
-        "rounded-2xl border border-border bg-card shadow-xs",
+        "rounded-3xl border border-border/80 bg-card/95 backdrop-blur-md shadow-xs transition-all",
         overflowVisible ? "overflow-visible" : "overflow-hidden",
         className
       )}
     >
-      <div className={cn("px-5 py-3 border-b border-border rounded-t-2xl", meta.accentBg)}>
-        <div className="flex items-center gap-2">
-          {icon && <span className={cn("grid h-7 w-7 place-items-center rounded-lg", meta.badgeColor)}>{icon}</span>}
+      <div className={cn("px-5 py-3.5 border-b border-border/80 rounded-t-3xl", meta.accentBg)}>
+        <div className="flex items-center gap-2.5">
+          {icon && <span className={cn("grid h-7 w-7 place-items-center rounded-xl shadow-2xs", meta.badgeColor)}>{icon}</span>}
           <div>
             <div className="text-sm font-semibold text-foreground">{title}</div>
             {subtitle && <div className="text-xs text-muted-foreground">{subtitle}</div>}

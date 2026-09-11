@@ -29,23 +29,25 @@ import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 
 const PALETTE = [
-  "var(--pastel-sky)",
-  "var(--pastel-mint)",
-  "var(--pastel-lavender)",
-  "var(--pastel-peach)",
-  "var(--pastel-pink)",
-  "var(--pastel-yellow)",
-  "var(--pastel-blue)",
-  "var(--pastel-teal)",
-  "var(--pastel-rose)",
+  "#3b82f6", // Vibrant Sapphire Blue
+  "#10b981", // Emerald
+  "#8b5cf6", // Electric Violet
+  "#f59e0b", // Radiant Amber
+  "#f43f5e", // Rose
+  "#06b6d4", // Cyan
+  "#6366f1", // Indigo
+  "#ec4899", // Pink
 ];
 
 const chartTooltip = {
-  background: "var(--card)",
-  border: "1px solid var(--border)",
-  borderRadius: 12,
-  boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)",
+  background: "color-mix(in oklab, var(--card) 90%, transparent)",
+  backdropFilter: "blur(16px)",
+  WebkitBackdropFilter: "blur(16px)",
+  border: "1px solid color-mix(in oklab, var(--border) 80%, transparent)",
+  borderRadius: 14,
+  boxShadow: "0 12px 32px -4px rgba(0, 0, 0, 0.25), 0 4px 12px -2px rgba(0, 0, 0, 0.1)",
   color: "var(--foreground)",
+  padding: "10px 14px",
 };
 
 function formatHeaderKey(key: string): string {
@@ -132,15 +134,15 @@ export function VisualStageCard({
   return (
     <div className="flex flex-col h-full bg-card/95 backdrop-blur-md">
       {/* ── Top Header ── */}
-      <div className="flex items-center justify-between px-5 py-3.5 border-b bg-pastel-lavender/40">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-border/80 bg-card/90 backdrop-blur-xl">
         <div className="flex items-center gap-3 min-w-0">
-          <span className="w-9 h-9 rounded-xl bg-primary/15 grid place-items-center shrink-0 shadow-xs">
+          <span className="w-10 h-10 rounded-2xl bg-primary/10 border border-primary/20 grid place-items-center shrink-0 shadow-xs">
             <ChartIcon className="w-5 h-5 text-primary" />
           </span>
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <h3 className="text-sm font-semibold text-foreground truncate">{chartTitle}</h3>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-background/80 border text-muted-foreground shadow-2xs shrink-0">
+              <h3 className="text-sm font-bold text-foreground truncate tracking-tight">{chartTitle}</h3>
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-muted/80 border border-border/80 text-foreground/80 shadow-2xs shrink-0">
                 {chartBadge}
               </span>
             </div>
@@ -153,13 +155,13 @@ export function VisualStageCard({
         {/* Action Controls */}
         <div className="flex items-center gap-2 shrink-0">
           {/* View toggle */}
-          <div className="flex items-center p-0.5 bg-background/80 border rounded-lg shadow-2xs">
+          <div className="flex items-center p-1 bg-muted/60 border border-border/80 rounded-xl shadow-2xs">
             <button
               onClick={() => setViewMode("chart")}
               className={cn(
-                "px-2.5 py-1 text-xs font-medium rounded-md transition-colors flex items-center gap-1.5",
+                "px-3 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 cursor-pointer",
                 viewMode === "chart"
-                  ? "bg-primary text-primary-foreground shadow-2xs"
+                  ? "bg-primary text-primary-foreground shadow-xs"
                   : "text-muted-foreground hover:text-foreground",
               )}
             >
@@ -169,9 +171,9 @@ export function VisualStageCard({
             <button
               onClick={() => setViewMode("table")}
               className={cn(
-                "px-2.5 py-1 text-xs font-medium rounded-md transition-colors flex items-center gap-1.5",
+                "px-3 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 cursor-pointer",
                 viewMode === "table"
-                  ? "bg-primary text-primary-foreground shadow-2xs"
+                  ? "bg-primary text-primary-foreground shadow-xs"
                   : "text-muted-foreground hover:text-foreground",
               )}
             >
@@ -183,7 +185,7 @@ export function VisualStageCard({
           {/* Close stage button */}
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-lg grid place-items-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+            className="w-9 h-9 rounded-xl grid place-items-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer"
             aria-label="Close visual stage"
             title="Close visual stage (expand chat)"
           >
@@ -208,7 +210,15 @@ export function VisualStageCard({
                       bottom: chartItems.length > 5 ? 30 : 10,
                     }}
                   >
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.3} />
+                    <defs>
+                      {metricKeys.slice(0, 3).map((_, i) => (
+                        <linearGradient key={`barGrad-${i}`} id={`barGrad-${i}`} x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor={PALETTE[i % PALETTE.length]} stopOpacity={0.95} />
+                          <stop offset="100%" stopColor={PALETTE[i % PALETTE.length]} stopOpacity={0.7} />
+                        </linearGradient>
+                      ))}
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.2} stroke="var(--border)" />
                     <XAxis
                       dataKey={categoryKey}
                       stroke="var(--muted-foreground)"
@@ -228,7 +238,7 @@ export function VisualStageCard({
                     <Tooltip
                       contentStyle={chartTooltip}
                       itemStyle={{ color: "var(--foreground)" }}
-                      labelStyle={{ color: "var(--foreground)" }}
+                      labelStyle={{ color: "var(--foreground)", fontWeight: 600 }}
                       formatter={(value: any, name: any) => [value, formatHeaderKey(String(name))]}
                       labelFormatter={(label: any, payload: any) => {
                         const row = payload?.[0]?.payload;
@@ -244,8 +254,8 @@ export function VisualStageCard({
                         key={key}
                         dataKey={key}
                         name={formatHeaderKey(key)}
-                        fill={PALETTE[i % PALETTE.length]}
-                        radius={[6, 6, 0, 0]}
+                        fill={`url(#barGrad-${i})`}
+                        radius={[8, 8, 2, 2]}
                       />
                     ))}
                   </BarChart>
@@ -255,45 +265,45 @@ export function VisualStageCard({
 
             {isPie && (
               <div className="w-full h-full flex flex-col md:flex-row items-center justify-center gap-8 py-4">
-                <div className="w-full md:w-1/2 h-64 sm:h-72">
+                <div className="w-full md:w-1/2 h-64 sm:h-72 relative flex items-center justify-center">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
                         data={chartItems}
                         dataKey={metricKeys[0] || "value"}
                         nameKey={categoryKey}
-                        innerRadius={55}
+                        innerRadius={65}
                         outerRadius={105}
-                        paddingAngle={3}
+                        paddingAngle={4}
                       >
                         {chartItems.map((_, i) => (
                           <Cell
                             key={i}
                             fill={PALETTE[i % PALETTE.length]}
                             stroke="var(--card)"
-                            strokeWidth={2}
+                            strokeWidth={3}
                           />
                         ))}
                       </Pie>
-                      <Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} labelStyle={{ color: "var(--foreground)" }} />
+                      <Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} labelStyle={{ color: "var(--foreground)", fontWeight: 600 }} />
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
-                <div className="w-full md:w-1/2 flex flex-col gap-2.5 max-h-72 overflow-y-auto pr-2">
-                  <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
+                <div className="w-full md:w-1/2 flex flex-col gap-2 max-h-72 overflow-y-auto pr-2">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">
                     Distribution Breakdown
                   </h4>
                   {chartItems.map((item, i) => (
                     <div
                       key={i}
-                      className="flex items-center justify-between p-2 rounded-lg bg-muted/40 text-xs hover:bg-muted/70 transition-colors"
+                      className="flex items-center justify-between p-2.5 rounded-xl border border-border/60 bg-muted/30 text-xs hover:bg-muted/60 transition-colors"
                     >
-                      <div className="flex items-center gap-2 min-w-0">
+                      <div className="flex items-center gap-2.5 min-w-0">
                         <span
-                          className="w-3 h-3 rounded-full shrink-0 shadow-2xs"
+                          className="w-3 h-3 rounded-full shrink-0 shadow-xs"
                           style={{ backgroundColor: PALETTE[i % PALETTE.length] }}
                         />
-                        <span className="font-medium text-foreground truncate">
+                        <span className="font-semibold text-foreground truncate">
                           {String(item[categoryKey] ?? "")}
                         </span>
                       </div>
@@ -320,11 +330,11 @@ export function VisualStageCard({
                   >
                     <defs>
                       <linearGradient id="stageGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.4} />
-                        <stop offset="95%" stopColor="var(--primary)" stopOpacity={0.0} />
+                        <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.5} />
+                        <stop offset="100%" stopColor="var(--primary)" stopOpacity={0.02} />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.3} />
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.2} stroke="var(--border)" />
                     <XAxis
                       dataKey={categoryKey}
                       stroke="var(--muted-foreground)"
@@ -340,13 +350,13 @@ export function VisualStageCard({
                       tickLine={false}
                       axisLine={false}
                     />
-                    <Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} labelStyle={{ color: "var(--foreground)" }} />
+                    <Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} labelStyle={{ color: "var(--foreground)", fontWeight: 600 }} />
                     <Area
                       type="monotone"
                       dataKey={metricKeys[0]}
                       name={formatHeaderKey(metricKeys[0])}
                       stroke="var(--primary)"
-                      strokeWidth={2.5}
+                      strokeWidth={3}
                       fill="url(#stageGrad)"
                       dot={{ r: 4, fill: "var(--primary)" }}
                       activeDot={{ r: 6 }}
