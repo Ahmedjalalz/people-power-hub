@@ -47,7 +47,7 @@ function ChatbotPage() {
         <div
           className={cn(
             "h-full transition-all duration-300",
-            activeVisual ? "w-full lg:w-[420px] shrink-0" : "w-full max-w-2xl mx-auto",
+            activeVisual ? "w-full lg:w-[460px] xl:w-[490px] shrink-0" : "w-full max-w-4xl lg:max-w-5xl mx-auto",
           )}
         >
           <Chatbot
