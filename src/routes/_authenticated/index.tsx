@@ -136,6 +136,7 @@ function HRInsights() {
       {/* ── Insight Cards Grid ── */}
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         <InsightCard
+          className="card-enter stagger-1"
           onClick={() => setOpenCard("attrition")}
           tint="bg-pastel-teal"
           tintVar="--pastel-teal"
@@ -163,6 +164,7 @@ function HRInsights() {
         />
 
         <InsightCard
+          className="card-enter stagger-2"
           onClick={() => setOpenCard("headcount")}
           tint="bg-pastel-sky"
           tintVar="--pastel-sky"
@@ -190,6 +192,7 @@ function HRInsights() {
 
 
         <InsightCard
+          className="card-enter stagger-3"
           onClick={() => setOpenCard("performance")}
           tint="bg-pastel-mint"
           tintVar="--pastel-mint"

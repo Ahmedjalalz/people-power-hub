@@ -13,14 +13,24 @@ export const Route = createFileRoute("/_authenticated")({
 
 function AuthenticatedLayout() {
   const isChatbotPage = useRouterState({ select: (state) => state.location.pathname === "/chatbot" });
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+
   return (
     <SidebarProvider>
       <div className={cn("flex w-full bg-background", isChatbotPage ? "h-screen overflow-hidden" : "min-h-screen")}>
         <AppSidebar />
         <div className={cn("flex flex-1 flex-col min-w-0", isChatbotPage && "h-full overflow-hidden")}>
           <Header />
-          <main className={cn("flex-1", isChatbotPage ? "min-h-0 overflow-hidden" : "")}>
-            <Outlet />
+          <main className={cn("flex-1 flex flex-col min-w-0", isChatbotPage ? "min-h-0 overflow-hidden" : "")}>
+            <div
+              key={pathname}
+              className={cn(
+                "page-enter flex-1 flex flex-col min-w-0",
+                isChatbotPage && "h-full min-h-0 overflow-hidden"
+              )}
+            >
+              <Outlet />
+            </div>
           </main>
         </div>
         {!isChatbotPage && <FloatingChatbot />}

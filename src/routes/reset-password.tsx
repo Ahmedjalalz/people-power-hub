@@ -64,7 +64,7 @@ function ResetPasswordPage() {
   if (!token && !success) {
     return (
       <main className="grid min-h-screen place-items-center bg-background px-6 py-12">
-        <div className="w-full max-w-md">
+        <div className="w-full max-w-md page-enter">
           <div className="relative overflow-hidden rounded-xl border bg-card p-7 shadow-xl text-center">
              <h1 className="text-xl font-semibold tracking-tight text-red-500">Invalid Reset Link</h1>
              <p className="mt-2 text-sm text-muted-foreground">The password reset link is invalid or missing the required token.</p>
@@ -78,7 +78,7 @@ function ResetPasswordPage() {
   }
 
   return <main className="grid min-h-screen place-items-center bg-background px-6 py-12">
-    <div className="w-full max-w-md"><div className="relative overflow-hidden rounded-xl border bg-card p-7 shadow-xl">
+    <div className="w-full max-w-md page-enter"><div className="relative overflow-hidden rounded-xl border bg-card p-7 shadow-xl">
       <div aria-hidden className="blob pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-pastel-teal opacity-60 blur-3xl" />
       
       <div className="relative">

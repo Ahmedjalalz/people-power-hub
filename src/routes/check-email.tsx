@@ -10,7 +10,7 @@ export const Route = createFileRoute("/check-email")({
 function CheckEmailPage() {
   return (
     <main className="grid min-h-screen place-items-center bg-background px-6 py-12">
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-md page-enter">
         <div className="relative overflow-hidden rounded-xl border bg-card p-7 shadow-xl text-center">
           <div aria-hidden className="blob pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-pastel-teal opacity-60 blur-3xl" />
           

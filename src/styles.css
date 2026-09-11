@@ -328,3 +328,65 @@
   content: "";
 }
 
+/* ── Page Entrance Motion & Micro-Cascades ── */
+@keyframes page-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes page-fade {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes card-cascade {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.99);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.page-enter {
+  animation: page-enter 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: transform, opacity;
+}
+
+.page-fade {
+  animation: page-fade 0.24s ease-out both;
+  will-change: opacity;
+}
+
+.card-enter {
+  animation: card-cascade 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: transform, opacity;
+}
+
+.stagger-1 { animation-delay: 50ms; }
+.stagger-2 { animation-delay: 100ms; }
+.stagger-3 { animation-delay: 150ms; }
+.stagger-4 { animation-delay: 200ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .page-enter,
+  .page-fade,
+  .card-enter {
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
+
