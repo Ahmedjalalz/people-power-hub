@@ -15,6 +15,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTheme } from "@/lib/theme";
 import { getCurrentUser, logout as clearLocalSession } from "@/lib/auth";
 import { getCriticalOpenCount } from "@/lib/trigger-engine";
+import { fetchDecisionCases } from "@/services/decision-cases";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -66,6 +67,12 @@ export function AppSidebar() {
     queryFn: getCurrentUser,
   });
 
+  const { data: decisionCasesData } = useQuery({
+    queryKey: ["decision-cases"],
+    queryFn: ({ signal }) => fetchDecisionCases({ active_only: false }, signal),
+    staleTime: 60 * 1000,
+  });
+
   const signOut = async () => {
     close();
     await queryClient.cancelQueries();
@@ -80,15 +87,24 @@ export function AppSidebar() {
   const isTriggersActive = pathname === "/triggers";
   const isAssistantActive = pathname === "/chatbot";
 
-  const [criticalCount, setCriticalCount] = useState(() => getCriticalOpenCount());
+  const [localCriticalCount, setLocalCriticalCount] = useState(() => getCriticalOpenCount());
 
   React.useEffect(() => {
     function handleUpdate() {
-      setCriticalCount(getCriticalOpenCount());
+      setLocalCriticalCount(getCriticalOpenCount());
     }
     window.addEventListener("trigger-cases-updated", handleUpdate);
     return () => window.removeEventListener("trigger-cases-updated", handleUpdate);
   }, []);
+
+  const criticalCount = React.useMemo(() => {
+    if (decisionCasesData?.cases && Array.isArray(decisionCasesData.cases)) {
+      return decisionCasesData.cases.filter(
+        (c) => c.priority === "Critical" && c.status !== "Resolved" && c.status !== "Closed"
+      ).length;
+    }
+    return localCriticalCount;
+  }, [decisionCasesData, localCriticalCount]);
 
   const userInitial = (user?.full_name?.trim() || user?.email?.trim() || "U")
     .charAt(0)

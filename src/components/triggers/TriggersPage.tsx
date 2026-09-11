@@ -200,6 +200,14 @@ export function TriggersPage() {
     mutationFn: ({ caseId, status }: { caseId: string; status: DecisionCaseStatus }) =>
       updateDecisionCaseStatus(caseId, status),
     onSuccess: (updatedRecord, { caseId, status }) => {
+      // Optimistically update React Query cache so sidebar badge updates immediately
+      queryClient.setQueryData(["decision-cases"], (old: any) => {
+        if (!old?.cases) return old;
+        return {
+          ...old,
+          cases: old.cases.map((c: any) => (c.id === caseId ? { ...c, status } : c)),
+        };
+      });
       queryClient.invalidateQueries({ queryKey: ["decision-cases"] });
       // Update audit entry in user metadata
       const currentCaseMeta = userMeta[caseId] || {};
@@ -230,6 +238,16 @@ export function TriggersPage() {
     }
     // Graceful fallback to stored seed cases if backend is loading or unavailable
     return loadStoredCases();
+  }, [backendResult, userMeta]);
+
+  // Sync fresh cases to local storage and broadcast to listeners (like AppSidebar)
+  useEffect(() => {
+    if (backendResult?.cases && backendResult.cases.length > 0) {
+      const adapted = backendResult.cases.map((record) =>
+        adaptBackendCaseToTriggerCase(record, userMeta)
+      );
+      saveCases(adapted);
+    }
   }, [backendResult, userMeta]);
 
   // Set initial selected case once cases load
