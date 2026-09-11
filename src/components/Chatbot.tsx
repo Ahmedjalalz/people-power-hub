@@ -48,7 +48,7 @@ import {
 } from "recharts";
 import { parseVisualData, analyzeDataStructure } from "@/lib/visual-extractor";
 
-const chartTooltip = { background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12 };
+const chartTooltip = { background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12, color: "var(--foreground)" };
 
 // ── Web Speech API type declaration ──────────────────────────────────────────
 interface ISpeechRecognition extends EventTarget {
@@ -1102,7 +1102,7 @@ function InlineVisualView({
                 <Cell key={index} fill={colors[index % colors.length]} />
               ))}
             </Pie>
-            <Tooltip contentStyle={chartTooltip} />
+            <Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} labelStyle={{ color: "var(--foreground)" }} />
           </PieChart>
         </ResponsiveContainer>
       </div>
@@ -1116,7 +1116,7 @@ function InlineVisualView({
           <AreaChart data={parsedData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
             <XAxis dataKey={categoryKey} tick={{ fontSize: 10 }} />
             <YAxis tick={{ fontSize: 10 }} />
-            <Tooltip contentStyle={chartTooltip} />
+            <Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} labelStyle={{ color: "var(--foreground)" }} />
             <Area type="monotone" dataKey={primaryMetric} stroke="#0d9488" fill="#0d9488" fillOpacity={0.25} />
           </AreaChart>
         </ResponsiveContainer>
@@ -1157,7 +1157,7 @@ function InlineVisualView({
         <BarChart data={parsedData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
           <XAxis dataKey={categoryKey} tick={{ fontSize: 10 }} />
           <YAxis tick={{ fontSize: 10 }} />
-          <Tooltip contentStyle={chartTooltip} />
+          <Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} labelStyle={{ color: "var(--foreground)" }} />
           <Bar dataKey={primaryMetric} fill="#0d9488" radius={[4, 4, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>

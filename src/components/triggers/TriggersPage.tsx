@@ -607,10 +607,10 @@ export function TriggersPage() {
                       type="button"
                       onClick={() => setSelectedCaseId((curr) => (curr === c.id ? null : c.id))}
                       className={cn(
-                        "w-full rounded-2xl border p-4 text-left transition-all cursor-pointer shadow-xs",
+                        "w-full rounded-2xl border p-4 text-left transition-all duration-200 cursor-pointer shadow-xs",
                         isSelected
                           ? "border-primary bg-primary/5 shadow-md ring-2 ring-primary/20"
-                          : "border-border bg-card hover:border-border/80 hover:bg-muted/40"
+                          : "border-border bg-card hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-sm hover:bg-muted/30"
                       )}
                     >
                       {/* Top Badges */}

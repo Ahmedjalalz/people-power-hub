@@ -1414,7 +1414,7 @@ function RunButton({
         className={cn(
           "group w-full overflow-hidden rounded-2xl px-6 py-4 text-left font-semibold transition-all",
           canRun && !isPending
-            ? "cursor-pointer shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0"
+            ? "cursor-pointer shadow-md hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-200"
             : "cursor-not-allowed opacity-50",
           meta.badgeColor
         )}

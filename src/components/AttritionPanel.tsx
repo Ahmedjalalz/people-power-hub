@@ -28,7 +28,7 @@ import {
 
 type SubView = "trend" | "people" | "reasons" | "departments";
 
-const chartTooltip = { background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12 };
+const chartTooltip = { background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12, color: "var(--foreground)" };
 
 export function AttritionPanel({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [sub, setSub] = useState<SubView | null>(null);
@@ -210,7 +210,7 @@ export function AttritionPanel({ open, onClose }: { open: boolean; onClose: () =
                       <Cell key={segment.risk_status} fill={segment.risk_status === "At Risk" ? "var(--chart-2)" : "var(--chart-5)"} />
                     ))}
                   </Pie>
-                  <Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} />
+                  <Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} labelStyle={{ color: "var(--foreground)" }} />
                 </PieChart>
               </ResponsiveContainer>
             </div>
@@ -248,7 +248,7 @@ export function AttritionPanel({ open, onClose }: { open: boolean; onClose: () =
                       <Cell key={segment.label} fill={index === topRiskDriversQuery.data.chart_segments.length - 1 ? "var(--muted-foreground)" : ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--chart-4)"][index % 4]} />
                     ))}
                   </Pie>
-                  <Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} />
+                  <Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} labelStyle={{ color: "var(--foreground)" }} />
                 </PieChart>
               </ResponsiveContainer>
             </div>
@@ -286,7 +286,7 @@ export function AttritionPanel({ open, onClose }: { open: boolean; onClose: () =
               <BarChart data={departmentRiskQuery.data.departments} layout="vertical">
                 <XAxis type="number" />
                 <YAxis type="category" dataKey="department" width={100} />
-                <Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} />
+                <Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} labelStyle={{ color: "var(--foreground)" }} />
                 <Bar dataKey="people_at_risk" fill="var(--chart-4)" radius={[0, 8, 8, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -368,16 +368,16 @@ function PersonPanel({
                 <p className="text-sm text-muted-foreground">Profile details unavailable.</p>
               )}
             </section>
-            <section className="rounded-xl bg-pastel-teal/50 p-4">
-              <div className="mb-3 text-xs uppercase tracking-wide text-muted-foreground">Recommended replacements</div>
+            <section className="rounded-xl border border-border/80 bg-card p-4 shadow-xs">
+              <div className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Recommended replacements</div>
               <div className="space-y-3">
                 {detail.recommended_replacements.map((replacement) => (
-                  <div key={replacement.employee_id} className="text-sm">
-                    <div className="font-medium">
-                      {replacement.rank}. <Link to="/employee/$employeeId" params={{ employeeId: replacement.employee_id }} className="text-primary underline decoration-primary/40 underline-offset-4 hover:decoration-primary">{replacement.employee_name}</Link> <span className="text-muted-foreground">({replacement.final_score}%)</span>
+                  <div key={replacement.employee_id} className="text-sm border-b border-border/40 pb-2.5 last:border-b-0 last:pb-0">
+                    <div className="font-semibold text-foreground">
+                      {replacement.rank}. <Link to="/employee/$employeeId" params={{ employeeId: replacement.employee_id }} className="text-primary underline decoration-primary/40 underline-offset-4 hover:decoration-primary transition-colors">{replacement.employee_name}</Link> <span className="text-xs font-normal text-muted-foreground">({replacement.final_score}%)</span>
                     </div>
-                    <p className="text-muted-foreground">{replacement.current_position} · {replacement.readiness} · {replacement.qualification_status}</p>
-                    <p className="mt-1 text-xs text-muted-foreground">{replacement.reasons[0]}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{replacement.current_position} · {replacement.readiness} · {replacement.qualification_status}</p>
+                    <p className="mt-1 text-xs text-foreground/80">{replacement.reasons[0]}</p>
                   </div>
                 ))}
               </div>

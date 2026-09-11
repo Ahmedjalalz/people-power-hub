@@ -84,7 +84,7 @@ export function StatTile({
   label,
   value,
   hint,
-  tint = "bg-pastel-teal",
+  tint = "bg-card border-border/80",
 }: {
   label: string;
   value: string;
@@ -92,29 +92,36 @@ export function StatTile({
   tint?: string;
 }) {
   return (
-    <div className={cn("rounded-xl border p-4", tint)}>
-      <div className="text-[11px] font-medium uppercase tracking-[0.12em] text-foreground/60">{label}</div>
-      <div className="mt-1 text-2xl font-semibold tracking-tight">{value}</div>
-      {hint && <div className="mt-0.5 text-[11px] text-foreground/60">{hint}</div>}
+    <div className={cn("rounded-xl border p-4 shadow-xs transition-all hover:shadow-sm", tint)}>
+      <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">{label}</div>
+      <div className="mt-1 text-2xl font-bold tracking-tight text-foreground tabular-nums">{value}</div>
+      {hint && <div className="mt-0.5 text-[11px] text-muted-foreground">{hint}</div>}
     </div>
   );
 }
 
 export function bandTint(band?: string) {
   const value = (band ?? "").toLowerCase();
-  if (value.includes("exceptional")) return "bg-pastel-mint";
-  if (value.includes("strong")) return "bg-pastel-teal";
-  if (value.includes("meets") && !value.includes("partial")) return "bg-pastel-sky";
-  if (value.includes("partial")) return "bg-pastel-yellow";
-  if (value.includes("improvement")) return "bg-pastel-peach";
-  return "bg-muted";
+  if (value.includes("exceptional"))
+    return "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60";
+  if (value.includes("strong"))
+    return "bg-teal-100 text-teal-800 dark:bg-teal-950/60 dark:text-teal-300 border border-teal-200 dark:border-teal-800/60";
+  if (value.includes("meets") && !value.includes("partial"))
+    return "bg-sky-100 text-sky-800 dark:bg-sky-950/60 dark:text-sky-300 border border-sky-200 dark:border-sky-800/60";
+  if (value.includes("partial"))
+    return "bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60";
+  if (value.includes("improvement"))
+    return "bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200 dark:border-rose-800/60";
+  return "bg-muted text-muted-foreground border border-border";
 }
 
 export function trendTint(trend?: string) {
   const value = (trend ?? "").toLowerCase();
-  if (value.includes("improv")) return "bg-pastel-mint";
-  if (value.includes("declin")) return "bg-pastel-rose";
-  return "bg-pastel-blue";
+  if (value.includes("improv"))
+    return "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60";
+  if (value.includes("declin"))
+    return "bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200 dark:border-rose-800/60";
+  return "bg-sky-100 text-sky-800 dark:bg-sky-950/60 dark:text-sky-300 border border-sky-200 dark:border-sky-800/60";
 }
 
 export function num(value: unknown, digits = 1): string {

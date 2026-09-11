@@ -23,7 +23,7 @@ import { Link } from "@tanstack/react-router";
 import { CenterPanel } from "@/components/CenterPanel";
 import { cn } from "@/lib/utils";
 
-const chartTooltip = { background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12 };
+const chartTooltip = { background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12, color: "var(--foreground)" };
 
 type Filters = {
   department: string;
@@ -497,10 +497,14 @@ function Select({
 }
 
 function RiskBadge({ level }: { level: string }) {
-  const tone = {
-    Low: "bg-pastel-mint", Medium: "bg-pastel-yellow", High: "bg-pastel-peach", Critical: "bg-pastel-rose",
-  }[level] || "bg-muted";
-  return <span className={cn("rounded-full px-2 py-0.5 text-[11px] font-medium", tone)}>{level}</span>;
+  const toneMap: Record<string, string> = {
+    Low: "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60",
+    Medium: "bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60",
+    High: "bg-orange-100 text-orange-800 dark:bg-orange-950/60 dark:text-orange-300 border border-orange-200 dark:border-orange-800/60",
+    Critical: "bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200 dark:border-rose-800/60",
+  };
+  const tone = toneMap[level] || "bg-muted text-muted-foreground border border-border";
+  return <span className={cn("rounded-full px-2.5 py-0.5 text-[11px] font-semibold", tone)}>{level}</span>;
 }
 
 function DeptComparison({ rows }: { rows: { name: string; approved: number; budgeted: number; actual: number }[] }) {
@@ -517,7 +521,7 @@ function DeptComparison({ rows }: { rows: { name: string; approved: number; budg
             <BarChart data={rows} margin={{ left: -18 }}>
               <XAxis dataKey="name" stroke="var(--muted-foreground)" fontSize={10} interval={0} angle={-25} textAnchor="end" height={60} />
               <YAxis stroke="var(--muted-foreground)" fontSize={11} />
-              <Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} />
+              <Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} labelStyle={{ color: "var(--foreground)" }} />
               <Legend wrapperStyle={{ fontSize: 11 }} />
               <Bar name="Approved" dataKey="approved" fill="var(--pastel-sky)" radius={[6, 6, 0, 0]} />
               <Bar name="Budgeted" dataKey="budgeted" fill="var(--pastel-teal)" radius={[6, 6, 0, 0]} />
@@ -557,7 +561,7 @@ function TrendChart({ data }: { data: { month: string; people: number; approved?
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium">Latest Headcount: {last} employees</span>
-          <span className={cn("rounded-full px-2 py-0.5 text-[11px] font-medium", growth >= 0 ? "bg-pastel-mint" : "bg-pastel-peach")}>
+          <span className={cn("rounded-full px-2.5 py-0.5 text-[11px] font-semibold border", growth >= 0 ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/60" : "bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300 border-rose-200 dark:border-rose-800/60")}>
             {growth >= 0 ? "+" : ""}{growth.toFixed(1)}% growth
           </span>
         </div>
@@ -573,7 +577,7 @@ function TrendChart({ data }: { data: { month: string; people: number; approved?
             </defs>
             <XAxis dataKey="month" stroke="var(--muted-foreground)" fontSize={10} interval={Math.max(0, Math.floor(data.length / 8))} />
             <YAxis stroke="var(--muted-foreground)" fontSize={11} domain={["dataMin - 10", "dataMax + 10"]} />
-            <Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} />
+            <Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} labelStyle={{ color: "var(--foreground)" }} />
             <Area type="monotone" name="Actual Employees" dataKey="people" stroke="var(--primary)" strokeWidth={2.5} fill="url(#hcFill)" animationDuration={900} />
           </AreaChart>
         </ResponsiveContainer>
@@ -591,7 +595,7 @@ function MovementTrendChart({ data }: { data: { month: string; joiners: number; 
           <LineChart data={data} margin={{ left: -18 }}>
             <XAxis dataKey="month" stroke="var(--muted-foreground)" fontSize={10} interval={Math.max(0, Math.floor(data.length / 8))} />
             <YAxis stroke="var(--muted-foreground)" fontSize={11} />
-            <Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} />
+            <Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} labelStyle={{ color: "var(--foreground)" }} />
             <Legend wrapperStyle={{ fontSize: 11 }} />
             <Line type="monotone" name="Joiners" dataKey="joiners" stroke="var(--pastel-mint)" strokeWidth={2.5} dot={false} />
             <Line type="monotone" name="Leavers" dataKey="leavers" stroke="var(--pastel-rose)" strokeWidth={2.5} dot={false} />
@@ -618,7 +622,7 @@ function DonutCard({
               <Pie data={data} dataKey="value" nameKey="label" innerRadius={42} outerRadius={68} paddingAngle={2}>
                 {data.map((row) => <Cell key={row.label} fill={row.color} stroke="var(--card)" />)}
               </Pie>
-              <Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} />
+              <Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} labelStyle={{ color: "var(--foreground)" }} />
             </PieChart>
           </ResponsiveContainer>
         </div>

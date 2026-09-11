@@ -45,6 +45,7 @@ const chartTooltip = {
   border: "1px solid var(--border)",
   borderRadius: 12,
   boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)",
+  color: "var(--foreground)",
 };
 
 function formatHeaderKey(key: string): string {
@@ -227,6 +228,7 @@ export function VisualStageCard({
                     <Tooltip
                       contentStyle={chartTooltip}
                       itemStyle={{ color: "var(--foreground)" }}
+                      labelStyle={{ color: "var(--foreground)" }}
                       formatter={(value: any, name: any) => [value, formatHeaderKey(String(name))]}
                       labelFormatter={(label: any, payload: any) => {
                         const row = payload?.[0]?.payload;
@@ -273,7 +275,7 @@ export function VisualStageCard({
                           />
                         ))}
                       </Pie>
-                      <Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} />
+                      <Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} labelStyle={{ color: "var(--foreground)" }} />
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
@@ -338,7 +340,7 @@ export function VisualStageCard({
                       tickLine={false}
                       axisLine={false}
                     />
-                    <Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} />
+                    <Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} labelStyle={{ color: "var(--foreground)" }} />
                     <Area
                       type="monotone"
                       dataKey={metricKeys[0]}

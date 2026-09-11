@@ -28,9 +28,9 @@ export function InsightCard({
       onClick={onClick}
       style={{ ["--tile" as string]: `var(${tintVar})` }}
       className={cn(
-        "group relative flex h-[280px] flex-col overflow-hidden rounded-xl border bg-card p-5 text-left transition-all",
-        "hover:shadow-[0_20px_40px_-24px_color-mix(in_oklab,var(--tile)_70%,transparent)]",
-        "hover:-translate-y-0.5 hover:border-primary/40",
+        "group relative flex h-[280px] flex-col overflow-hidden rounded-2xl border border-border/80 bg-card p-5 text-left transition-all duration-200 cursor-pointer",
+        "hover:shadow-lg hover:shadow-primary/5",
+        "hover:-translate-y-1 hover:border-primary/40 active:translate-y-0",
         className,
       )}
     >
@@ -42,7 +42,7 @@ export function InsightCard({
       />
       <div className="relative mb-3 flex items-center justify-between">
         <div className={cn("icon-tile", tint)}>{icon}</div>
-        <ChevronRight className="h-4 w-4 text-muted-foreground transition-all group-hover:translate-x-0.5 group-hover:text-foreground" />
+        <ChevronRight className="h-4 w-4 text-muted-foreground transition-all duration-200 group-hover:translate-x-1 group-hover:text-foreground" />
       </div>
       <div className="relative mb-1 text-[11px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
         {label}

@@ -226,16 +226,16 @@ function ProfileHeader({ employee }: { employee: Employee }) {
             </div>
           </div>
           <div className="flex flex-wrap gap-2 text-xs">
-            <Pill tint="bg-pastel-sky">{employee.id}</Pill>
-            <Pill tint="bg-pastel-mint">{employee.employeeStatus}</Pill>
-            <Pill tint="bg-pastel-lavender">{employee.workMode}</Pill>
+            <Pill tint="bg-sky-100 text-sky-800 dark:bg-sky-950/60 dark:text-sky-300 border border-sky-200 dark:border-sky-800/60">{employee.id}</Pill>
+            <Pill tint="bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60">{employee.employeeStatus}</Pill>
+            <Pill tint="bg-violet-100 text-violet-800 dark:bg-violet-950/60 dark:text-violet-300 border border-violet-200 dark:border-violet-800/60">{employee.workMode}</Pill>
             <Pill
               tint={
                 employee.attritionLabel === "High risk"
-                  ? "bg-pastel-peach"
+                  ? "bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200 dark:border-rose-800/60"
                   : employee.attritionLabel === "Medium risk"
-                    ? "bg-pastel-yellow"
-                    : "bg-pastel-mint"
+                    ? "bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60"
+                    : "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60"
               }
             >
               {employee.attritionLabel}
@@ -265,7 +265,7 @@ function QuickFact({ label, value }: { label: string; value: string }) {
 
 function Pill({ children, tint }: { children: ReactNode; tint: string }) {
   return (
-    <span className={cn("rounded-full px-3 py-1 font-medium shadow-sm", tint)}>{children}</span>
+    <span className={cn("rounded-full px-3 py-1 font-semibold shadow-xs", tint)}>{children}</span>
   );
 }
 
@@ -311,9 +311,30 @@ function GaugeCard({
   );
 }
 
+const CRITICALITY_CONFIG: Record<Criticality, { badge: string; bar: string; glow: string; text: string }> = {
+  High: {
+    badge: "bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200 dark:border-rose-800/60",
+    bar: "bg-rose-500",
+    glow: "bg-rose-500/20",
+    text: "Protect this role",
+  },
+  Medium: {
+    badge: "bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60",
+    bar: "bg-amber-500",
+    glow: "bg-amber-500/20",
+    text: "Plan ahead",
+  },
+  Low: {
+    badge: "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60",
+    bar: "bg-emerald-500",
+    glow: "bg-emerald-500/20",
+    text: "Low impact",
+  },
+};
+
 function CriticalityCard({ level, title }: { level: Criticality; title: string }) {
   const steps: Criticality[] = ["Low", "Medium", "High"];
-  const tint = level === "High" ? "bg-pastel-peach" : level === "Medium" ? "bg-pastel-yellow" : "bg-pastel-mint";
+  const config = CRITICALITY_CONFIG[level] || CRITICALITY_CONFIG.Low;
   const copy =
     level === "High"
       ? "Hard to backfill quickly — losing this person would disrupt delivery."
@@ -324,7 +345,7 @@ function CriticalityCard({ level, title }: { level: Criticality; title: string }
     <div className="relative overflow-hidden rounded-xl border bg-card p-5 shadow-sm">
       <div
         aria-hidden
-        className={cn("pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full blur-3xl opacity-60", tint)}
+        className={cn("pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full blur-3xl opacity-60", config.glow)}
       />
       <div className="relative">
         <div className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
@@ -332,8 +353,8 @@ function CriticalityCard({ level, title }: { level: Criticality; title: string }
         </div>
         <div className="mt-2 flex items-baseline gap-2">
           <span className="text-3xl font-semibold">{level}</span>
-          <span className={cn("rounded-full px-2.5 py-0.5 text-[11px] font-medium", tint)}>
-            {level === "High" ? "Protect this role" : level === "Medium" ? "Plan ahead" : "Low impact"}
+          <span className={cn("rounded-full px-2.5 py-0.5 text-[11px] font-semibold", config.badge)}>
+            {config.text}
           </span>
         </div>
         <div className="mt-4 flex gap-1.5">
@@ -341,8 +362,8 @@ function CriticalityCard({ level, title }: { level: Criticality; title: string }
             <div
               key={step}
               className={cn(
-                "h-2.5 flex-1 rounded-full",
-                steps.indexOf(step) <= steps.indexOf(level) ? tint : "bg-foreground/8",
+                "h-2.5 flex-1 rounded-full transition-all duration-300",
+                steps.indexOf(step) <= steps.indexOf(level) ? config.bar : "bg-foreground/8",
               )}
             />
           ))}

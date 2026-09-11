@@ -22,8 +22,8 @@ export function FloatingChatbot() {
           else setOpen(true);
         }}
         className={cn(
-          "fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full shadow-lg grid place-items-center transition-all",
-          "bg-primary text-primary-foreground hover:scale-105",
+          "fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full shadow-lg grid place-items-center transition-all duration-200 cursor-pointer",
+          "bg-primary text-primary-foreground hover:scale-105 active:scale-95 hover:shadow-xl",
         )}
         aria-label="Open HR assistant"
       >

@@ -92,7 +92,7 @@ function HRInsights() {
             Start with attrition — click a card to open its detail panel.
           </p>
         </div>
-        <Link to="/scenario" className="rounded-lg shadow-xs cursor-pointer inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors">
+        <Link to="/scenario" className="rounded-xl shadow-xs cursor-pointer inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 text-sm font-semibold hover:bg-primary/90 active:scale-[0.98] transition-all">
           <FlaskConical className="mr-1.5 h-4 w-4" strokeWidth={2.25} />
           Scenario Simulator
         </Link>
@@ -124,7 +124,7 @@ function HRInsights() {
 
             <Link
               to="/triggers"
-              className="inline-flex items-center gap-2 rounded-xl bg-foreground text-background px-4 py-2 text-xs font-semibold hover:opacity-90 transition-opacity shadow-xs cursor-pointer"
+              className="inline-flex items-center gap-2 rounded-xl bg-foreground text-background px-4 py-2 text-xs font-semibold hover:opacity-90 active:scale-[0.98] transition-all shadow-xs cursor-pointer"
             >
               <span>Review Cases ({criticalTriggers})</span>
               <ArrowRight className="h-3.5 w-3.5" />
