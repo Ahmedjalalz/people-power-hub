@@ -39,7 +39,7 @@ function ChatbotPage() {
         <div
           className={cn(
             "h-full min-h-0 transition-all duration-300 flex flex-col",
-            activeVisual ? "w-full lg:w-[460px] xl:w-[490px] shrink-0" : "w-full max-w-4xl lg:max-w-5xl mx-auto",
+            activeVisual ? "w-full lg:w-[500px] xl:w-[540px] shrink-0" : "w-full max-w-4xl lg:max-w-5xl mx-auto",
           )}
         >
           <Chatbot

@@ -22,8 +22,6 @@ import {
   RotateCcw,
   Bot,
   User,
-  PanelLeftClose,
-  PanelLeft,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -573,55 +571,69 @@ export function Chatbot({
       {/* ── Main Chat Area ── */}
       <div className="flex flex-col flex-1 min-w-0 h-full">
         {/* ── Header ── */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-pastel-lavender/40 backdrop-blur-sm">
-          <div className="flex items-center gap-2.5">
-            {/* History Toggle Button */}
+        <div className="flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 border-b border-border bg-pastel-lavender/40 backdrop-blur-sm gap-2">
+          {/* Left: History toggle + Sparkles + Title */}
+          <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1 mr-1">
+            {/* History Toggle Button with eye-catching color and badge */}
             <button
               onClick={() => setIsHistoryOpen((prev) => !prev)}
               className={cn(
-                "grid h-8 w-8 place-items-center rounded-xl border text-muted-foreground transition-colors cursor-pointer",
+                "relative flex items-center justify-center h-8.5 w-8.5 shrink-0 rounded-xl transition-all duration-200 cursor-pointer shadow-xs",
                 isHistoryOpen
-                  ? "bg-primary text-primary-foreground border-primary shadow-2xs"
-                  : "border-border/80 bg-background/80 hover:bg-muted hover:text-foreground shadow-2xs"
+                  ? "bg-primary text-primary-foreground border border-primary shadow-sm ring-2 ring-primary/20"
+                  : "bg-pastel-teal text-primary border border-primary/30 hover:bg-pastel-teal/80 hover:border-primary/50 hover:scale-105 active:scale-95"
               )}
               aria-label="Toggle chat history"
-              title={isHistoryOpen ? "Hide history" : "Show chat history"}
+              title={
+                isHistoryOpen
+                  ? "Close chat history"
+                  : sessions.length > 0
+                    ? `Chat history (${sessions.length} saved)`
+                    : "Chat history"
+              }
             >
-              {isHistoryOpen ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeft className="h-4 w-4" />}
+              <History className="h-4.5 w-4.5" />
+              {sessions.length > 0 && !isHistoryOpen && (
+                <span className="absolute -top-1 -right-1 flex h-4 min-w-4 px-1 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-primary-foreground shadow-xs">
+                  {sessions.length}
+                </span>
+              )}
             </button>
 
-            <div className="w-8 h-8 rounded-xl bg-primary/15 grid place-items-center text-primary shadow-2xs">
+            <div className="w-8 h-8 rounded-xl bg-primary/15 grid place-items-center text-primary shadow-2xs shrink-0 hidden xs:grid">
               <Sparkles className="w-4 h-4" />
             </div>
-            <div className="min-w-0">
-              <div className="font-semibold text-sm text-foreground truncate flex items-center gap-2">
-                <span>{activeSession ? activeSession.title : title}</span>
+
+            <div className="min-w-0 flex-1">
+              <div className="font-semibold text-xs sm:text-sm text-foreground truncate flex items-center gap-1.5">
+                <span className="truncate">{activeSession ? activeSession.title : title}</span>
                 {activeSession && (
-                  <span className="rounded-full bg-primary/10 text-primary text-[10px] font-bold px-2 py-0.2 hidden sm:inline">
+                  <span className="rounded-full bg-primary/10 text-primary text-[10px] font-bold px-1.5 py-0.2 shrink-0 hidden md:inline">
                     Saved Chat
                   </span>
                 )}
               </div>
-              <div className="text-xs text-muted-foreground truncate">{subtitle}</div>
+              <div className="text-[11px] text-muted-foreground truncate">{subtitle}</div>
             </div>
           </div>
 
-          <div className="flex items-center gap-1">
+          {/* Right: New Chat + Close */}
+          <div className="flex items-center gap-1.5 shrink-0">
             <Button
-              variant="ghost"
+              variant="outline"
               size="sm"
               onClick={startNewChat}
-              className="h-8 gap-1 rounded-xl text-xs text-muted-foreground hover:text-foreground cursor-pointer hidden sm:flex"
+              className="h-8 gap-1 rounded-xl text-xs font-medium border-border/80 bg-background/80 hover:bg-muted text-foreground cursor-pointer shadow-2xs px-2.5"
               title="Start a new chat session"
             >
-              <Plus className="h-3.5 w-3.5" />
-              <span>New Chat</span>
+              <Plus className="h-3.5 w-3.5 text-primary shrink-0" />
+              <span className="whitespace-nowrap">New Chat</span>
             </Button>
 
             {onClose && (
               <button
                 onClick={onClose}
-                className="w-8 h-8 rounded-xl grid place-items-center text-muted-foreground hover:bg-muted/70 hover:text-foreground transition-colors cursor-pointer"
+                className="w-8 h-8 rounded-xl grid place-items-center text-muted-foreground hover:bg-muted/70 hover:text-foreground transition-colors cursor-pointer shrink-0"
                 aria-label="Close chat"
                 title="Close chat"
               >

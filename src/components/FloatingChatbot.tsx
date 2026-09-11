@@ -52,11 +52,11 @@ export function FloatingChatbot() {
               </div>
             )}
 
-            {/* Chat Box (shrinks further to ~36% when visual stage is open) */}
+            {/* Chat Box (maintains comfortable width ~45% when visual stage is open) */}
             <div
               className={cn(
                 "h-full rounded-2xl border bg-card/95 backdrop-blur-md shadow-2xl overflow-hidden pointer-events-auto transition-all duration-300",
-                activeVisual ? "w-full md:w-[38%] lg:w-[35%] shrink-0" : "w-full",
+                activeVisual ? "w-full md:w-[48%] lg:w-[45%] xl:w-[42%] md:min-w-[430px] shrink-0" : "w-full",
               )}
             >
               <Chatbot
