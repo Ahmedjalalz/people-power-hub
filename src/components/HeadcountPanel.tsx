@@ -100,9 +100,9 @@ export function HeadcountPanel({
         val = `${m.value.toFixed(1)}%`;
       }
 
-      if (m.metric_name === "actual_employee_count") { tint = "bg-primary/10 text-primary"; icon = Users2; }
-      else if (m.metric_name === "approved_position_count") { tint = "bg-slate-500/10 text-slate-600 dark:text-slate-400"; icon = BadgeCheck; }
-      else if (m.metric_name === "budgeted_position_count") { tint = "bg-sky-500/10 text-sky-600 dark:text-sky-400"; icon = Wallet; }
+      if (m.metric_name === "actual_employee_count") { tint = "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"; icon = Users2; }
+      else if (m.metric_name === "approved_position_count") { tint = "bg-rose-500/10 text-rose-600 dark:text-rose-400"; icon = BadgeCheck; }
+      else if (m.metric_name === "budgeted_position_count") { tint = "bg-amber-500/10 text-amber-600 dark:text-amber-400"; icon = Wallet; }
       else if (m.metric_name === "vacant_approved_position_count") { tint = "bg-amber-500/10 text-amber-600 dark:text-amber-400"; icon = DoorOpen; }
       else if (m.metric_name === "vacancy_rate_percentage") { tint = "bg-rose-500/10 text-rose-600 dark:text-rose-400"; icon = Percent; }
       else if (m.metric_name === "budget_utilization_percentage") { tint = "bg-violet-500/10 text-violet-600 dark:text-violet-400"; icon = Gauge; }
@@ -559,9 +559,9 @@ function DeptComparison({ rows }: { rows: { name: string; approved: number; budg
                 iconType="circle"
                 iconSize={8}
               />
-              <Bar name="Approved" dataKey="approved" fill="#64748b" radius={[4, 4, 0, 0]} />
-              <Bar name="Budgeted" dataKey="budgeted" fill="#0ea5e9" radius={[4, 4, 0, 0]} />
-              <Bar name="Actual" dataKey="actual" fill="#2563eb" radius={[4, 4, 0, 0]} />
+              <Bar name="Approved" dataKey="approved" fill="#ef4444" radius={[4, 4, 0, 0]} />
+              <Bar name="Budgeted" dataKey="budgeted" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+              <Bar name="Actual" dataKey="actual" fill="#10b981" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
