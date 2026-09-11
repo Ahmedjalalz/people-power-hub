@@ -51,10 +51,13 @@ import {
 import { cn } from "@/lib/utils";
 
 const tooltipStyle = {
-  background: "var(--card)",
+  background: "color-mix(in oklab, var(--card) 95%, transparent)",
+  backdropFilter: "blur(12px)",
+  WebkitBackdropFilter: "blur(12px)",
   border: "1px solid var(--border)",
   borderRadius: 12,
-  boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+  boxShadow: "0 8px 24px -4px rgba(0, 0, 0, 0.25), 0 2px 8px -2px rgba(0, 0, 0, 0.15)",
+  color: "var(--foreground)",
 };
 
 function priorityBadge(priority?: string) {
@@ -847,10 +850,38 @@ export function DistributionDonut({ rows }: { rows: { band: string; count: numbe
         <PieChart>
           <Pie data={rows} dataKey="count" nameKey="band" innerRadius={54} outerRadius={82} paddingAngle={2}>
             {rows.map((_, index) => (
-              <Cell key={index} fill={colors[index % colors.length]} />
+              <Cell key={index} fill={colors[index % colors.length]} stroke="var(--card)" />
             ))}
           </Pie>
-          <Tooltip contentStyle={tooltipStyle} />
+          <Tooltip
+            content={({ active, payload }) => {
+              if (!active || !payload?.length) return null;
+              const item = payload[0];
+              const bandName = String(item.name || item.payload?.band || "");
+              const count = Number(item.value || item.payload?.count || 0);
+              const pct = item.payload?.percentage;
+              const sliceIndex = rows.findIndex((r) => r.band === bandName);
+              const color = item.payload?.fill || colors[(sliceIndex >= 0 ? sliceIndex : 0) % colors.length];
+
+              return (
+                <div
+                  style={tooltipStyle}
+                  className="px-3.5 py-2 text-xs shadow-2xl backdrop-blur-md animate-in fade-in-0 duration-150"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="h-2.5 w-2.5 rounded-full shrink-0 shadow-xs" style={{ backgroundColor: color }} />
+                    <span className="font-semibold text-foreground">{bandName}</span>
+                  </div>
+                  <div className="mt-1 flex items-center justify-between gap-4 text-muted-foreground">
+                    <span>Count: <strong className="font-bold text-foreground">{count}</strong></span>
+                    {typeof pct === "number" && !isNaN(pct) && (
+                      <span className="text-[11px] font-medium text-foreground/80">{pct.toFixed(1)}%</span>
+                    )}
+                  </div>
+                </div>
+              );
+            }}
+          />
         </PieChart>
       </ResponsiveContainer>
     </div>
@@ -864,7 +895,11 @@ export function DepartmentRankingChart({ rows }: { rows: { department: string; s
         <BarChart data={rows} layout="vertical" margin={{ left: 10, right: 16 }}>
           <XAxis type="number" stroke="var(--muted-foreground)" fontSize={11} />
           <YAxis type="category" dataKey="department" width={120} stroke="var(--muted-foreground)" fontSize={11} />
-          <Tooltip contentStyle={tooltipStyle} />
+          <Tooltip
+            contentStyle={tooltipStyle}
+            itemStyle={{ color: "var(--foreground)" }}
+            labelStyle={{ color: "var(--foreground)", fontWeight: 600, marginBottom: "2px" }}
+          />
           <Bar dataKey="score" fill="var(--chart-2)" radius={[0, 8, 8, 0]} />
         </BarChart>
       </ResponsiveContainer>

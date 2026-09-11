@@ -22,7 +22,15 @@ import {
 } from "@/services/performance";
 import { cn } from "@/lib/utils";
 
-const tooltipStyle = { background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12 };
+const tooltipStyle = {
+  background: "color-mix(in oklab, var(--card) 95%, transparent)",
+  backdropFilter: "blur(12px)",
+  WebkitBackdropFilter: "blur(12px)",
+  border: "1px solid var(--border)",
+  borderRadius: 12,
+  boxShadow: "0 8px 24px -4px rgba(0, 0, 0, 0.25)",
+  color: "var(--foreground)",
+};
 
 type SortKey = "employee_name" | "department" | "score" | "band" | "change";
 
@@ -194,7 +202,11 @@ export function PerformancePanel({ open, onClose }: { open: boolean; onClose: ()
                   <LineChart data={trend}>
                     <XAxis dataKey="month" stroke="var(--muted-foreground)" fontSize={11} />
                     <YAxis stroke="var(--muted-foreground)" fontSize={11} />
-                    <Tooltip contentStyle={tooltipStyle} />
+                    <Tooltip
+                      contentStyle={tooltipStyle}
+                      itemStyle={{ color: "var(--foreground)" }}
+                      labelStyle={{ color: "var(--foreground)", fontWeight: 600, marginBottom: "2px" }}
+                    />
                     <Line type="monotone" dataKey="score" stroke="var(--primary)" strokeWidth={2.5} dot={{ r: 3 }} />
                   </LineChart>
                 </ResponsiveContainer>
