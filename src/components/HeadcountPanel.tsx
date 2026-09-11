@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, AreaChart, Area,
-  PieChart, Pie, Cell, LineChart, Line,
+  PieChart, Pie, Cell, LineChart, Line, CartesianGrid,
 } from "recharts";
 import {
   Users2, BadgeCheck, Wallet, DoorOpen, Percent, Gauge, Sparkle, MessageSquare, Table2, BarChart3, Search, RotateCcw, Check, Calendar, AlertTriangle
@@ -101,7 +101,7 @@ export function HeadcountPanel({
       }
 
       if (m.metric_name === "actual_employee_count") { tint = "bg-primary/10 text-primary"; icon = Users2; }
-      else if (m.metric_name === "approved_position_count") { tint = "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"; icon = BadgeCheck; }
+      else if (m.metric_name === "approved_position_count") { tint = "bg-slate-500/10 text-slate-600 dark:text-slate-400"; icon = BadgeCheck; }
       else if (m.metric_name === "budgeted_position_count") { tint = "bg-sky-500/10 text-sky-600 dark:text-sky-400"; icon = Wallet; }
       else if (m.metric_name === "vacant_approved_position_count") { tint = "bg-amber-500/10 text-amber-600 dark:text-amber-400"; icon = DoorOpen; }
       else if (m.metric_name === "vacancy_rate_percentage") { tint = "bg-rose-500/10 text-rose-600 dark:text-rose-400"; icon = Percent; }
@@ -167,7 +167,7 @@ export function HeadcountPanel({
   // Section 5: Composition by Job Level
   const jobLevelData = useMemo(() => {
     if (!jobLevelQuery.data?.records) return [];
-    const colors = ["#2563eb", "#059669", "#7c3aed", "#d97706", "#0891b2", "#e11d48"];
+    const colors = ["#2563eb", "#0ea5e9", "#6366f1", "#0d9488", "#8b5cf6", "#64748b"];
     return jobLevelQuery.data.records.map((r: any, idx: number) => ({
       label: r.job_level,
       value: r.actual_employee_count,
@@ -516,16 +516,52 @@ function DeptComparison({ rows }: { rows: { name: string; approved: number; budg
         <ToggleButton active={view === "table"} onClick={() => setView("table")} icon={<Table2 className="h-3.5 w-3.5" />} label="Table" />
       </div>
       {view === "chart" ? (
-        <div className="h-72">
-          <ResponsiveContainer>
-            <BarChart data={rows} margin={{ left: -18 }}>
-              <XAxis dataKey="name" stroke="var(--muted-foreground)" fontSize={10} interval={0} angle={-25} textAnchor="end" height={60} />
-              <YAxis stroke="var(--muted-foreground)" fontSize={11} />
-              <Tooltip contentStyle={chartTooltip} itemStyle={{ color: "var(--foreground)" }} labelStyle={{ color: "var(--foreground)" }} />
-              <Legend wrapperStyle={{ fontSize: 11 }} />
-              <Bar name="Approved" dataKey="approved" fill="#2563eb" radius={[6, 6, 0, 0]} />
-              <Bar name="Budgeted" dataKey="budgeted" fill="#059669" radius={[6, 6, 0, 0]} />
-              <Bar name="Actual" dataKey="actual" fill="#7c3aed" radius={[6, 6, 0, 0]} />
+        <div className="h-80 w-full pt-1">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              data={rows}
+              margin={{ left: -14, right: 8, top: 12, bottom: 20 }}
+              barGap={2}
+              barCategoryGap="24%"
+            >
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="color-mix(in oklab, var(--border) 60%, transparent)" />
+              <XAxis
+                dataKey="name"
+                stroke="var(--muted-foreground)"
+                fontSize={10}
+                interval={0}
+                angle={-25}
+                textAnchor="end"
+                height={55}
+                tickLine={false}
+              />
+              <YAxis
+                stroke="var(--muted-foreground)"
+                fontSize={11}
+                tickLine={false}
+                axisLine={false}
+              />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "color-mix(in oklab, var(--card) 95%, transparent)",
+                  backdropFilter: "blur(12px)",
+                  border: "1px solid var(--border)",
+                  borderRadius: "12px",
+                  boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1)",
+                  fontSize: "12px",
+                  color: "var(--foreground)",
+                }}
+                itemStyle={{ color: "var(--foreground)" }}
+                labelStyle={{ color: "var(--foreground)", fontWeight: 600, marginBottom: "4px" }}
+              />
+              <Legend
+                wrapperStyle={{ fontSize: 11, paddingTop: 10 }}
+                iconType="circle"
+                iconSize={8}
+              />
+              <Bar name="Approved" dataKey="approved" fill="#64748b" radius={[4, 4, 0, 0]} />
+              <Bar name="Budgeted" dataKey="budgeted" fill="#0ea5e9" radius={[4, 4, 0, 0]} />
+              <Bar name="Actual" dataKey="actual" fill="#2563eb" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
