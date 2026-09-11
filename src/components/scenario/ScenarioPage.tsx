@@ -1561,18 +1561,21 @@ function RichResultDisplay({
             const formatted = formatVal(value);
             const isPos = typeof value === "number" && value > 0;
             const isNeg = typeof value === "number" && value < 0;
+            const label = key.replace(/_/g, " ");
+            const displayVal = (isPos ? "+" : "") + (formatted ?? "—");
             return (
-              <div key={key} className="rounded-xl border border-border bg-card p-3 shadow-xs">
-                <div className="mb-1 text-[10px] uppercase tracking-widest text-muted-foreground">
-                  {key.replace(/_/g, " ")}
+              <div key={key} className="rounded-xl border border-border bg-card p-3 shadow-xs min-w-0 overflow-hidden">
+                <div className="mb-1 text-[10px] uppercase tracking-widest text-muted-foreground truncate" title={label}>
+                  {label}
                 </div>
                 <div
                   className={cn(
-                    "text-xl font-bold tabular-nums",
+                    "text-lg sm:text-xl font-bold tabular-nums truncate",
                     isPos ? "text-emerald-600 dark:text-emerald-400" : isNeg ? "text-rose-600 dark:text-rose-400" : "text-foreground"
                   )}
+                  title={displayVal}
                 >
-                  {isPos ? "+" : ""}{formatted ?? "—"}
+                  {displayVal}
                 </div>
               </div>
             );
@@ -1582,26 +1585,40 @@ function RichResultDisplay({
 
       {allKeys.length > 0 && (
         <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-xs">
-          <div className="grid grid-cols-3 border-b border-border bg-muted/30 px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-            <div>Metric</div>
-            <div className="text-center">Current</div>
-            <div className="text-center">Projected</div>
+          <div className="grid grid-cols-3 border-b border-border bg-muted/30 px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground gap-2">
+            <div className="truncate">Metric</div>
+            <div className="text-center truncate">Current</div>
+            <div className="text-center truncate">Projected</div>
           </div>
           <div className="divide-y divide-border">
             {allKeys.map((key) => {
-              const bVal = formatVal(data.baseline[key]);
-              const sVal = formatVal(data.simulated_state[key]);
+              const bVal = formatVal(data.baseline[key]) ?? "—";
+              const sVal = formatVal(data.simulated_state[key]) ?? "—";
               const changed = bVal !== sVal;
+              const metricLabel = key.replace(/_/g, " ");
               return (
                 <div
                   key={key}
-                  className={cn("grid grid-cols-3 px-4 py-3 text-sm", changed && "bg-emerald-50/40 dark:bg-emerald-950/10")}
+                  className={cn(
+                    "grid grid-cols-3 px-4 py-3 text-sm items-center gap-2",
+                    changed && "bg-emerald-50/40 dark:bg-emerald-950/10"
+                  )}
                 >
-                  <div className="text-xs text-muted-foreground pr-2 truncate self-center">{key.replace(/_/g, " ")}</div>
-                  <div className="text-center font-medium tabular-nums self-center">{bVal ?? "—"}</div>
-                  <div className={cn("flex items-center justify-center gap-1 font-bold tabular-nums", changed && "text-emerald-700 dark:text-emerald-400")}>
+                  <div className="text-xs text-muted-foreground truncate min-w-0" title={metricLabel}>
+                    {metricLabel}
+                  </div>
+                  <div className="text-center font-medium tabular-nums truncate min-w-0" title={bVal}>
+                    {bVal}
+                  </div>
+                  <div
+                    className={cn(
+                      "flex items-center justify-center gap-1 font-bold tabular-nums min-w-0 overflow-hidden",
+                      changed ? "text-emerald-700 dark:text-emerald-400" : "text-foreground"
+                    )}
+                    title={sVal}
+                  >
                     {changed && <ArrowRight className="h-3 w-3 shrink-0 opacity-50" />}
-                    {sVal ?? "—"}
+                    <span className="truncate">{sVal}</span>
                   </div>
                 </div>
               );
@@ -1612,14 +1629,14 @@ function RichResultDisplay({
 
       {listImpact.map(([key, value]) => (
         <div key={key} className="rounded-2xl border border-border bg-card overflow-hidden shadow-xs">
-          <div className={cn("px-4 py-3 border-b border-border text-xs font-bold uppercase tracking-widest", meta.accentBg, meta.accentText)}>
+          <div className={cn("px-4 py-3 border-b border-border text-xs font-bold uppercase tracking-widest truncate", meta.accentBg, meta.accentText)} title={key.replace(/_/g, " ")}>
             {key.replace(/_/g, " ")}
           </div>
           <ul className="divide-y divide-border">
             {(value as unknown[]).map((item, i) => (
               <li key={i} className="flex items-start gap-3 px-4 py-3 text-sm">
                 <Sparkles className={cn("mt-0.5 h-3.5 w-3.5 shrink-0", meta.accentText)} />
-                <span>{typeof item === "string" ? item : JSON.stringify(item)}</span>
+                <span className="min-w-0 flex-1 break-words leading-relaxed">{typeof item === "string" ? item : JSON.stringify(item)}</span>
               </li>
             ))}
           </ul>
@@ -1629,12 +1646,12 @@ function RichResultDisplay({
       {data.warnings && data.warnings.length > 0 && (
         <div className="rounded-2xl border border-amber-200 bg-amber-50 overflow-hidden dark:border-amber-800 dark:bg-amber-950/20">
           <div className="flex items-center gap-2 border-b border-amber-200 dark:border-amber-800 px-4 py-3">
-            <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+            <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0" />
             <span className="text-xs font-bold uppercase tracking-widest text-amber-700 dark:text-amber-300">Warnings</span>
           </div>
           <ul className="divide-y divide-amber-100 dark:divide-amber-900">
             {data.warnings.map((w, i) => (
-              <li key={i} className="px-4 py-2.5 text-sm text-amber-700 dark:text-amber-300">{w}</li>
+              <li key={i} className="px-4 py-2.5 text-sm text-amber-700 dark:text-amber-300 break-words">{w}</li>
             ))}
           </ul>
         </div>
@@ -1654,9 +1671,9 @@ function RichResultDisplay({
               {Object.entries(data.assumptions)
                 .filter(([, v]) => v !== null && typeof v !== "object")
                 .map(([key, value]) => (
-                  <div key={key} className="flex items-baseline justify-between gap-3 px-4 py-2.5 text-xs">
-                    <span className="text-muted-foreground">{key.replace(/_/g, " ")}</span>
-                    <span className="font-semibold text-right">{String(value)}</span>
+                  <div key={key} className="flex items-baseline justify-between gap-3 px-4 py-2.5 text-xs min-w-0">
+                    <span className="text-muted-foreground truncate min-w-0" title={key.replace(/_/g, " ")}>{key.replace(/_/g, " ")}</span>
+                    <span className="font-semibold text-right break-words min-w-0 max-w-[60%]">{String(value)}</span>
                   </div>
                 ))}
             </div>

@@ -831,11 +831,11 @@ function CaseDossierCard({
           </div>
         </div>
 
-        <h2 className="text-xl font-bold tracking-tight text-foreground">{caseItem.title}</h2>
+        <h2 className="text-xl font-bold tracking-tight text-foreground break-words">{caseItem.title}</h2>
 
         {/* Subject Card Row */}
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-background p-3.5">
-          <div className="flex items-center gap-3">
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-background p-3.5 min-w-0">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
             <span
               className={cn(
                 "grid h-10 w-10 shrink-0 place-items-center rounded-xl text-sm font-bold shadow-xs",
@@ -849,9 +849,9 @@ function CaseDossierCard({
                 <Building2 className="h-5 w-5" />
               )}
             </span>
-            <div>
-              <div className="font-semibold text-sm text-foreground">{caseItem.subjectName}</div>
-              <div className="text-xs text-muted-foreground">
+            <div className="min-w-0 flex-1">
+              <div className="font-semibold text-sm text-foreground truncate" title={caseItem.subjectName}>{caseItem.subjectName}</div>
+              <div className="text-xs text-muted-foreground truncate" title={[caseItem.subjectId, caseItem.department, caseItem.role].filter(Boolean).join(" · ")}>
                 {[caseItem.subjectId, caseItem.department, caseItem.role].filter(Boolean).join(" · ")}
               </div>
             </div>
@@ -861,7 +861,7 @@ function CaseDossierCard({
             <Link
               to="/employee/$employeeId"
               params={{ employeeId: caseItem.employeeId }}
-              className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+              className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline shrink-0"
             >
               <span>Employee Profile</span>
               <ExternalLink className="h-3 w-3" />
@@ -874,10 +874,10 @@ function CaseDossierCard({
         {/* ── Why Flagged? (Reason) ── */}
         <div className="rounded-xl border border-amber-200/80 bg-amber-50/60 p-4 dark:border-amber-900/60 dark:bg-amber-950/20">
           <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-800 dark:text-amber-300 mb-1">
-            <AlertTriangle className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
+            <AlertTriangle className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
             Why Was This Case Created?
           </div>
-          <p className="text-xs font-medium leading-relaxed text-amber-900 dark:text-amber-200">
+          <p className="text-xs font-medium leading-relaxed text-amber-900 dark:text-amber-200 break-words">
             {caseItem.reason}
           </p>
         </div>
@@ -915,17 +915,17 @@ function CaseDossierCard({
                 <div
                   key={i}
                   className={cn(
-                    "rounded-xl border p-3 shadow-xs",
+                    "rounded-xl border p-3 shadow-xs min-w-0 overflow-hidden",
                     isViolation
                       ? "border-rose-200/90 bg-rose-50/30 dark:border-rose-900/40 dark:bg-rose-950/10"
                       : "border-border bg-muted/20"
                   )}
                 >
-                  <div className="flex items-center justify-between text-[11px] font-semibold text-muted-foreground">
-                    <span>{ev.metric}</span>
+                  <div className="flex items-center justify-between gap-1 text-[11px] font-semibold text-muted-foreground min-w-0">
+                    <span className="truncate" title={ev.metric}>{ev.metric}</span>
                     <span
                       className={cn(
-                        "rounded px-1.5 py-0.2 text-[10px] font-bold",
+                        "rounded px-1.5 py-0.2 text-[10px] font-bold shrink-0",
                         isViolation
                           ? "bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300"
                           : "bg-muted text-muted-foreground"
@@ -935,11 +935,11 @@ function CaseDossierCard({
                     </span>
                   </div>
 
-                  <div className="mt-1 text-lg font-bold tabular-nums text-foreground">
+                  <div className="mt-1 text-lg font-bold tabular-nums text-foreground break-words">
                     {ev.actual}
                   </div>
 
-                  <p className="mt-1 text-[11px] text-muted-foreground leading-snug">
+                  <p className="mt-1 text-[11px] text-muted-foreground leading-snug break-words">
                     {ev.detail}
                   </p>
                 </div>
@@ -949,12 +949,12 @@ function CaseDossierCard({
         </div>
 
         {/* ── Suggested Next Step ── */}
-        <div className="rounded-xl border border-primary/20 bg-primary/5 p-4">
+        <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 min-w-0">
           <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-primary mb-1.5">
-            <Sparkles className="h-3.5 w-3.5 text-primary" />
+            <Sparkles className="h-3.5 w-3.5 text-primary shrink-0" />
             Suggested Practical Next Step
           </div>
-          <p className="text-xs leading-relaxed text-foreground font-medium">
+          <p className="text-xs leading-relaxed text-foreground font-medium break-words">
             {caseItem.suggestedAction}
           </p>
 
@@ -967,15 +967,15 @@ function CaseDossierCard({
               {caseItem.actionChecklist.map((item) => (
                 <label
                   key={item.id}
-                  className="flex items-start gap-2 text-xs text-foreground cursor-pointer hover:bg-primary/10 p-1 rounded-lg transition-colors"
+                  className="flex items-start gap-2 text-xs text-foreground cursor-pointer hover:bg-primary/10 p-1 rounded-lg transition-colors min-w-0"
                 >
                   <input
                     type="checkbox"
                     checked={item.completed}
                     onChange={() => onToggleChecklist(caseItem.id, item.id)}
-                    className="mt-0.5 rounded border-border text-primary focus:ring-primary h-3.5 w-3.5"
+                    className="mt-0.5 rounded border-border text-primary focus:ring-primary h-3.5 w-3.5 shrink-0"
                   />
-                  <span className={cn(item.completed && "line-through opacity-60")}>
+                  <span className={cn("min-w-0 flex-1 break-words", item.completed && "line-through opacity-60")}>
                     {item.text}
                   </span>
                 </label>
@@ -989,17 +989,17 @@ function CaseDossierCard({
           {caseItem.scenarioType && (
             <Link
               to="/scenario"
-              className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-background px-3.5 py-2.5 text-xs font-semibold text-foreground hover:bg-muted shadow-xs transition-colors"
+              className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-background px-3.5 py-2.5 text-xs font-semibold text-foreground hover:bg-muted shadow-xs transition-colors min-w-0"
             >
-              <FlaskConical className="h-3.5 w-3.5 text-primary" />
-              <span>Model in Scenario Simulator</span>
-              <ArrowRight className="h-3 w-3 opacity-60" />
+              <FlaskConical className="h-3.5 w-3.5 text-primary shrink-0" />
+              <span className="truncate">Model in Scenario Simulator</span>
+              <ArrowRight className="h-3 w-3 opacity-60 shrink-0" />
             </Link>
           )}
 
           <Link
             to="/chatbot"
-            className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-background px-3.5 py-2.5 text-xs font-semibold text-foreground hover:bg-muted shadow-xs transition-colors"
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-background px-3.5 py-2.5 text-xs font-semibold text-foreground hover:bg-muted shadow-xs transition-colors shrink-0"
           >
             <MessageSquare className="h-3.5 w-3.5 text-primary" />
             <span>Ask Assistant</span>
@@ -1007,13 +1007,13 @@ function CaseDossierCard({
         </div>
 
         {/* ── Interactive Workflow Status Stepper (Live Backend PATCH) ── */}
-        <div className="rounded-xl border border-border bg-background p-4 shadow-xs">
+        <div className="rounded-xl border border-border bg-background p-4 shadow-xs min-w-0">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
               Case Workflow Status
             </span>
             {isUpdatingStatus && (
-              <span className="flex items-center gap-1 text-[11px] text-primary">
+              <span className="flex items-center gap-1 text-[11px] text-primary shrink-0">
                 <Loader2 className="h-3 w-3 animate-spin" />
                 Syncing backend...
               </span>
@@ -1031,14 +1031,15 @@ function CaseDossierCard({
                   disabled={isUpdatingStatus}
                   onClick={() => onStatusChange(step)}
                   className={cn(
-                    "flex items-center justify-center rounded-xl py-2.5 px-1.5 text-center text-xs font-semibold transition-all cursor-pointer min-h-[38px]",
+                    "flex items-center justify-center rounded-xl py-2.5 px-1 text-center text-xs font-semibold transition-all cursor-pointer min-h-[38px] min-w-0 overflow-hidden",
                     isCurrent
                       ? cn("border ring-2 ring-primary/20 shadow-xs", cfg.bg, cfg.text, cfg.border)
                       : "border border-border text-muted-foreground hover:bg-muted hover:text-foreground",
                     isUpdatingStatus && "opacity-50 cursor-not-allowed"
                   )}
+                  title={step}
                 >
-                  <span className="text-[11px] leading-tight">{step}</span>
+                  <span className="text-[10px] sm:text-[11px] leading-tight truncate">{step}</span>
                 </button>
               );
             })}
@@ -1056,7 +1057,7 @@ function CaseDossierCard({
           </div>
 
           {caseItem.resolutionNotes && (
-            <div className="rounded-xl border border-border bg-muted/20 p-3 text-xs text-foreground">
+            <div className="rounded-xl border border-border bg-muted/20 p-3 text-xs text-foreground break-words">
               <div className="text-[10px] font-semibold text-muted-foreground uppercase mb-1">
                 Current Note
               </div>
@@ -1076,7 +1077,7 @@ function CaseDossierCard({
               size="sm"
               onClick={handleSaveNote}
               disabled={!noteInput.trim()}
-              className="rounded-xl text-xs px-3 shadow-xs cursor-pointer"
+              className="rounded-xl text-xs px-3 shadow-xs cursor-pointer shrink-0"
             >
               Save Note
             </Button>
@@ -1091,8 +1092,8 @@ function CaseDossierCard({
             </div>
             <div className="space-y-2 text-xs">
               {caseItem.history.map((h) => (
-                <div key={h.id} className="flex items-start gap-2 text-muted-foreground border-l-2 border-border pl-2.5">
-                  <div className="min-w-0 flex-1">
+                <div key={h.id} className="flex items-start gap-2 text-muted-foreground border-l-2 border-border pl-2.5 min-w-0">
+                  <div className="min-w-0 flex-1 break-words">
                     <span className="font-semibold text-foreground">{h.author}:</span> {h.action}
                     <div className="text-[10px] opacity-60">
                       {new Date(h.timestamp).toLocaleString()}
@@ -1116,45 +1117,45 @@ function LeadershipContinuityEvidenceCard({ rawEv }: { rawEv: Record<string, any
   const factors = rawEv.attrition_contributing_factors || [];
 
   return (
-    <div className="rounded-xl border border-rose-200/80 bg-rose-50/40 p-4 dark:border-rose-900/60 dark:bg-rose-950/20">
+    <div className="rounded-xl border border-rose-200/80 bg-rose-50/40 p-4 dark:border-rose-900/60 dark:bg-rose-950/20 min-w-0">
       <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-rose-800 dark:text-rose-300 mb-3">
-        <UserX className="h-4 w-4 text-rose-600 dark:text-rose-400" />
+        <UserX className="h-4 w-4 text-rose-600 dark:text-rose-400 shrink-0" />
         Leadership Continuity & Successor Pipeline
       </div>
 
       <div className="space-y-3">
         {/* Successor Card */}
         {topSucc ? (
-          <div className="rounded-xl border border-border bg-background p-3">
+          <div className="rounded-xl border border-border bg-background p-3 min-w-0">
             <div className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground mb-1">
               Top Designated Successor
             </div>
-            <div className="flex items-center justify-between gap-2">
-              <div>
-                <div className="font-bold text-sm text-foreground">
+            <div className="flex items-center justify-between gap-2.5 min-w-0">
+              <div className="min-w-0 flex-1">
+                <div className="font-bold text-sm text-foreground truncate" title={`${topSucc.employee_name} (${topSucc.employee_id})`}>
                   {topSucc.employee_name} ({topSucc.employee_id})
                 </div>
-                <div className="text-xs text-muted-foreground">
+                <div className="text-xs text-muted-foreground truncate" title={topSucc.current_position}>
                   Current: {topSucc.current_position}
                 </div>
               </div>
-              <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-800 dark:bg-amber-950/60 dark:text-amber-300">
+              <span className="shrink-0 rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-800 dark:bg-amber-950/60 dark:text-amber-300">
                 {topSucc.readiness || "Developing"}
               </span>
             </div>
-            <p className="mt-2 text-[11px] text-rose-600 dark:text-rose-400">
+            <p className="mt-2 text-[11px] text-rose-600 dark:text-rose-400 break-words">
               ⚠️ Gap Alert: No successor is currently "Ready Now". Acceleration or retention package required.
             </p>
           </div>
         ) : (
-          <div className="rounded-xl border border-dashed border-rose-300 bg-background/50 p-3 text-xs text-rose-700 dark:text-rose-300">
+          <div className="rounded-xl border border-dashed border-rose-300 bg-background/50 p-3 text-xs text-rose-700 dark:text-rose-300 break-words">
             0 Succession candidates nominated for this leadership seat.
           </div>
         )}
 
         {/* Attrition Drivers */}
         {factors.length > 0 && (
-          <div>
+          <div className="min-w-0">
             <div className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground mb-1.5">
               Identified Flight Risk Contributing Factors
             </div>
@@ -1162,7 +1163,7 @@ function LeadershipContinuityEvidenceCard({ rawEv }: { rawEv: Record<string, any
               {factors.map((f: string, idx: number) => (
                 <span
                   key={idx}
-                  className="rounded-lg border border-rose-200 bg-rose-100/60 px-2 py-0.5 text-[11px] font-medium text-rose-800 dark:border-rose-800 dark:bg-rose-950/60 dark:text-rose-300"
+                  className="rounded-lg border border-rose-200 bg-rose-100/60 px-2 py-0.5 text-[11px] font-medium text-rose-800 dark:border-rose-800 dark:bg-rose-950/60 dark:text-rose-300 break-words max-w-full"
                 >
                   {f}
                 </span>
@@ -1185,39 +1186,39 @@ function PerformanceDeteriorationEvidenceCard({ rawEv }: { rawEv: Record<string,
   const kpi1Score = rawEv.development_kpi_1_score ?? 69.9;
 
   return (
-    <div className="rounded-xl border border-amber-200/80 bg-amber-50/40 p-4 dark:border-amber-900/60 dark:bg-amber-950/20">
+    <div className="rounded-xl border border-amber-200/80 bg-amber-50/40 p-4 dark:border-amber-900/60 dark:bg-amber-950/20 min-w-0">
       <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-800 dark:text-amber-300 mb-3">
-        <TrendingDown className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+        <TrendingDown className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0" />
         Performance Deterioration Analysis
       </div>
 
       <div className="grid grid-cols-2 gap-3 mb-3">
-        <div className="rounded-xl border border-border bg-background p-3">
-          <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+        <div className="rounded-xl border border-border bg-background p-3 min-w-0">
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold truncate">
             Current Score & Band
           </div>
-          <div className="text-xl font-bold tabular-nums text-foreground mt-0.5">
+          <div className="text-xl font-bold tabular-nums text-foreground mt-0.5 truncate">
             {score} <span className="text-xs font-normal text-muted-foreground">({band})</span>
           </div>
         </div>
 
-        <div className="rounded-xl border border-border bg-background p-3">
-          <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+        <div className="rounded-xl border border-border bg-background p-3 min-w-0">
+          <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold truncate">
             3-Month Trajectory
           </div>
-          <div className="text-xl font-bold tabular-nums text-rose-600 dark:text-rose-400 mt-0.5">
+          <div className="text-xl font-bold tabular-nums text-rose-600 dark:text-rose-400 mt-0.5 truncate">
             {delta > 0 ? "+" : ""}{delta} pts
           </div>
-          <div className="text-[10px] text-muted-foreground">Trend: {trend}</div>
+          <div className="text-[10px] text-muted-foreground truncate">Trend: {trend}</div>
         </div>
       </div>
 
-      <div className="rounded-xl border border-border bg-background p-3">
-        <div className="flex items-center justify-between text-xs">
-          <span className="font-semibold text-foreground">Priority Development KPI: {kpi1}</span>
-          <span className="font-bold text-rose-600 dark:text-rose-400">{kpi1Score} / 100</span>
+      <div className="rounded-xl border border-border bg-background p-3 min-w-0">
+        <div className="flex items-center justify-between gap-2 text-xs min-w-0">
+          <span className="font-semibold text-foreground truncate min-w-0 flex-1" title={kpi1}>Priority Development KPI: {kpi1}</span>
+          <span className="font-bold text-rose-600 dark:text-rose-400 shrink-0">{kpi1Score} / 100</span>
         </div>
-        <p className="mt-1 text-[11px] text-muted-foreground">
+        <p className="mt-1 text-[11px] text-muted-foreground break-words">
           Score lags role standard (≥ 75.0). Targeted coaching or executive mentorship suggested.
         </p>
       </div>
@@ -1236,9 +1237,9 @@ function BudgetComplianceEvidenceCard({ rawEv }: { rawEv: Record<string, any> })
   ];
 
   return (
-    <div className="rounded-xl border border-rose-200/80 bg-rose-50/40 p-4 dark:border-rose-900/60 dark:bg-rose-950/20">
+    <div className="rounded-xl border border-rose-200/80 bg-rose-50/40 p-4 dark:border-rose-900/60 dark:bg-rose-950/20 min-w-0">
       <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-rose-800 dark:text-rose-300 mb-3">
-        <DollarSign className="h-4 w-4 text-rose-600 dark:text-rose-400" />
+        <DollarSign className="h-4 w-4 text-rose-600 dark:text-rose-400 shrink-0" />
         Budget Governance & Unapproved Positions ({exceptions} Staff)
       </div>
 
@@ -1246,20 +1247,20 @@ function BudgetComplianceEvidenceCard({ rawEv }: { rawEv: Record<string, any> })
         {positions.map((p: any, i: number) => (
           <div
             key={i}
-            className="flex items-center justify-between rounded-xl border border-border bg-background p-2.5 text-xs"
+            className="flex items-center justify-between gap-2.5 rounded-xl border border-border bg-background p-2.5 text-xs min-w-0"
           >
-            <div>
-              <div className="font-semibold text-foreground">{p.title}</div>
-              <div className="text-[11px] text-muted-foreground">{p.dept}</div>
+            <div className="min-w-0 flex-1">
+              <div className="font-semibold text-foreground truncate" title={p.title}>{p.title}</div>
+              <div className="text-[11px] text-muted-foreground truncate" title={p.dept}>{p.dept}</div>
             </div>
-            <span className="rounded-full bg-rose-100 px-2 py-0.5 text-[10px] font-bold text-rose-700 dark:bg-rose-950/60 dark:text-rose-300">
+            <span className="shrink-0 rounded-full bg-rose-100 px-2 py-0.5 text-[10px] font-bold text-rose-700 dark:bg-rose-950/60 dark:text-rose-300">
               {p.status}
             </span>
           </div>
         ))}
       </div>
 
-      <p className="mt-3 text-[11px] text-rose-600 dark:text-rose-400">
+      <p className="mt-3 text-[11px] text-rose-600 dark:text-rose-400 break-words">
         Action Required: Reconcile headcount allocation or regularize positions via Department Head sign-off.
       </p>
     </div>
@@ -1319,18 +1320,18 @@ function CriticalVacancyEvidenceCard({ rawEv }: { rawEv: Record<string, any> }) 
   const days = rawEv.days_vacant ?? 52;
 
   return (
-    <div className="rounded-xl border border-amber-200/80 bg-amber-50/40 p-4 dark:border-amber-900/60 dark:bg-amber-950/20">
+    <div className="rounded-xl border border-amber-200/80 bg-amber-50/40 p-4 dark:border-amber-900/60 dark:bg-amber-950/20 min-w-0">
       <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-800 dark:text-amber-300 mb-2">
-        <Clock className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+        <Clock className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0" />
         Critical Vacancy SLA Overrun
       </div>
-      <div className="flex items-baseline gap-2">
+      <div className="flex flex-wrap items-baseline gap-2">
         <span className="text-2xl font-bold tabular-nums text-foreground">{days} Days</span>
-        <span className="text-xs text-rose-600 dark:text-rose-400 font-medium">
+        <span className="text-xs text-rose-600 dark:text-rose-400 font-medium break-words">
           (SLA Limit: 30 days — {days - 30} days overdue)
         </span>
       </div>
-      <p className="mt-1.5 text-xs text-muted-foreground">
+      <p className="mt-1.5 text-xs text-muted-foreground break-words">
         Key operational position has remained unstaffed beyond allowable business threshold.
       </p>
     </div>

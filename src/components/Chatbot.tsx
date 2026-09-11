@@ -1183,7 +1183,7 @@ function FormattedText({ text }: { text: string }) {
   const lines = text.split("\n");
 
   return (
-    <div className="space-y-1.5">
+    <div className="space-y-1.5 break-words min-w-0">
       {lines.map((line, idx) => {
         if (!line.trim()) return <div key={idx} className="h-1.5" />;
 
@@ -1191,9 +1191,9 @@ function FormattedText({ text }: { text: string }) {
         const numberedMatch = line.match(/^(\d+\.)\s+(.*)$/);
         if (numberedMatch) {
           return (
-            <div key={idx} className="flex gap-2 items-start pl-1">
+            <div key={idx} className="flex gap-2 items-start pl-1 min-w-0">
               <span className="font-semibold text-primary shrink-0">{numberedMatch[1]}</span>
-              <span className="flex-1"><InlineMarkdown text={numberedMatch[2]} /></span>
+              <span className="flex-1 min-w-0 break-words"><InlineMarkdown text={numberedMatch[2]} /></span>
             </div>
           );
         }
@@ -1202,15 +1202,15 @@ function FormattedText({ text }: { text: string }) {
         const bulletMatch = line.match(/^[-*•]\s+(.*)$/);
         if (bulletMatch) {
           return (
-            <div key={idx} className="flex gap-2 items-start pl-1">
+            <div key={idx} className="flex gap-2 items-start pl-1 min-w-0">
               <span className="text-primary shrink-0">•</span>
-              <span className="flex-1"><InlineMarkdown text={bulletMatch[1]} /></span>
+              <span className="flex-1 min-w-0 break-words"><InlineMarkdown text={bulletMatch[1]} /></span>
             </div>
           );
         }
 
         return (
-          <div key={idx} className="leading-relaxed">
+          <div key={idx} className="leading-relaxed break-words min-w-0">
             <InlineMarkdown text={line} />
           </div>
         );
