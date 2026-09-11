@@ -10,7 +10,6 @@ import {
   Sparkles,
   Search,
   Filter,
-  Check,
   RefreshCw,
   FlaskConical,
   MessageSquare,
@@ -1089,15 +1088,14 @@ function CaseDossierCard({
                   disabled={isUpdatingStatus}
                   onClick={() => onStatusChange(step)}
                   className={cn(
-                    "flex flex-col items-center justify-center rounded-xl p-2 text-center text-xs font-semibold transition-all cursor-pointer",
+                    "flex items-center justify-center rounded-xl py-2.5 px-1.5 text-center text-xs font-semibold transition-all cursor-pointer min-h-[38px]",
                     isCurrent
-                      ? cn("border ring-2 ring-primary/20", cfg.bg, cfg.text, cfg.border)
+                      ? cn("border ring-2 ring-primary/20 shadow-xs", cfg.bg, cfg.text, cfg.border)
                       : "border border-border text-muted-foreground hover:bg-muted hover:text-foreground",
                     isUpdatingStatus && "opacity-50 cursor-not-allowed"
                   )}
                 >
                   <span className="text-[11px] leading-tight">{step}</span>
-                  {isCurrent && <Check className="mt-1 h-3 w-3" />}
                 </button>
               );
             })}
