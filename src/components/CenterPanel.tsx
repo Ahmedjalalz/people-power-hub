@@ -42,7 +42,7 @@ export function CenterPanel({
       <DialogPrimitive.Portal>
         <DialogPrimitive.Overlay
           onClick={handleClose}
-          className="panel-veil fixed inset-0 z-50 bg-foreground/35 backdrop-blur-md cursor-pointer"
+          className="panel-veil fixed inset-0 z-50 cursor-pointer bg-foreground/45 backdrop-blur-sm"
         />
         <div className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center p-4">
           <DialogPrimitive.Content
@@ -51,7 +51,7 @@ export function CenterPanel({
             }}
             className={cn(
               "panel-content pointer-events-auto w-full focus:outline-none",
-              "max-h-[90dvh] overflow-y-auto rounded-2xl border border-border bg-card p-5 shadow-2xl sm:p-7",
+               "max-h-[90dvh] overflow-y-auto rounded-lg border border-border bg-card p-5 shadow-2xl sm:p-7",
               size === "lg" ? "max-w-4xl" : "max-w-2xl",
             )}
           >
@@ -60,7 +60,7 @@ export function CenterPanel({
                 <button
                   type="button"
                   onClick={onBack}
-                  className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-muted/80 text-muted-foreground transition-all hover:bg-muted hover:text-foreground hover:scale-105 active:scale-95 cursor-pointer"
+                   className="mt-0.5 grid size-10 shrink-0 place-items-center rounded-lg bg-muted text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   aria-label="Back"
                 >
                   <ArrowLeft className="h-4 w-4" />
@@ -82,7 +82,7 @@ export function CenterPanel({
                   e.stopPropagation();
                   handleClose();
                 }}
-                className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-muted/80 text-muted-foreground transition-all hover:bg-rose-500/15 hover:text-rose-600 dark:hover:text-rose-400 hover:scale-105 active:scale-95 cursor-pointer"
+                 className="mt-0.5 grid size-10 shrink-0 place-items-center rounded-lg bg-muted text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 aria-label="Close"
               >
                 <X className="h-4 w-4" />
