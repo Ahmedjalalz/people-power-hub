@@ -341,21 +341,21 @@ export function TriggersPage() {
   const resolvedCount = cases.filter((c) => c.status === "Resolved" || c.status === "Closed").length;
 
   return (
-    <div className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background">
       {/* ── Page Header & KPI Strip ── */}
-      <div className="border-b border-border bg-card/60 backdrop-blur-sm">
-        <div className="mx-auto max-w-7xl px-6 py-5">
+      <div className="border-b border-border bg-card">
+        <div className="mx-auto max-w-7xl px-4 py-7 sm:px-6">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3.5 py-1 text-xs font-semibold text-primary backdrop-blur-sm">
+              <div className="mb-3 inline-flex items-center gap-2 text-sm font-semibold text-primary">
                 <ShieldAlert className="h-3.5 w-3.5" />
-                HR Decision Trigger Engine
+                Action centre
               </div>
-              <h1 className="text-2xl font-bold tracking-tight text-foreground">
-                Case Monitoring & Alerts
+              <h1 className="text-3xl font-bold tracking-tight text-foreground">
+                Decide what needs attention next
               </h1>
               <p className="mt-1 text-sm text-muted-foreground">
-                Live automated workforce alert monitoring & decision engine with 5 critical detection rules.
+                Review workforce concerns, understand the evidence, and record the next action in one place.
               </p>
             </div>
 
@@ -366,12 +366,12 @@ export function TriggersPage() {
                 size="sm"
                 onClick={handleRunScan}
                 disabled={evaluateMutation.isPending}
-                className="btn-premium gap-2 rounded-xl shadow-xs text-xs font-semibold cursor-pointer"
+                className="gap-2 font-semibold"
               >
                 <RefreshCw
                   className={cn("h-3.5 w-3.5", evaluateMutation.isPending && "animate-spin text-primary-foreground")}
                 />
-                <span>{evaluateMutation.isPending ? "Evaluating Rules..." : "Run Rule Check"}</span>
+                <span>{evaluateMutation.isPending ? "Checking for new cases…" : "Check for new cases"}</span>
               </Button>
 
               <Button
@@ -390,7 +390,7 @@ export function TriggersPage() {
 
           {/* Scan feedback banner */}
           {scanMessage && (
-            <div className="mt-3 inline-flex items-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-1.5 text-xs font-medium text-emerald-800 dark:border-emerald-500/20 dark:bg-emerald-950/40 dark:text-emerald-300 animate-in fade-in-0 duration-200">
+            <div role="status" className="mt-4 flex items-center gap-2 rounded-lg border border-success/30 bg-success/10 px-4 py-3 text-sm font-medium text-foreground animate-in fade-in-0 duration-200">
               <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
               <span>{scanMessage}</span>
             </div>
@@ -398,7 +398,7 @@ export function TriggersPage() {
 
           {/* Summary Metric Ribbon */}
           <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-5">
-            <div className="rounded-2xl border border-border/80 bg-card/90 backdrop-blur p-4 shadow-xs transition-all hover:shadow-sm">
+            <div className="rounded-lg border bg-background p-4">
               <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                 Active Alerts
               </div>
@@ -408,14 +408,13 @@ export function TriggersPage() {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 backdrop-blur p-4 shadow-xs dark:border-rose-900/50 dark:bg-rose-950/20 transition-all hover:shadow-sm">
+            <div className="rounded-lg border border-destructive/25 bg-destructive/5 p-4">
               <div className="flex items-center justify-between">
                 <div className="text-[10px] font-bold uppercase tracking-wider text-rose-700 dark:text-rose-400">
                   Critical
                 </div>
                 {criticalCount > 0 && (
                   <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75" />
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500" />
                   </span>
                 )}
@@ -428,7 +427,7 @@ export function TriggersPage() {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 backdrop-blur p-4 shadow-xs dark:border-amber-900/50 dark:bg-amber-950/20 transition-all hover:shadow-sm">
+            <div className="rounded-lg border border-warning/30 bg-warning/10 p-4">
               <div className="text-[10px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">
                 High Priority
               </div>
@@ -440,7 +439,7 @@ export function TriggersPage() {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-border/80 bg-card/90 backdrop-blur p-4 shadow-xs transition-all hover:shadow-sm">
+            <div className="rounded-lg border bg-background p-4">
               <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                 Under Review
               </div>
@@ -452,7 +451,7 @@ export function TriggersPage() {
               </div>
             </div>
 
-            <div className="col-span-2 sm:col-span-4 lg:col-span-1 rounded-2xl border border-border/80 bg-card/90 backdrop-blur p-4 shadow-xs transition-all hover:shadow-sm">
+            <div className="col-span-2 rounded-lg border bg-background p-4 sm:col-span-4 lg:col-span-1">
               <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                 Resolved
               </div>
@@ -474,6 +473,7 @@ export function TriggersPage() {
             <div className="flex items-center gap-1 rounded-xl border border-border bg-muted/40 p-1">
               <button
                 type="button"
+                aria-pressed={statusTab === "active"}
                 onClick={() => setStatusTab("active")}
                 className={cn(
                   "rounded-lg px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer",
@@ -486,6 +486,7 @@ export function TriggersPage() {
               </button>
               <button
                 type="button"
+                aria-pressed={statusTab === "resolved"}
                 onClick={() => setStatusTab("resolved")}
                 className={cn(
                   "rounded-lg px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer",
@@ -498,6 +499,7 @@ export function TriggersPage() {
               </button>
               <button
                 type="button"
+                aria-pressed={statusTab === "all"}
                 onClick={() => setStatusTab("all")}
                 className={cn(
                   "rounded-lg px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer",
@@ -529,6 +531,7 @@ export function TriggersPage() {
                   <button
                     key={p}
                     type="button"
+                    aria-pressed={isActive}
                     onClick={() => setPriorityFilter(p)}
                     className={cn(
                       "rounded-full px-2.5 py-1 text-xs font-medium border transition-colors cursor-pointer",
@@ -552,7 +555,7 @@ export function TriggersPage() {
     </div>
 
       {/* ── Main Two-Column Workspace ── */}
-      <div className="mx-auto max-w-7xl px-6 py-6">
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
         {/* Search & Meta sub-bar */}
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
           <div className="relative w-full sm:w-80">
@@ -560,7 +563,7 @@ export function TriggersPage() {
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Filter cases by name, ID, role..."
+                       placeholder="Search by person, case ID, role, or department"
               className="pl-9.5 h-10 rounded-xl border-border bg-card text-xs shadow-xs"
             />
           </div>
@@ -584,8 +587,8 @@ export function TriggersPage() {
           {/* ── LEFT: Case Queue List ── */}
           <div className={cn("space-y-3", activeCase && "hidden lg:block")}>
             <div className="flex items-center justify-between px-1 text-xs font-semibold text-muted-foreground">
-              <span>CASE QUEUE ({filteredCases.length})</span>
-              <span>LIVE DECISION ENGINE</span>
+              <span>Cases to review ({filteredCases.length})</span>
+              <span>Select one for details</span>
             </div>
 
             {filteredCases.length === 0 ? (
@@ -602,15 +605,23 @@ export function TriggersPage() {
                   const st = STATUS_CONFIG[c.status];
 
                   return (
-                    <button
+                    <div
                       key={c.id}
-                      type="button"
+                      role="button"
+                      tabIndex={0}
+                      aria-pressed={isSelected}
                       onClick={() => setSelectedCaseId((curr) => (curr === c.id ? null : c.id))}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          setSelectedCaseId((curr) => (curr === c.id ? null : c.id));
+                        }
+                      }}
                       className={cn(
-                        "w-full rounded-2xl border p-4 text-left transition-all duration-200 cursor-pointer shadow-xs",
+                        "w-full rounded-lg border p-4 text-left transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                         isSelected
-                          ? "border-primary bg-primary/5 shadow-md ring-2 ring-primary/20"
-                          : "border-border bg-card hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-sm hover:bg-muted/30"
+                          ? "border-primary bg-primary/5 ring-1 ring-primary/20"
+                          : "border-border bg-card hover:border-primary/40 hover:bg-muted/30"
                       )}
                     >
                       {/* Top Badges */}
@@ -704,7 +715,7 @@ export function TriggersPage() {
                           ))}
                         </div>
                       )}
-                    </button>
+                    </div>
                   );
                 })}
               </div>
@@ -743,7 +754,7 @@ export function TriggersPage() {
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
 

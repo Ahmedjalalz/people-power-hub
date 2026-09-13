@@ -143,7 +143,7 @@ export function ChatVisualSplitLayout({
   if (!activeVisual) {
     if (isFloating) {
       return (
-        <div className="w-full h-full rounded-2xl border border-border/80 bg-card/95 backdrop-blur-md shadow-2xl overflow-hidden pointer-events-auto">
+        <div className="h-full w-full overflow-hidden rounded-lg border bg-card shadow-lg pointer-events-auto">
           {children}
         </div>
       );
@@ -176,7 +176,7 @@ export function ChatVisualSplitLayout({
       {/* ── Left Panel: Visual Stage Card ── */}
       <div
         className={cn(
-          "h-full min-w-[320px] rounded-2xl border border-border/80 bg-card/95 backdrop-blur-md shadow-lg overflow-hidden flex-col pointer-events-auto",
+          "h-full min-w-[320px] overflow-hidden rounded-lg border bg-card shadow-sm flex-col pointer-events-auto",
           isMd
             ? "hidden md:flex md:w-[var(--split-visual)]"
             : "hidden lg:flex lg:w-[var(--split-visual)]",
@@ -241,7 +241,7 @@ export function ChatVisualSplitLayout({
       {/* ── Right Panel: Chatbox ── */}
       <div
         className={cn(
-          "h-full w-full rounded-2xl border border-border/80 bg-card/95 backdrop-blur-md shadow-lg overflow-hidden pointer-events-auto flex flex-col",
+          "h-full w-full overflow-hidden rounded-lg border bg-card shadow-sm pointer-events-auto flex flex-col",
           isMd
             ? "md:min-w-[340px] md:w-[var(--split-chat)]"
             : "lg:min-w-[340px] lg:w-[var(--split-chat)]",

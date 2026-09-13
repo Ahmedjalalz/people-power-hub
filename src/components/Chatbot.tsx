@@ -291,10 +291,10 @@ type ChatbotProps = {
 export function Chatbot({
   compact = false,
   autoFocus = false,
-  title = "HR Insights Assistant",
-  subtitle = "Ask about attrition, risk & retention",
-  placeholder = "Ask about an employee, ranking, or risk...",
-  welcomeMessage = "Hi! I'm your HR Insights assistant. Ask me things like *\"who are the top 10 performers this month?\"*, *\"Why was Usman Ali flagged?\"*, or *\"What are today's critical cases?\"*",
+  title = "People AI",
+  subtitle = "Ask a question in everyday language",
+  placeholder = "Ask about a person, team, risk, or performance…",
+  welcomeMessage = "Hello. I can help you understand your workforce data and decide what to review next. Try asking *\"Who may need support?\"*, *\"Why was Usman Ali flagged?\"*, or *\"What needs attention today?\"*",
   onClose,
   activeVisual,
   onActiveVisualChange,
@@ -395,7 +395,7 @@ export function Chatbot({
   };
 
   return (
-    <div className={cn("flex h-full bg-card overflow-hidden relative", compact ? "" : "rounded-2xl border shadow-sm")}>
+    <div className={cn("relative flex h-full overflow-hidden bg-card", compact ? "" : "rounded-lg border shadow-sm")}>
       {/* ── Collapsible Chat History Side Panel ── */}
       {isHistoryOpen && (
         <aside
@@ -571,7 +571,7 @@ export function Chatbot({
       {/* ── Main Chat Area ── */}
       <div className="flex flex-col flex-1 min-w-0 h-full">
         {/* ── Header ── */}
-        <div className="flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 border-b border-border/80 bg-card/90 backdrop-blur-md gap-2">
+        <div className="flex items-center justify-between gap-2 border-b bg-card px-3 py-3 sm:px-4">
           {/* Left: History toggle + Sparkles + Title */}
           <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1 mr-1">
             {/* History Toggle Button with eye-catching color and badge */}
@@ -609,7 +609,7 @@ export function Chatbot({
                 <span className="truncate">{activeSession ? activeSession.title : title}</span>
                 {activeSession && (
                   <span className="rounded-full bg-primary/10 text-primary text-[10px] font-bold px-1.5 py-0.2 shrink-0 hidden md:inline">
-                    Saved Chat
+                    Saved
                   </span>
                 )}
               </div>
@@ -674,12 +674,12 @@ export function Chatbot({
 
           {messages.length === 1 && !isStreaming && (
             <div className="pt-2 pb-1 space-y-2 animate-in fade-in-0 duration-200">
-              <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-1">
-                Suggested questions
+               <div className="px-1 text-xs font-semibold text-muted-foreground">
+                 Not sure where to start? Try one of these
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {[
-                  { q: "who are the top 10 performers this month", tag: "Performance" },
+                   { q: "Who are the top 10 performers this month?", tag: "Performance" },
                   { q: "Why was Usman Ali flagged?", tag: "Risk Analysis" },
                   { q: "What are today's critical cases?", tag: "Active Alerts" },
                   { q: "Who is at highest risk?", tag: "Attrition" },
@@ -702,7 +702,7 @@ export function Chatbot({
         </div>
 
         {/* ── Input Bar ── */}
-        <div className="p-3 border-t border-border bg-card/80 backdrop-blur-xs">
+         <div className="border-t bg-card p-3">
           {/* Listening state — wave bar replaces text input */}
           {isListening ? (
             <div className="flex items-center gap-2 rounded-2xl border bg-primary/5 border-primary/30 px-3 py-2 transition-all">
@@ -858,10 +858,10 @@ function MessageBubble({
     return (
       <div className="flex gap-2.5 items-start animate-in fade-in-0 duration-200">
         <BotAvatar />
-        <div className="rounded-2xl rounded-tl-sm bg-muted/60 px-4 py-3 max-w-[85%] border border-border/80 shadow-xs">
+         <div role="status" aria-live="polite" className="max-w-[85%] rounded-lg rounded-tl-sm border bg-muted/60 px-4 py-3">
           <div className="text-xs text-muted-foreground flex items-center justify-between gap-3">
             <div className="flex items-center gap-1.5 italic">
-              <span>{message.statusText || "Analyzing HR workforce data..."}</span>
+               <span>{message.statusText || "Reviewing the relevant people data"}</span>
               <span className="thinking-dot">.</span>
               <span className="thinking-dot">.</span>
               <span className="thinking-dot">.</span>
