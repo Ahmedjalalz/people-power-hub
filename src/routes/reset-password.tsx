@@ -7,13 +7,21 @@ import { Label } from "@/components/ui/label";
 import { PasswordInput } from "@/components/PasswordInput";
 import { PasswordStrength, isPasswordStrong } from "@/components/PasswordStrength";
 import { resetPassword, AuthError } from "@/lib/auth";
+import { AuthShell } from "@/components/AuthShell";
 
 type ResetPasswordSearch = {
   token?: string;
 };
 
 export const Route = createFileRoute("/reset-password")({
-  head: () => ({ meta: [{ title: "Create New Password — PeopleLens HR" }] }),
+  head: () => ({ meta: [
+    { title: "Create new password — People Power Hub" },
+    { name: "description", content: "Choose a new password for your People Power Hub account." },
+    { property: "og:title", content: "Create new password — People Power Hub" },
+    { property: "og:description", content: "Choose a new password for your People Power Hub account." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   validateSearch: (search: Record<string, unknown>): ResetPasswordSearch => {
     return {
       token: typeof search.token === "string" ? search.token : undefined,
@@ -63,38 +71,23 @@ function ResetPasswordPage() {
 
   if (!token && !success) {
     return (
-      <main className="grid min-h-screen place-items-center bg-background px-6 py-12">
-        <div className="w-full max-w-md page-enter">
-          <div className="relative overflow-hidden rounded-xl border bg-card p-7 shadow-xl text-center">
+      <AuthShell eyebrow="Secure account recovery">
+          <div className="text-center">
              <h1 className="text-xl font-semibold tracking-tight text-red-500">Invalid Reset Link</h1>
              <p className="mt-2 text-sm text-muted-foreground">The password reset link is invalid or missing the required token.</p>
              <Button asChild className="w-full mt-6 rounded-lg">
                <Link to="/forgot-password">Request a new link</Link>
              </Button>
           </div>
-        </div>
-      </main>
+      </AuthShell>
     );
   }
 
-  return <main className="grid min-h-screen place-items-center bg-background px-6 py-12">
-    <div className="w-full max-w-md page-enter"><div className="relative overflow-hidden rounded-xl border bg-card p-7 shadow-xl">
-      <div aria-hidden className="blob pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-pastel-teal opacity-60 blur-3xl" />
-      
-      <div className="relative">
-        <div className="mb-6 flex items-center gap-2">
-          <div className="grid h-10 w-10 place-items-center rounded-lg bg-pastel-teal">
-            <ShieldCheck className="h-5 w-5 text-primary" />
-          </div>
-          <div>
-            <div className="text-lg font-semibold">PeopleLens</div>
-            <div className="text-xs text-muted-foreground">HR Management</div>
-          </div>
-        </div>
-
+  return <AuthShell eyebrow="Secure account recovery">
         {success ? (
           <div className="text-center mt-6">
-            <h1 className="text-2xl font-semibold tracking-tight">Password reset!</h1>
+            <ShieldCheck className="mx-auto size-12 text-success" />
+            <h1 className="mt-5 text-3xl font-bold">Password updated</h1>
             <p className="mt-2 text-sm text-muted-foreground">
               Your password has been successfully changed.
             </p>
@@ -104,8 +97,9 @@ function ResetPasswordPage() {
           </div>
         ) : (
           <>
-            <h1 className="text-2xl font-semibold tracking-tight">Create new password</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <p className="text-sm font-semibold text-primary">Choose a secure password</p>
+            <h1 className="mt-2 text-3xl font-bold">Create a new password</h1>
+            <p className="mt-3 text-sm text-muted-foreground">
               Please enter your new password below.
             </p>
             <form onSubmit={submit} className="mt-6 space-y-4">
@@ -125,7 +119,5 @@ function ResetPasswordPage() {
             </form>
           </>
         )}
-      </div>
-    </div></div>
-  </main>;
+  </AuthShell>;
 }
