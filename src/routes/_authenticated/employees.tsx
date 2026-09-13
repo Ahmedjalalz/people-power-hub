@@ -187,19 +187,19 @@ function EmployeesPage() {
   }, [allEmployees, selectedDepartment, searchQuery]);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 py-6 sm:py-8">
+    <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 lg:px-8 lg:py-10">
       {/* ── Page Header ── */}
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+      <div className="mb-8 flex flex-wrap items-end justify-between gap-4 border-b border-border pb-7">
         <div>
-          <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3.5 py-1 text-xs font-semibold text-primary backdrop-blur-sm">
+          <div className="mb-2 inline-flex items-center gap-2 text-sm font-semibold text-primary">
             <Users className="h-3.5 w-3.5" />
             <span>Staff Directory</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-            Employees
+          <h1 className="text-3xl font-bold text-foreground sm:text-4xl">
+            Find a person
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Filter by department to explore personnel, positions, and profile details.
+            Search by name, role, department, or employee ID to open a complete profile.
           </p>
         </div>
 
@@ -217,7 +217,7 @@ function EmployeesPage() {
       <div className="flex flex-col lg:flex-row gap-6 items-start">
         {/* ── SIDE 1: Departments Filter ── */}
         <aside className="w-full lg:w-72 xl:w-80 shrink-0 self-stretch flex flex-col">
-          <div className="sticky top-20 flex flex-col h-[calc(100vh-11rem)] min-h-[500px] rounded-2xl border border-border/80 bg-card/90 backdrop-blur-md p-4 sm:p-5 shadow-xs">
+          <div className="flex max-h-[32rem] flex-col rounded-lg border border-border bg-card p-4 sm:p-5 lg:sticky lg:top-20 lg:max-h-[calc(100dvh-7rem)]">
             {/* Department Panel Header */}
             <div className="flex items-center justify-between pb-3.5 border-b border-border/80">
               <div className="flex items-center gap-2">
@@ -234,6 +234,7 @@ function EmployeesPage() {
               <button
                 type="button"
                 onClick={() => setSelectedDepartment(null)}
+                aria-pressed={selectedDepartment === null}
                 className={cn(
                   "w-full flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition-all text-left cursor-pointer",
                   selectedDepartment === null
@@ -267,6 +268,7 @@ function EmployeesPage() {
                     key={dept.name}
                     type="button"
                     onClick={() => setSelectedDepartment(dept.name)}
+                    aria-pressed={isSelected}
                     className={cn(
                       "w-full flex items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition-all text-left cursor-pointer group",
                       isSelected
@@ -319,7 +321,7 @@ function EmployeesPage() {
         {/* ── SIDE 2: Employee Cards Grid ── */}
         <section className="flex-1 min-w-0 flex flex-col gap-4">
           {/* Controls Bar: Search & Status indicator */}
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border/80 bg-card/90 backdrop-blur-md p-3 sm:px-4 shadow-xs">
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-card p-3 sm:px-4">
             <div className="relative flex-1 min-w-[220px]">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
@@ -405,12 +407,12 @@ function EmployeesPage() {
                     key={employee.id}
                     to="/employee/$employeeId"
                     params={{ employeeId: employee.id }}
-                    className="group relative flex flex-col justify-between rounded-2xl border border-border/80 bg-card/90 backdrop-blur-md p-5 shadow-xs transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl cursor-pointer"
+                    className="group relative flex min-h-60 flex-col justify-between rounded-lg border border-border bg-card p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   >
                     {/* Top Row: Avatar & Metadata Badges */}
                     <div>
                       <div className="flex items-start justify-between gap-3">
-                        <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-primary/10 font-bold text-primary border border-primary/15 shadow-xs text-sm transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+                        <div aria-hidden="true" className="grid h-11 w-11 shrink-0 place-items-center rounded-lg border border-primary/15 bg-primary/10 text-sm font-bold text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
                           {avatarInitials}
                         </div>
 
@@ -423,6 +425,12 @@ function EmployeesPage() {
                             <span className="inline-flex items-center gap-1 rounded-full bg-rose-500/10 px-2.5 py-0.5 text-[10px] font-bold text-rose-600 dark:text-rose-400 border border-rose-500/20">
                               <ShieldAlert className="h-3 w-3" />
                               <span>At Risk</span>
+                            </span>
+                          )}
+                          {employee.riskScore !== undefined && employee.riskScore >= 60 && employee.riskScore < 70 && (
+                            <span className="inline-flex items-center gap-1 rounded-full border border-warning/25 bg-warning/10 px-2.5 py-0.5 text-[10px] font-bold text-warning-foreground">
+                              <ShieldAlert className="h-3 w-3" />
+                              <span>Elevated risk</span>
                             </span>
                           )}
                         </div>
@@ -466,8 +474,8 @@ function EmployeesPage() {
                         )}
                       </div>
 
-                      <div className="inline-flex items-center gap-1 text-xs font-semibold text-primary opacity-0 group-hover:opacity-100 transition-opacity">
-                        <span>View</span>
+                      <div className="inline-flex items-center gap-1 text-xs font-semibold text-primary">
+                        <span>View profile</span>
                         <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                       </div>
                     </div>
@@ -478,6 +486,6 @@ function EmployeesPage() {
           )}
         </section>
       </div>
-    </div>
+    </main>
   );
 }

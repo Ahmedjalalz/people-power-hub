@@ -1,14 +1,22 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Loader2, KeyRound, ArrowLeft } from "lucide-react";
+import { Loader2, MailCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { forgotPassword, AuthError } from "@/lib/auth";
+import { AuthShell } from "@/components/AuthShell";
 
 export const Route = createFileRoute("/forgot-password")({
-  head: () => ({ meta: [{ title: "Reset Password — PeopleLens HR" }] }),
+  head: () => ({ meta: [
+    { title: "Reset password — People Power Hub" },
+    { name: "description", content: "Request a secure People Power Hub password reset link." },
+    { property: "og:title", content: "Reset password — People Power Hub" },
+    { property: "og:description", content: "Request a secure People Power Hub password reset link." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
   component: ForgotPasswordPage,
 });
 
@@ -32,42 +40,23 @@ function ForgotPasswordPage() {
     }
   };
 
-  return <main className="grid min-h-screen place-items-center bg-background px-6 py-12">
-    <div className="w-full max-w-md page-enter"><div className="relative overflow-hidden rounded-xl border bg-card p-7 shadow-xl">
-      <div aria-hidden className="blob pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-pastel-teal opacity-60 blur-3xl" />
-      
-      <div className="relative">
-        <div className="mb-6">
-          <Button variant="ghost" size="icon" asChild className="mb-4 rounded-full">
-            <Link to="/auth">
-              <ArrowLeft className="h-4 w-4" />
-            </Link>
-          </Button>
-          <div className="flex items-center gap-2">
-            <div className="grid h-10 w-10 place-items-center rounded-lg bg-pastel-teal">
-              <KeyRound className="h-5 w-5 text-primary" />
-            </div>
-            <div>
-              <div className="text-lg font-semibold">PeopleLens</div>
-              <div className="text-xs text-muted-foreground">HR Management</div>
-            </div>
-          </div>
-        </div>
-
+  return <AuthShell eyebrow="Secure account recovery">
         {success ? (
-          <div className="text-center mt-6">
-            <h1 className="text-2xl font-semibold tracking-tight">Check your email</h1>
-            <p className="mt-2 text-sm text-muted-foreground">
+          <div className="text-center">
+            <span className="mx-auto grid size-14 place-items-center rounded-lg bg-success/10 text-success"><MailCheck /></span>
+            <h1 className="mt-5 text-3xl font-bold">Check your email</h1>
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">
               If an account exists with this email, a password reset link has been sent.
             </p>
-            <Button asChild className="w-full mt-6 rounded-lg">
+            <Button asChild className="mt-6 w-full">
               <Link to="/auth">Return to sign in</Link>
             </Button>
           </div>
         ) : (
           <>
-            <h1 className="text-2xl font-semibold tracking-tight">Reset password</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <p className="text-sm font-semibold text-primary">Account help</p>
+            <h1 className="mt-2 text-3xl font-bold">Reset your password</h1>
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">
               Enter your email address and we'll send you a link to reset your password.
             </p>
             <form onSubmit={submit} className="mt-6 space-y-4">
@@ -75,14 +64,13 @@ function ForgotPasswordPage() {
                 <Label htmlFor="email">Work email</Label>
                 <Input id="email" type="email" required autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@company.com" className="rounded-lg" />
               </div>
-              <Button type="submit" className="w-full rounded-lg" disabled={busy}>
+               <Button type="submit" className="w-full" disabled={busy}>
                 {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Send reset link
               </Button>
             </form>
+            <Button asChild variant="link" className="mt-3 w-full"><Link to="/auth">Back to sign in</Link></Button>
           </>
         )}
-      </div>
-    </div></div>
-  </main>;
+  </AuthShell>;
 }

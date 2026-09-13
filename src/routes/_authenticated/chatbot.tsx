@@ -7,15 +7,15 @@ import type { ActiveVisual } from "@/types/chat";
 export const Route = createFileRoute("/_authenticated/chatbot")({
   head: () => ({
     meta: [
-      { title: "HR Assistant — PeopleLens" },
+      { title: "Ask People AI — People Power Hub" },
       {
         name: "description",
-        content: "Chat with your HR insights assistant about attrition risk, retention, and performance rankings.",
+        content: "Ask plain-language questions about people, teams, risks, and performance.",
       },
-      { property: "og:title", content: "HR Assistant — PeopleLens" },
+      { property: "og:title", content: "Ask People AI — People Power Hub" },
       {
         property: "og:description",
-        content: "Chat with your HR insights assistant about attrition risk, retention, and performance rankings.",
+        content: "Ask plain-language questions about people, teams, risks, and performance.",
       },
     ],
   }),
@@ -26,7 +26,7 @@ function ChatbotPage() {
   const [activeVisual, setActiveVisual] = useState<ActiveVisual | null>(null);
 
   return (
-    <div className="h-full flex flex-col p-3 sm:p-4 lg:p-5 max-w-7xl mx-auto w-full min-h-0 overflow-hidden">
+    <main className="mx-auto flex h-full min-h-0 w-full max-w-7xl flex-col overflow-hidden p-3 sm:p-4 lg:p-5">
       <div className="flex-1 min-h-0 flex items-stretch">
         <ChatVisualSplitLayout
           activeVisual={activeVisual}
@@ -43,6 +43,6 @@ function ChatbotPage() {
           />
         </ChatVisualSplitLayout>
       </div>
-    </div>
+    </main>
   );
 }

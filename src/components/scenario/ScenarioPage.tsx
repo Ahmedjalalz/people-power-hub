@@ -185,16 +185,16 @@ export function ScenarioPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="border-b border-border bg-card/60 backdrop-blur-sm">
-        <div className="mx-auto max-w-7xl px-6 py-5">
-          <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3.5 py-1 text-xs font-semibold text-primary backdrop-blur-sm">
+    <main className="min-h-screen bg-background">
+      <div className="border-b border-border bg-card">
+        <div className="mx-auto max-w-7xl px-4 py-7 sm:px-6 lg:px-8">
+          <div className="mb-2 inline-flex items-center gap-2 text-sm font-semibold text-primary">
             <FlaskConical className="h-3.5 w-3.5" />
             Scenario Simulator
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">Workforce Modeling</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Select a scenario, configure the parameters, and see the projected impact and recommendations.
+          <h1 className="text-3xl font-bold text-foreground sm:text-4xl">Plan a workforce change</h1>
+          <p className="mt-2 max-w-2xl text-base leading-7 text-muted-foreground">
+            Choose a change, add the relevant people or department details, then review the likely impact before deciding.
           </p>
         </div>
 
@@ -232,6 +232,7 @@ export function ScenarioPage() {
                   <button
                     key={scenario.key}
                     onClick={() => setActiveKey(scenario.key)}
+                     aria-pressed={isActive}
                     className={cn(
                       "group mr-0.5 flex shrink-0 items-center gap-2 rounded-t-lg border-b-2 px-4 py-3 text-sm font-medium transition-all whitespace-nowrap",
                       isActive
@@ -269,9 +270,9 @@ export function ScenarioPage() {
       )}
 
       {active && (
-        <div key={active.key} className={cn("min-h-[calc(100vh-12rem)] bg-gradient-to-br", meta.gradient)}>
-          <div className="mx-auto max-w-7xl px-6 py-6">
-            <div className={cn("mb-6 rounded-2xl border border-border p-4", meta.accentBg)}>
+        <div key={active.key} className="min-h-[calc(100vh-12rem)] bg-muted/20">
+          <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+            <div className={cn("mb-6 rounded-lg border border-border p-4", meta.accentBg)}>
               <div className="flex items-center gap-3">
                 <span className={cn("grid h-9 w-9 shrink-0 place-items-center rounded-xl", meta.badgeColor)}>
                   {meta.icon}
@@ -299,7 +300,7 @@ export function ScenarioPage() {
           Select a scenario tab to get started
         </div>
       )}
-    </div>
+    </main>
   );
 }
 
