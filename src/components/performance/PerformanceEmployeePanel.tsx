@@ -183,7 +183,7 @@ export function PerformanceEmployeePanel({
   }, [trendQuery.data, rootData]);
 
   // Trend stats
-  const trendScores = trend.map((t) => t.score).filter((s) => s > 0);
+  const trendScores = trend.map((t: { score: number }) => t.score).filter((s: number) => s > 0);
   const peakScore = trendScores.length > 0 ? Math.max(...trendScores) : null;
   const lowestScore = trendScores.length > 0 ? Math.min(...trendScores) : null;
 
@@ -223,8 +223,8 @@ export function PerformanceEmployeePanel({
     });
   }, [kpiQuery.data, rootData]);
 
-  const strengths = kpis.filter((k) => k.normalizedScore >= 70);
-  const developmentAreas = kpis.filter((k) => k.normalizedScore < 70);
+  const strengths = kpis.filter((k: { normalizedScore: number }) => k.normalizedScore >= 70);
+  const developmentAreas = kpis.filter((k: { normalizedScore: number }) => k.normalizedScore < 70);
 
   // ─── Recommendations resolution ─────────────────────────────────────────────
   const recommendations = useMemo(() => {
@@ -518,7 +518,7 @@ export function PerformanceEmployeePanel({
                   <p className="py-6 text-center text-xs text-muted-foreground">No KPIs currently rated in the strengths bracket.</p>
                 ) : (
                   <div className="space-y-3.5">
-                    {strengths.map((k) => (
+                    {strengths.map((k: any) => (
                       <KpiCard key={k.id || k.name} kpi={k} isStrength={true} />
                     ))}
                   </div>
@@ -541,7 +541,7 @@ export function PerformanceEmployeePanel({
                   <p className="py-6 text-center text-xs text-muted-foreground">All KPIs are currently meeting strength expectations.</p>
                 ) : (
                   <div className="space-y-3.5">
-                    {developmentAreas.map((k) => (
+                    {developmentAreas.map((k: any) => (
                       <KpiCard key={k.id || k.name} kpi={k} isStrength={false} />
                     ))}
                   </div>
@@ -564,7 +564,7 @@ export function PerformanceEmployeePanel({
             emptyLabel="No development recommendations currently required — performance is on track."
           >
             <div className="grid gap-3.5 md:grid-cols-2">
-              {recommendations.map((r, index) => (
+              {recommendations.map((r: any, index: number) => (
                 <div
                   key={r.id || `${r.courseName}-${index}`}
                   className="rounded-2xl border border-border bg-gradient-to-br from-card via-card to-pastel-lavender/10 p-4 shadow-xs transition-all hover:border-primary/40 hover:shadow-sm"
@@ -679,7 +679,7 @@ export function PerformanceEmployeePanel({
             emptyLabel="No learning records available for this employee."
           >
             <div className="space-y-2.5">
-              {learning.map((row, index) => (
+              {learning.map((row: any, index: number) => (
                 <div
                   key={row.id || `${row.courseName}-${index}`}
                   className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-border bg-card p-3.5 shadow-xs transition-all hover:bg-muted/30"

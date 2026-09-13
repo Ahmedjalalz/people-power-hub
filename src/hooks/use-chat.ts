@@ -301,7 +301,7 @@ export function useChat({ welcomeMessage }: UseChatOptions) {
         const baseMessages = current.filter((m) => m.id !== "welcome");
         const next = [...baseMessages, userMsg, initialAssistantMsg];
         if (sessionId) {
-          persistSessionMessages(sessionId, next, activeThreadId);
+          persistSessionMessages(sessionId, next, activeThreadId ?? undefined);
         }
         return next;
       });
@@ -312,7 +312,7 @@ export function useChat({ welcomeMessage }: UseChatOptions) {
             item.id === assistantMessageId ? { ...item, ...update } : item
           );
           if (sessionId) {
-            persistSessionMessages(sessionId, next, activeThreadId);
+            persistSessionMessages(sessionId, next, activeThreadId ?? undefined);
           }
           return next;
         });

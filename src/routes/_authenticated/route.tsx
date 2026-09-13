@@ -17,11 +17,11 @@ function AuthenticatedLayout() {
 
   return (
     <SidebarProvider>
-      <div className={cn("flex w-full bg-background", isChatbotPage ? "h-screen overflow-hidden" : "min-h-screen")}>
+      <div className={cn("flex w-full bg-background", isChatbotPage ? "h-dvh overflow-hidden" : "min-h-dvh")}>
         <AppSidebar />
         <div className={cn("flex flex-1 flex-col min-w-0", isChatbotPage && "h-full overflow-hidden")}>
           <Header />
-          <main className={cn("flex-1 flex flex-col min-w-0", isChatbotPage ? "min-h-0 overflow-hidden" : "")}>
+          <div className={cn("flex-1 flex flex-col min-w-0", isChatbotPage ? "min-h-0 overflow-hidden" : "")}>
             <div
               key={pathname}
               className={cn(
@@ -31,7 +31,7 @@ function AuthenticatedLayout() {
             >
               <Outlet />
             </div>
-          </main>
+          </div>
         </div>
         {!isChatbotPage && <FloatingChatbot />}
       </div>
