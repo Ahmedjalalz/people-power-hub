@@ -277,11 +277,11 @@ function GaugeCard({
   const circumference = 2 * Math.PI * radius;
   const offset = circumference * (1 - Math.min(Math.max(value, 0), 100) / 100);
   return (
-    <div className="group rounded-xl border bg-card p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md">
+    <div className="group rounded-lg border bg-card p-5 transition-all hover:border-primary/30">
       <div className="text-xs font-medium text-muted-foreground">{label}</div>
       <div className="mt-3 flex items-center gap-4">
         <div className="relative h-[88px] w-[88px] shrink-0">
-          <svg viewBox="0 0 88 88" className="h-full w-full -rotate-90">
+          <svg viewBox="0 0 88 88" className="h-full w-full -rotate-90" role="img" aria-label={`${label}: ${value} out of 100`}>
             <circle cx="44" cy="44" r={radius} fill="none" strokeWidth="10" className="stroke-foreground/8" />
             <circle
               cx="44"
