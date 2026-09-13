@@ -86,18 +86,18 @@ function EmployeePage() {
   const { employee } = Route.useLoaderData();
 
   return (
-    <main className="mx-auto max-w-6xl px-6 pb-16 pt-6">
+    <main className="mx-auto w-full max-w-6xl px-4 pb-16 pt-6 sm:px-6 lg:px-8">
       <Link
         to="/employees"
-        className="group mb-5 inline-flex items-center gap-2 rounded-full border bg-card/70 px-3 py-1.5 text-sm text-muted-foreground shadow-sm transition-all hover:-translate-y-0.5 hover:text-foreground"
+        className="group mb-5 inline-flex min-h-10 items-center gap-2 rounded-lg border bg-card px-3 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
-        Back to Employees
+        Back to people
       </Link>
 
       <ProfileHeader employee={employee} />
 
-      <div className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-[1.6fr_1fr]">
+      <div className="mt-5 grid grid-cols-1 gap-5 xl:grid-cols-2">
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <GaugeCard
             label="Engagement score"
@@ -201,25 +201,18 @@ function EmployeePage() {
 
 function ProfileHeader({ employee }: { employee: Employee }) {
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-border/80 bg-card/90 backdrop-blur-md shadow-xs">
-      <div
-        aria-hidden
-        className="absolute inset-x-0 top-0 h-28 bg-gradient-to-r from-primary/20 via-primary/10 to-transparent border-b border-border/40"
-      />
-      <div
-        aria-hidden
-        className="blob pointer-events-none absolute -right-20 -top-24 h-64 w-64 rounded-full bg-primary/15 opacity-40 blur-3xl"
-      />
-      <div className="relative px-6 pb-6 pt-14 sm:px-8">
+    <div className="relative overflow-hidden rounded-lg border border-border bg-card">
+      <div aria-hidden className="absolute inset-x-0 top-0 h-2 bg-primary" />
+      <div className="relative px-5 pb-6 pt-8 sm:px-8">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div className="flex items-end gap-5">
-            <div className="grid h-24 w-24 shrink-0 place-items-center rounded-full bg-card text-2xl font-bold shadow-md ring-4 ring-card">
-              <span className="grid h-[84px] w-[84px] place-items-center rounded-full bg-primary/10 text-primary border border-primary/20">
+            <div aria-hidden="true" className="grid h-20 w-20 shrink-0 place-items-center rounded-lg border border-primary/20 bg-primary/10 text-xl font-bold text-primary sm:h-24 sm:w-24 sm:text-2xl">
+              <span>
                 {initials(employee.name)}
               </span>
             </div>
             <div className="min-w-0 pb-1">
-              <h1 className="truncate text-3xl font-bold tracking-tight text-foreground">{employee.name}</h1>
+              <h1 className="text-2xl font-bold text-foreground sm:text-3xl">{employee.name}</h1>
               <p className="mt-0.5 text-sm font-medium text-muted-foreground">
                 {employee.designation} · {employee.department} · Level {employee.jobLevel}
               </p>
@@ -285,7 +278,7 @@ function GaugeCard({
   const offset = circumference * (1 - Math.min(Math.max(value, 0), 100) / 100);
   return (
     <div className="group rounded-xl border bg-card p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md">
-      <div className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">{label}</div>
+      <div className="text-xs font-medium text-muted-foreground">{label}</div>
       <div className="mt-3 flex items-center gap-4">
         <div className="relative h-[88px] w-[88px] shrink-0">
           <svg viewBox="0 0 88 88" className="h-full w-full -rotate-90">
