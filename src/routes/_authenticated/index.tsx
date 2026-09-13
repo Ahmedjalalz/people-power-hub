@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
-import { ShieldAlert, Users2, Target, FlaskConical, ArrowRight } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { ShieldAlert, Users2, Target, FlaskConical, ArrowRight, CircleAlert, Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { getCriticalOpenCount } from "@/lib/trigger-engine";
 import { InsightCard } from "@/components/InsightCard";
 import { AttritionPanel } from "@/components/AttritionPanel";
@@ -80,69 +80,35 @@ function HRInsights() {
   const decliningCount = perf["declining_count"] ?? perf["Declining_Count"] ?? perf["declining"];
 
   return (
-    <main className="mx-auto max-w-7xl px-6 py-8">
-      {/* ── Page Header ── */}
-      <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3.5 py-1 text-xs font-semibold text-primary backdrop-blur-sm">
-            <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-            Focus: Attrition
-          </div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">HR Insights</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Start with attrition — click a card to open its detail panel and explore drill-down telemetry.
-          </p>
+    <main className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 lg:px-8 lg:py-10">
+      <section className="mb-8 grid gap-5 border-b border-border pb-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+        <div className="max-w-2xl">
+          <p className="mb-2 flex items-center gap-2 text-sm font-semibold text-primary"><Sparkles className="size-4" />Your workforce today</p>
+          <h1 className="text-3xl font-bold text-foreground sm:text-4xl">See what needs attention, then act.</h1>
+          <p className="mt-3 max-w-xl text-base leading-7 text-muted-foreground">Start with employee retention, then explore staffing and performance when you need more context.</p>
         </div>
-        <Link
-          to="/scenario"
-          className="btn-premium inline-flex items-center gap-2.5 rounded-2xl px-5 py-2.5 text-sm font-semibold shadow-md transition-all active:scale-[0.98] cursor-pointer"
-        >
-          <FlaskConical className="h-4 w-4" strokeWidth={2.25} />
-          <span>Scenario Simulator</span>
-        </Link>
-      </div>
+        <Button asChild size="lg"><Link to="/scenario"><FlaskConical />Plan a workforce change</Link></Button>
+      </section>
 
-      {/* ── Decision Trigger Engine Active Alert Banner ── */}
       {criticalTriggers > 0 && (
-        <div className="mb-8 rounded-3xl border border-rose-500/30 bg-gradient-to-r from-rose-500/10 via-amber-500/5 to-card/90 backdrop-blur-md p-5 shadow-xs transition-all hover:border-rose-500/50 hover:shadow-lg">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <span className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-rose-500/15 text-rose-600 dark:text-rose-400">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-2xl bg-rose-400 opacity-20" />
-                <ShieldAlert className="h-5 w-5" />
-              </span>
-              <div>
-                <div className="flex items-center gap-2.5">
-                  <span className="font-bold text-sm text-foreground">
-                    Decision Trigger Engine: {criticalTriggers} Critical Case{criticalTriggers > 1 ? "s" : ""}
-                  </span>
-                  <span className="rounded-full bg-rose-500 px-2.5 py-0.5 text-[10px] font-bold text-white uppercase tracking-wider shadow-xs">
-                    Immediate Action
-                  </span>
-                </div>
-                <p className="mt-0.5 text-xs text-muted-foreground">
-                  Automated rules matched urgent flight risks and unfilled critical roles requiring HR intervention.
-                </p>
-              </div>
-            </div>
-
-            <Link
-              to="/triggers"
-              className="inline-flex items-center gap-2 rounded-xl bg-foreground text-background px-4 py-2 text-xs font-semibold hover:opacity-90 active:scale-[0.98] transition-all shadow-xs cursor-pointer"
-            >
-              <span>Review Cases ({criticalTriggers})</span>
-              <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
+        <section aria-labelledby="urgent-cases-title" className="mb-8 grid gap-4 rounded-lg border border-destructive/30 bg-destructive/5 p-5 sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:items-center">
+          <span className="grid size-11 place-items-center rounded-lg bg-destructive/10 text-destructive"><CircleAlert className="size-5" /></span>
+          <div>
+            <div className="flex flex-wrap items-center gap-2"><h2 id="urgent-cases-title" className="font-bold">{criticalTriggers} urgent {criticalTriggers === 1 ? "case needs" : "cases need"} review</h2><span className="rounded-full bg-destructive px-2 py-0.5 text-xs font-semibold text-destructive-foreground">Action needed</span></div>
+            <p className="mt-1 text-sm text-muted-foreground">People risks and critical vacancies have reached your review threshold.</p>
           </div>
-        </div>
+          <Button asChild variant="outline" size="sm"><Link to="/triggers">Review cases <ArrowRight /></Link></Button>
+        </section>
       )}
 
-      {/* ── Insight Cards Grid ── */}
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <section aria-labelledby="insight-heading">
+        <div className="mb-5 flex items-end justify-between gap-4">
+          <div><h2 id="insight-heading" className="text-xl font-bold">Key insights</h2><p className="mt-1 text-sm text-muted-foreground">Select a topic to see the evidence and recommended next steps.</p></div>
+        </div>
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         <InsightCard
-          className="card-enter stagger-1"
           onClick={() => setOpenCard("attrition")}
-          tint="bg-rose-500/10 text-rose-600 dark:text-rose-400"
+          tint="bg-destructive/10 text-destructive"
           tintVar="--color-viz-5"
           icon={<ShieldAlert className="h-5 w-5" strokeWidth={2.25} />}
           label="Attrition"
@@ -155,25 +121,21 @@ function HRInsights() {
                   <div
                     key={point.month}
                     className={cn(
-                      "flex-1 rounded-t-md transition-all duration-300 hover:scale-y-105",
-                      idx === attritionOverview.trend.length - 1
-                        ? "bg-gradient-to-t from-rose-500/80 to-rose-500 shadow-xs"
-                        : "bg-gradient-to-t from-primary/50 to-primary/80"
-                    )}
+                      `flex-1 rounded-t-sm transition-transform duration-200 ${idx === attritionOverview.trend.length - 1 ? "bg-destructive" : "bg-primary/60"}`
+                    }
                     style={{ height: `${(point.rate / 10) * 100}%` }}
                     title={`${point.month}: ${point.rate}%`}
                   />
                 ))}
               </div>
               <div className="text-[11px] text-muted-foreground">
-                Rising for 6 months — open for risk list, reasons and replacements.
+                Risk has risen for six months. Open to see people, reasons, and possible cover.
               </div>
             </div>
           }
         />
 
         <InsightCard
-          className="card-enter stagger-2"
           onClick={() => setOpenCard("headcount")}
           tint="bg-primary/10 text-primary"
           tintVar="--primary"
@@ -188,7 +150,7 @@ function HRInsights() {
                   <span className="w-24 truncate font-medium text-muted-foreground">{row.dept}</span>
                   <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted/60">
                     <div
-                      className="h-full rounded-full bg-gradient-to-r from-sky-500 to-primary transition-all duration-500"
+                      className="h-full rounded-full bg-primary transition-all duration-500"
                       style={{ width: `${(row.people / maxPeople) * 100}%` }}
                     />
                   </div>
@@ -201,7 +163,6 @@ function HRInsights() {
 
 
         <InsightCard
-          className="card-enter stagger-3"
           onClick={() => setOpenCard("performance")}
           tint="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
           tintVar="--color-viz-2"
@@ -218,9 +179,9 @@ function HRInsights() {
           visual={
             <div className="space-y-2">
               {[
-                { label: "Strong + exceptional", value: strongCount, gradient: "from-emerald-500 to-teal-400" },
-                { label: "Improving", value: improvingCount, gradient: "from-primary to-sky-400" },
-                { label: "Declining", value: decliningCount, gradient: "from-rose-500 to-amber-500" },
+                { label: "Strong + exceptional", value: strongCount, tone: "bg-success" },
+                { label: "Improving", value: improvingCount, tone: "bg-primary" },
+                { label: "Declining", value: decliningCount, tone: "bg-destructive" },
               ].map((row) => {
                 const max = Math.max(
                   Number(strongCount ?? 0),
@@ -233,7 +194,7 @@ function HRInsights() {
                     <span className="w-28 truncate font-medium text-muted-foreground">{row.label}</span>
                     <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted/60">
                       <div
-                        className={cn("h-full rounded-full bg-gradient-to-r transition-all duration-500", row.gradient)}
+                        className={`h-full rounded-full transition-all duration-500 ${row.tone}`}
                         style={{ width: `${(Number(row.value ?? 0) / max) * 100}%` }}
                       />
                     </div>
@@ -244,7 +205,8 @@ function HRInsights() {
             </div>
           }
         />
-      </div>
+        </div>
+      </section>
 
       <AttritionPanel open={openCard === "attrition"} onClose={() => setOpenCard(null)} />
 
