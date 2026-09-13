@@ -120,9 +120,7 @@ function HRInsights() {
                 {attritionOverview.trend.map((point, idx) => (
                   <div
                     key={point.month}
-                    className={cn(
-                      `flex-1 rounded-t-sm transition-transform duration-200 ${idx === attritionOverview.trend.length - 1 ? "bg-destructive" : "bg-primary/60"}`
-                    }
+                    className={`flex-1 rounded-t-sm transition-transform duration-200 ${idx === attritionOverview.trend.length - 1 ? "bg-destructive" : "bg-primary/60"}`}
                     style={{ height: `${(point.rate / 10) * 100}%` }}
                     title={`${point.month}: ${point.rate}%`}
                   />
