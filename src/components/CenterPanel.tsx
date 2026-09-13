@@ -42,7 +42,7 @@ export function CenterPanel({
       <DialogPrimitive.Portal>
         <DialogPrimitive.Overlay
           onClick={handleClose}
-          className="panel-veil fixed inset-0 z-50 bg-foreground/30 backdrop-blur-lg cursor-pointer"
+          className="panel-veil fixed inset-0 z-50 bg-foreground/35 backdrop-blur-md cursor-pointer"
         />
         <div className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center p-4">
           <DialogPrimitive.Content
@@ -50,8 +50,8 @@ export function CenterPanel({
               handleClose();
             }}
             className={cn(
-              "panel-content pointer-events-auto w-full",
-              "max-h-[88vh] overflow-y-auto rounded-3xl border border-border/80 bg-card/95 backdrop-blur-xl p-6 sm:p-7 shadow-2xl",
+              "panel-content pointer-events-auto w-full focus:outline-none",
+              "max-h-[90dvh] overflow-y-auto rounded-2xl border border-border bg-card p-5 shadow-2xl sm:p-7",
               size === "lg" ? "max-w-4xl" : "max-w-2xl",
             )}
           >

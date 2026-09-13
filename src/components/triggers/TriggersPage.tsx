@@ -290,7 +290,7 @@ export function TriggersPage() {
 
   // Run Rule Check action
   const handleRunScan = () => {
-    evaluateMutation.mutate();
+    evaluateMutation.mutate(undefined);
   };
 
   // Filtered cases
