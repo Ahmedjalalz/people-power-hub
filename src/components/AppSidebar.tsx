@@ -25,7 +25,7 @@ export function useSidebarContext() {
 }
 
 const navigation = [
-  { to: "/" as const, label: "Overview", description: "What needs attention", icon: BarChart3 },
+  { to: "/" as const, label: "HR Insights", description: "Workforce signals and priorities", icon: BarChart3 },
   { to: "/employees" as const, label: "People", description: "Employees and teams", icon: Users },
   { to: "/scenario" as const, label: "Plan a change", description: "Test workforce scenarios", icon: FlaskConical },
   { to: "/triggers" as const, label: "Action centre", description: "Cases requiring review", icon: ShieldAlert },

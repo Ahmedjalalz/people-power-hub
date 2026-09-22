@@ -9,6 +9,7 @@ import { forgotPassword, AuthError } from "@/lib/auth";
 import { AuthShell } from "@/components/AuthShell";
 
 export const Route = createFileRoute("/forgot-password")({
+  ssr: false,
   head: () => ({ meta: [
     { title: "Reset password — People Power Hub" },
     { name: "description", content: "Request a secure People Power Hub password reset link." },
