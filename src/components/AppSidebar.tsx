@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { BarChart3, FlaskConical, LogOut, MessageSquare, Moon, ShieldAlert, Sun, Users, X } from "lucide-react";
+import { BarChart3, FlaskConical, LogOut, MessageSquare, Moon, Network, ShieldAlert, Sun, UploadCloud, Users, X } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTheme } from "@/lib/theme";
 import { getCurrentUser, logout as clearLocalSession } from "@/lib/auth";
@@ -30,6 +30,8 @@ const navigation = [
   { to: "/scenario" as const, label: "Plan a change", description: "Test workforce scenarios", icon: FlaskConical },
   { to: "/triggers" as const, label: "Action centre", description: "Cases requiring review", icon: ShieldAlert },
   { to: "/chatbot" as const, label: "Ask People AI", description: "Explore in plain language", icon: MessageSquare },
+  { to: "/ontologies" as const, label: "Ontologies", description: "Knowledge graph & schemas", icon: Network },
+  { to: "/data-sync" as const, label: "Tenant Data Sync", description: "Ingest & sync tenant datasets", icon: UploadCloud },
 ];
 
 export function AppSidebar() {

@@ -7,7 +7,6 @@ import {
   FileSpreadsheet,
   ShieldCheck,
   GitPullRequest,
-  UploadCloud,
   RotateCcw,
   Sparkles,
   Building,
@@ -35,7 +34,6 @@ import {
   fetchChangeRequests,
   createChangeRequest,
   decideChangeRequest,
-  fetchOrganization,
 } from "@/services/ontology";
 import { OntologyGraphCanvas } from "./OntologyGraphCanvas";
 import { OntologyNodeDetailPanel } from "./OntologyNodeDetailPanel";
@@ -43,10 +41,9 @@ import { OntologyEntitiesView } from "./OntologyEntitiesView";
 import { OntologyMappingsView } from "./OntologyMappingsView";
 import { OntologyCoverageView } from "./OntologyCoverageView";
 import { OntologyGovernanceView } from "./OntologyGovernanceView";
-import { OrganizationDataSyncPanel } from "./OrganizationDataSyncPanel";
 import { cn } from "@/lib/utils";
 
-type StudioSubTab = "overview" | "graph" | "entities" | "mappings" | "coverage" | "governance" | "sync";
+type StudioSubTab = "overview" | "graph" | "entities" | "mappings" | "coverage" | "governance";
 
 export function OntologyStudioPage() {
   const queryClient = useQueryClient();
@@ -134,11 +131,6 @@ export function OntologyStudioPage() {
   const changesQuery = useQuery({
     queryKey: ["ontology", "changes"],
     queryFn: fetchChangeRequests,
-  });
-
-  const organizationQuery = useQuery({
-    queryKey: ["ontology", "organization", tenantId],
-    queryFn: () => fetchOrganization(tenantId),
   });
 
   // Handle node selection with history tracking
@@ -298,18 +290,6 @@ export function OntologyStudioPage() {
             )}
           >
             <GitPullRequest className="size-3.5" /> Governance & Reviews
-          </button>
-          <button
-            type="button"
-            onClick={() => setSubTab("sync")}
-            className={cn(
-              "flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-semibold transition-all whitespace-nowrap ml-auto",
-              subTab === "sync"
-                ? "bg-emerald-600 text-white shadow-sm"
-                : "text-muted-foreground hover:bg-emerald-500/10 hover:text-emerald-600 dark:hover:text-emerald-400",
-            )}
-          >
-            <UploadCloud className="size-3.5" /> Tenant Data Sync
           </button>
         </div>
       </div>
@@ -557,26 +537,6 @@ export function OntologyStudioPage() {
             await decideChangeRequest(id, decision);
             changesQuery.refetch();
             dashboardQuery.refetch();
-          }}
-        />
-      )}
-
-      {/* Sub-view: Tenant Data Sync */}
-      {subTab === "sync" && (
-        <OrganizationDataSyncPanel
-          currentTenantId={tenantId}
-          onTenantChange={handleTenantChange}
-          tenants={tenants}
-          organizationDetail={organizationQuery.data || null}
-          onRefreshOrganization={() => {
-            organizationQuery.refetch();
-            tenantsQuery.refetch();
-            dashboardQuery.refetch();
-            liveGraphQuery.refetch();
-          }}
-          onOpenLiveGraph={() => {
-            setSubTab("graph");
-            setGraphMode("live");
           }}
         />
       )}

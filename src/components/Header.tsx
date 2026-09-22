@@ -9,6 +9,8 @@ const titles: Record<string, { title: string; description: string }> = {
   "/scenario": { title: "Plan a change", description: "Explore likely workforce impact before acting" },
   "/triggers": { title: "Action centre", description: "Review cases that need a decision" },
   "/chatbot": { title: "Ask People AI", description: "Explore workforce questions in plain language" },
+  "/ontologies": { title: "Ontologies", description: "Knowledge graph explorer, entity models & governance" },
+  "/data-sync": { title: "Tenant Data Sync", description: "Ingest, map & synchronize tenant datasets to Supabase and knowledge graph" },
 };
 
 export function Header() {

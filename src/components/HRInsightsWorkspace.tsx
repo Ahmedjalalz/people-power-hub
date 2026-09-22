@@ -13,7 +13,6 @@ import {
   Target,
   TrendingUp,
   Users2,
-  Network,
 } from "lucide-react";
 import {
   Area,
@@ -32,7 +31,6 @@ import {
 import { AttritionPanel } from "@/components/AttritionPanel";
 import { HeadcountPanel } from "@/components/HeadcountPanel";
 import { PerformancePanel } from "@/components/performance/PerformancePanel";
-import { OntologyStudioPage } from "@/components/ontology/OntologyStudioPage";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
@@ -56,7 +54,7 @@ import {
   type TrendPoint,
 } from "@/services/performance";
 
-type Topic = "attrition" | "headcount" | "performance" | "ontologies";
+type Topic = "attrition" | "headcount" | "performance";
 
 const tooltipStyle = {
   background: "var(--card)",
@@ -105,7 +103,7 @@ export function HRInsightsWorkspace({ criticalTriggers }: { criticalTriggers: nu
     if (typeof window !== "undefined") {
       const p = new URLSearchParams(window.location.search);
       const t = p.get("tab");
-      if (t === "ontologies" || t === "attrition" || t === "headcount" || t === "performance") {
+      if (t === "attrition" || t === "headcount" || t === "performance") {
         return t as Topic;
       }
     }
@@ -137,17 +135,11 @@ export function HRInsightsWorkspace({ criticalTriggers }: { criticalTriggers: nu
             <TabsTrigger value="attrition" className="gap-2 rounded-none border-b-2 border-transparent px-4 py-4 shadow-none data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none"><ShieldAlert className="size-4" />Attrition</TabsTrigger>
             <TabsTrigger value="headcount" className="gap-2 rounded-none border-b-2 border-transparent px-4 py-4 shadow-none data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none"><Users2 className="size-4" />Headcount</TabsTrigger>
             <TabsTrigger value="performance" className="gap-2 rounded-none border-b-2 border-transparent px-4 py-4 shadow-none data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none"><Target className="size-4" />Performance</TabsTrigger>
-            <TabsTrigger value="ontologies" className="gap-2 rounded-none border-b-2 border-transparent px-4 py-4 shadow-none data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none"><Network className="size-4" />Ontologies</TabsTrigger>
           </TabsList>
         </div>
         <TabsContent value="attrition" className="mt-0"><AttritionView onOpenFull={() => setFullView("attrition")} /></TabsContent>
         <TabsContent value="headcount" className="mt-0"><HeadcountView onOpenFull={() => setFullView("headcount")} /></TabsContent>
         <TabsContent value="performance" className="mt-0"><PerformanceView onOpenFull={() => setFullView("performance")} /></TabsContent>
-        <TabsContent value="ontologies" className="mt-0">
-          <div className="pt-6">
-            <OntologyStudioPage />
-          </div>
-        </TabsContent>
       </Tabs>
 
       <AttritionPanel open={fullView === "attrition"} onClose={() => setFullView(null)} />

@@ -17,7 +17,9 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedChatbotRouteImport } from './routes/_authenticated/chatbot'
+import { Route as AuthenticatedDataSyncRouteImport } from './routes/_authenticated/data-sync'
 import { Route as AuthenticatedEmployeesRouteImport } from './routes/_authenticated/employees'
+import { Route as AuthenticatedOntologiesRouteImport } from './routes/_authenticated/ontologies'
 import { Route as AuthenticatedScenarioRouteImport } from './routes/_authenticated/scenario'
 import { Route as AuthenticatedTriggersRouteImport } from './routes/_authenticated/triggers'
 import { Route as ApiAttritionRouteImport } from './routes/api/attrition'
@@ -70,9 +72,19 @@ const AuthenticatedChatbotRoute = AuthenticatedChatbotRouteImport.update({
   path: '/chatbot',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedDataSyncRoute = AuthenticatedDataSyncRouteImport.update({
+  id: '/data-sync',
+  path: '/data-sync',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedEmployeesRoute = AuthenticatedEmployeesRouteImport.update({
   id: '/employees',
   path: '/employees',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedOntologiesRoute = AuthenticatedOntologiesRouteImport.update({
+  id: '/ontologies',
+  path: '/ontologies',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedScenarioRoute = AuthenticatedScenarioRouteImport.update({
@@ -145,7 +157,9 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/chatbot': typeof AuthenticatedChatbotRoute
+  '/data-sync': typeof AuthenticatedDataSyncRoute
   '/employees': typeof AuthenticatedEmployeesRoute
+  '/ontologies': typeof AuthenticatedOntologiesRoute
   '/scenario': typeof AuthenticatedScenarioRoute
   '/triggers': typeof AuthenticatedTriggersRoute
   '/api/attrition': typeof ApiAttritionRoute
@@ -166,7 +180,9 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/chatbot': typeof AuthenticatedChatbotRoute
+  '/data-sync': typeof AuthenticatedDataSyncRoute
   '/employees': typeof AuthenticatedEmployeesRoute
+  '/ontologies': typeof AuthenticatedOntologiesRoute
   '/scenario': typeof AuthenticatedScenarioRoute
   '/triggers': typeof AuthenticatedTriggersRoute
   '/api/attrition': typeof ApiAttritionRoute
@@ -190,7 +206,9 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/_authenticated/chatbot': typeof AuthenticatedChatbotRoute
+  '/_authenticated/data-sync': typeof AuthenticatedDataSyncRoute
   '/_authenticated/employees': typeof AuthenticatedEmployeesRoute
+  '/_authenticated/ontologies': typeof AuthenticatedOntologiesRoute
   '/_authenticated/scenario': typeof AuthenticatedScenarioRoute
   '/_authenticated/triggers': typeof AuthenticatedTriggersRoute
   '/api/attrition': typeof ApiAttritionRoute
@@ -215,7 +233,9 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/chatbot'
+    | '/data-sync'
     | '/employees'
+    | '/ontologies'
     | '/scenario'
     | '/triggers'
     | '/api/attrition'
@@ -236,7 +256,9 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/chatbot'
+    | '/data-sync'
     | '/employees'
+    | '/ontologies'
     | '/scenario'
     | '/triggers'
     | '/api/attrition'
@@ -259,7 +281,9 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/_authenticated/chatbot'
+    | '/_authenticated/data-sync'
     | '/_authenticated/employees'
+    | '/_authenticated/ontologies'
     | '/_authenticated/scenario'
     | '/_authenticated/triggers'
     | '/api/attrition'
@@ -351,11 +375,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedChatbotRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/data-sync': {
+      id: '/_authenticated/data-sync'
+      path: '/data-sync'
+      fullPath: '/data-sync'
+      preLoaderRoute: typeof AuthenticatedDataSyncRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/employees': {
       id: '/_authenticated/employees'
       path: '/employees'
       fullPath: '/employees'
       preLoaderRoute: typeof AuthenticatedEmployeesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/ontologies': {
+      id: '/_authenticated/ontologies'
+      path: '/ontologies'
+      fullPath: '/ontologies'
+      preLoaderRoute: typeof AuthenticatedOntologiesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/scenario': {
@@ -447,7 +485,9 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedChatbotRoute: typeof AuthenticatedChatbotRoute
+  AuthenticatedDataSyncRoute: typeof AuthenticatedDataSyncRoute
   AuthenticatedEmployeesRoute: typeof AuthenticatedEmployeesRoute
+  AuthenticatedOntologiesRoute: typeof AuthenticatedOntologiesRoute
   AuthenticatedScenarioRoute: typeof AuthenticatedScenarioRoute
   AuthenticatedTriggersRoute: typeof AuthenticatedTriggersRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
@@ -456,7 +496,9 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedChatbotRoute: AuthenticatedChatbotRoute,
+  AuthenticatedDataSyncRoute: AuthenticatedDataSyncRoute,
   AuthenticatedEmployeesRoute: AuthenticatedEmployeesRoute,
+  AuthenticatedOntologiesRoute: AuthenticatedOntologiesRoute,
   AuthenticatedScenarioRoute: AuthenticatedScenarioRoute,
   AuthenticatedTriggersRoute: AuthenticatedTriggersRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
