@@ -9,12 +9,12 @@ export const Route = createFileRoute("/_authenticated/")({
       { title: "HR Insights — PeopleLens" },
       {
         name: "description",
-        content: "Attrition prediction, headcount, and workforce performance insights.",
+        content: "Attrition prediction, headcount, workforce performance, and ontology insights.",
       },
       { property: "og:title", content: "HR Insights — PeopleLens" },
       {
         property: "og:description",
-        content: "Attrition prediction, headcount, and workforce performance insights.",
+        content: "Attrition prediction, headcount, workforce performance, and ontology insights.",
       },
     ],
   }),
@@ -31,5 +31,6 @@ function HRInsights() {
     window.addEventListener("trigger-cases-updated", handleUpdate);
     return () => window.removeEventListener("trigger-cases-updated", handleUpdate);
   }, []);
+
   return <HRInsightsWorkspace criticalTriggers={criticalTriggers} />;
 }
