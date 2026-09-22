@@ -479,7 +479,11 @@ export function OntologyStudioPage() {
             onModeChange={setGraphMode}
             tenantId={tenantId}
             schemaData={schemaGraphQuery.data}
-            liveData={liveGraphQuery.data}
+            liveData={
+              graphMode === "live" && selectedNodeId && liveNodeDetailQuery.data?.nodes?.length
+                ? liveNodeDetailQuery.data
+                : liveGraphQuery.data
+            }
             selectedNodeId={selectedNodeId}
             onSelectNode={handleSelectNode}
             onRefreshLive={() => liveGraphQuery.refetch()}
