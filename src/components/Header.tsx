@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useSidebarContext } from "@/components/AppSidebar";
 
 const titles: Record<string, { title: string; description: string }> = {
-  "/": { title: "Workforce overview", description: "Priorities, signals, and next steps" },
+  "/": { title: "HR Insights", description: "Workforce signals, priorities, and next steps" },
   "/employees": { title: "People", description: "Find employees and understand their context" },
   "/scenario": { title: "Plan a change", description: "Explore likely workforce impact before acting" },
   "/triggers": { title: "Action centre", description: "Review cases that need a decision" },

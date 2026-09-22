@@ -10,6 +10,7 @@ import { AuthShell } from "@/components/AuthShell";
 import { isSignedIn, login, resendVerification, wakeUpServer, AuthError } from "@/lib/auth";
 
 export const Route = createFileRoute("/auth")({
+  ssr: false,
   head: () => ({ meta: [
     { title: "Sign in — People Power Hub" },
     { name: "description", content: "Sign in to People Power Hub to understand your workforce and take action." },

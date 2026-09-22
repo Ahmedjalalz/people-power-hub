@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { AuthShell } from "@/components/AuthShell";
 
 export const Route = createFileRoute("/check-email")({
+  ssr: false,
   head: () => ({ meta: [
     { title: "Check your email — People Power Hub" },
     { name: "description", content: "Confirm your email to finish setting up People Power Hub." },

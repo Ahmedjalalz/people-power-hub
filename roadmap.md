@@ -5,3 +5,4 @@
 - [x] Redesign HR Insights and core detail panel structure
 - [x] Redesign employees, chatbot, scenarios, and triggers
 - [x] Verify authentication, API flows, accessibility, and responsive layouts
+- [x] Replace overview drill-down cards with a tabbed HR Insights workspace

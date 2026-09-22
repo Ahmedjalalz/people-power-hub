@@ -14,6 +14,7 @@ type ResetPasswordSearch = {
 };
 
 export const Route = createFileRoute("/reset-password")({
+  ssr: false,
   head: () => ({ meta: [
     { title: "Create new password — People Power Hub" },
     { name: "description", content: "Choose a new password for your People Power Hub account." },
