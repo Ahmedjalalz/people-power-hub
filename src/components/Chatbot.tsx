@@ -48,7 +48,7 @@ import {
 } from "recharts";
 import { parseVisualData, analyzeDataStructure } from "@/lib/visual-extractor";
 
-const chartTooltip = { background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12, color: "var(--foreground)" };
+const chartTooltip = { background: "var(--popover)", border: "1px solid var(--border)", borderRadius: 12, color: "var(--popover-foreground)", boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.4)" };
 
 // ── Web Speech API type declaration ──────────────────────────────────────────
 interface ISpeechRecognition extends EventTarget {
@@ -329,8 +329,13 @@ export function Chatbot({
   const latestVisualRef = useRef<string | null>(null);
 
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
-  }, [messages]);
+    if (!scrollRef.current) return;
+    if (isStreaming) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    } else {
+      scrollRef.current.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+    }
+  }, [messages, isStreaming]);
 
   useEffect(() => {
     if (autoFocus) inputRef.current?.focus();
@@ -934,7 +939,25 @@ function MessageBubble({
               </div>
             </div>
           ) : (
-            <FormattedText text={message.content} />
+            <div>
+              <FormattedText
+                text={message.content}
+                isTyping={message.role === "assistant" && message.status === "typing"}
+              />
+              {message.role === "assistant" && message.status === "typing" && (
+                <div className="flex items-center justify-between gap-2 mt-2 pt-1 border-t border-border/40 text-[11px] text-muted-foreground animate-in fade-in duration-150">
+                  <span className="italic">Streaming response...</span>
+                  <button
+                    onClick={onCancelGeneration}
+                    className="not-italic font-semibold text-rose-600 dark:text-rose-400 hover:underline flex items-center gap-1 cursor-pointer"
+                    title="Stop response"
+                  >
+                    <Square className="w-2.5 h-2.5 fill-current" />
+                    <span>Stop</span>
+                  </button>
+                </div>
+              )}
+            </div>
           )}
 
           {/* Visualization preview / stage link */}
@@ -1177,15 +1200,29 @@ function BotAvatar() {
 
 // ─── Markdown / Text Formatter with Clickable Employee Links ─────────────────
 
-function FormattedText({ text }: { text: string }) {
-  if (!text) return null;
+function FormattedText({ text, isTyping }: { text: string; isTyping?: boolean }) {
+  if (!text) {
+    if (isTyping) {
+      return <span className="inline-block w-1.5 h-4 bg-primary align-middle rounded-xs animate-pulse" />;
+    }
+    return null;
+  }
 
   const lines = text.split("\n");
 
   return (
     <div className="space-y-1.5 break-words min-w-0">
       {lines.map((line, idx) => {
-        if (!line.trim()) return <div key={idx} className="h-1.5" />;
+        const isLastLine = idx === lines.length - 1;
+        if (!line.trim()) {
+          return (
+            <div key={idx} className="h-1.5">
+              {isLastLine && isTyping && (
+                <span className="inline-block w-1.5 h-4 bg-primary align-middle rounded-xs animate-pulse" />
+              )}
+            </div>
+          );
+        }
 
         // Numbered list
         const numberedMatch = line.match(/^(\d+\.)\s+(.*)$/);
@@ -1193,7 +1230,12 @@ function FormattedText({ text }: { text: string }) {
           return (
             <div key={idx} className="flex gap-2 items-start pl-1 min-w-0">
               <span className="font-semibold text-primary shrink-0">{numberedMatch[1]}</span>
-              <span className="flex-1 min-w-0 break-words"><InlineMarkdown text={numberedMatch[2]} /></span>
+              <span className="flex-1 min-w-0 break-words">
+                <InlineMarkdown text={numberedMatch[2]} />
+                {isLastLine && isTyping && (
+                  <span className="inline-block w-1.5 h-4 ml-1 bg-primary align-middle rounded-xs animate-pulse" />
+                )}
+              </span>
             </div>
           );
         }
@@ -1204,7 +1246,12 @@ function FormattedText({ text }: { text: string }) {
           return (
             <div key={idx} className="flex gap-2 items-start pl-1 min-w-0">
               <span className="text-primary shrink-0">•</span>
-              <span className="flex-1 min-w-0 break-words"><InlineMarkdown text={bulletMatch[1]} /></span>
+              <span className="flex-1 min-w-0 break-words">
+                <InlineMarkdown text={bulletMatch[1]} />
+                {isLastLine && isTyping && (
+                  <span className="inline-block w-1.5 h-4 ml-1 bg-primary align-middle rounded-xs animate-pulse" />
+                )}
+              </span>
             </div>
           );
         }
@@ -1212,6 +1259,9 @@ function FormattedText({ text }: { text: string }) {
         return (
           <div key={idx} className="leading-relaxed break-words min-w-0">
             <InlineMarkdown text={line} />
+            {isLastLine && isTyping && (
+              <span className="inline-block w-1.5 h-4 ml-1 bg-primary align-middle rounded-xs animate-pulse" />
+            )}
           </div>
         );
       })}

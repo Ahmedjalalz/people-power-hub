@@ -21,12 +21,16 @@ export const Route = createFileRoute("/api/chat")({
         }
 
         const authorization = request.headers.get("Authorization");
+        const acceptHeader = request.headers.get("Accept");
+        const wantsStream = acceptHeader?.includes("text/event-stream");
+        const targetEndpoint = wantsStream ? `${API_BASE}/chat/stream` : `${API_BASE}/chat`;
 
         try {
-          const upstream = await fetch(`${API_BASE}/chat`, {
+          const upstream = await fetch(targetEndpoint, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
+              ...(wantsStream ? { Accept: "text/event-stream" } : {}),
               ...(authorization ? { Authorization: authorization } : {}),
             },
             body: JSON.stringify(result.data),
@@ -35,11 +39,36 @@ export const Route = createFileRoute("/api/chat")({
 
           if (!upstream.ok) {
             const errorBody = await upstream.text();
-            console.error(`HR chat request failed [${upstream.status}]: ${errorBody}`);
+            const isHtml = errorBody.trim().startsWith("<") || errorBody.includes("<!DOCTYPE");
+            if (isHtml) {
+              console.warn(
+                `[Chat API] Upstream returned status ${upstream.status} (HTML/Cloudflare response). Suppressing raw HTML log.`,
+              );
+            } else {
+              console.error(`HR chat request failed [${upstream.status}]: ${errorBody}`);
+            }
             return Response.json(
-              { error: `Chat service request failed (${upstream.status}).` },
+              {
+                error:
+                  upstream.status === 429
+                    ? "The chat service is temporarily rate-limited. Please wait a moment."
+                    : upstream.status === 503
+                    ? "The chat service is currently waking up from sleep on Render. Please wait ~30s and try again."
+                    : `Chat service request failed (${upstream.status}).`,
+              },
               { status: upstream.status },
             );
+          }
+
+          if (wantsStream && upstream.body) {
+            return new Response(upstream.body, {
+              status: upstream.status,
+              headers: {
+                "Content-Type": "text/event-stream",
+                "Cache-Control": "no-cache",
+                Connection: "keep-alive",
+              },
+            });
           }
 
           const data = await upstream.json();

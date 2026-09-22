@@ -66,7 +66,17 @@ function parseEvent(line: string): ChatStreamEvent | null {
   }
 }
 
-export async function streamChat({ message, threadId, signal, onEvent }: { message: string; threadId: string; signal?: AbortSignal; onEvent: (event: ChatStreamEvent) => void }): Promise<void> {
+export async function streamChat({
+  message,
+  threadId,
+  signal,
+  onEvent,
+}: {
+  message: string;
+  threadId?: string | null;
+  signal?: AbortSignal;
+  onEvent: (event: ChatStreamEvent) => void;
+}): Promise<void> {
   const timeoutController = new AbortController();
   const timeoutId = window.setTimeout(() => timeoutController.abort(), CHAT_TIMEOUT_MS);
   const requestSignal = signal ? AbortSignal.any([signal, timeoutController.signal]) : timeoutController.signal;
@@ -78,7 +88,7 @@ export async function streamChat({ message, threadId, signal, onEvent }: { messa
         Accept: "text/event-stream",
         ...getAuthHeader(),
       },
-      body: JSON.stringify({ message, thread_id: threadId }),
+      body: JSON.stringify({ message, thread_id: threadId || undefined }),
       signal: requestSignal,
     });
     if (!response.ok) throw new Error(`Chat request failed (${response.status}).`);
@@ -90,8 +100,15 @@ export async function streamChat({ message, threadId, signal, onEvent }: { messa
       const lines = buffer.split(/\r?\n/);
       buffer = flush ? "" : (lines.pop() ?? "");
       for (const line of lines) {
-        const event = parseEvent(line);
-        if (event) onEvent(event);
+        const trimmed = line.trim();
+        if (!trimmed) continue;
+        const event = parseEvent(trimmed);
+        if (event) {
+          if (event.type === "done" && "chart_data" in event && event.chart_data != null) {
+            event.chart_data = safeParseChartData(event.chart_data);
+          }
+          onEvent(event);
+        }
       }
     };
     while (true) {

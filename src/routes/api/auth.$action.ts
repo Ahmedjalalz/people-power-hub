@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { forwardUpstreamResponse } from "@/lib/proxy-helper";
 
 const API_BASE = "https://hr-work-force.onrender.com";
 const UPSTREAM_TIMEOUT_MS = 120_000;
@@ -53,21 +54,7 @@ async function forward(request: Request, action: string): Promise<Response> {
       clearTimeout(timeout);
     }
 
-    const responseBody = await upstream.text();
-
-    if (!upstream.ok) {
-      console.error(
-        `Auth proxy [${action}] failed [${upstream.status}]: ${responseBody}`,
-      );
-    }
-
-    return new Response(responseBody, {
-      status: upstream.status,
-      headers: {
-        "Content-Type":
-          upstream.headers.get("Content-Type") ?? "application/json",
-      },
-    });
+    return await forwardUpstreamResponse(upstream, `Auth proxy [${action}]`);
   } catch (error) {
     console.error(`Auth proxy [${action}] network error:`, error);
     return Response.json(

@@ -43,7 +43,22 @@ export type ChatStreamEvent =
   | { type: "meta"; thread_id?: string }
   | { type: "status"; text?: string }
   | { type: "token"; text?: string }
-  | { type: "done"; thread_id?: string; selected_employee_id?: string; selected_employee_name?: string; last_tool_status?: string; elapsed_ms?: number };
+  | {
+      type: "done";
+      thread_id?: string;
+      reply?: string;
+      visualization?: boolean;
+      chart_type?: ChartType | null;
+      chart_data?: unknown;
+      chart_url?: string | null;
+      visualization_reason?: string | null;
+      selected_employee_id?: string | null;
+      selected_employee_name?: string | null;
+      last_tool_status?: string | null;
+      runtime_source?: unknown;
+      elapsed_ms?: number;
+    }
+  | { type: "error"; message?: string; detail?: string };
 
 export type ChatMetadata = Extract<ChatStreamEvent, { type: "done" }>;
 

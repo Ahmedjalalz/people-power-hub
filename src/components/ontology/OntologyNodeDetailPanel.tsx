@@ -87,7 +87,7 @@ export function OntologyNodeDetailPanel({
                     const neighborId = isOutbound ? e.target : e.source;
                     const family = getEdgeFamily(e.relation);
                     const familyDotColor =
-                      family === "talent" ? "bg-purple-500" : family === "planning" ? "bg-amber-500" : "bg-sky-500";
+                      family === "talent" ? "bg-purple-500 dark:bg-purple-400" : family === "planning" ? "bg-amber-500 dark:bg-amber-400" : "bg-sky-500 dark:bg-sky-400";
 
                     return (
                       <div

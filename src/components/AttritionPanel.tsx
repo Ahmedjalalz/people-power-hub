@@ -28,7 +28,7 @@ import {
 
 type SubView = "trend" | "people" | "reasons" | "departments";
 
-const chartTooltip = { background: "var(--card)", border: "1px solid var(--border)", borderRadius: 12, color: "var(--foreground)" };
+const chartTooltip = { background: "var(--popover)", border: "1px solid var(--border)", borderRadius: 12, color: "var(--popover-foreground)", boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.4)" };
 
 export function AttritionPanel({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [sub, setSub] = useState<SubView | null>(null);

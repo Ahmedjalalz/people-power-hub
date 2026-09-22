@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { forwardUpstreamResponse } from "@/lib/proxy-helper";
 
 const API_BASE =
   process.env["NEXT_PUBLIC_API_BASE_URL"]?.trim().replace(/\/$/, "") ||
@@ -98,22 +99,7 @@ async function forward(request: Request): Promise<Response> {
       signal: controller.signal,
     });
 
-    clearTimeout(timeout);
-
-    const responseBody = await upstream.text();
-
-    if (!upstream.ok) {
-      console.error(
-        `Performance API failed [${upstream.status}] ${upstreamUrl.pathname}: ${responseBody}`,
-      );
-    }
-
-    return new Response(responseBody, {
-      status: upstream.status,
-      headers: {
-        "Content-Type": upstream.headers.get("Content-Type") ?? "application/json",
-      },
-    });
+    return await forwardUpstreamResponse(upstream, `Performance API [${upstreamUrl.pathname}]`);
   } catch (error) {
     clearTimeout(timeout);
     const isTimeout = error instanceof Error && error.message === "upstream_timeout";

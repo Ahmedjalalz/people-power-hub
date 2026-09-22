@@ -40,13 +40,13 @@ const PALETTE = [
 ];
 
 const chartTooltip = {
-  background: "color-mix(in oklab, var(--card) 90%, transparent)",
+  background: "color-mix(in oklab, var(--popover) 95%, transparent)",
   backdropFilter: "blur(16px)",
   WebkitBackdropFilter: "blur(16px)",
   border: "1px solid color-mix(in oklab, var(--border) 80%, transparent)",
   borderRadius: 14,
-  boxShadow: "0 12px 32px -4px rgba(0, 0, 0, 0.25), 0 4px 12px -2px rgba(0, 0, 0, 0.1)",
-  color: "var(--foreground)",
+  boxShadow: "0 12px 32px -4px rgba(0, 0, 0, 0.35), 0 4px 12px -2px rgba(0, 0, 0, 0.15)",
+  color: "var(--popover-foreground)",
   padding: "10px 14px",
 };
 

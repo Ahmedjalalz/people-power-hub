@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { forwardUpstreamResponse } from "@/lib/proxy-helper";
 
 export const Route = createFileRoute("/api/pipeline/headcount")({
   server: {
@@ -17,22 +18,7 @@ export const Route = createFileRoute("/api/pipeline/headcount")({
             signal: request.signal,
           });
 
-          if (!upstream.ok) {
-            const errorBody = await upstream.text();
-            console.error(`Headcount API request failed [${upstream.status}]: ${errorBody}`);
-            return Response.json(
-              { status: "error", message: `Backend request failed (${upstream.status}).` },
-              { status: upstream.status },
-            );
-          }
-
-          const responseBody = await upstream.text();
-          return new Response(responseBody, {
-            status: 200,
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
+          return await forwardUpstreamResponse(upstream, "Headcount API");
         } catch (error) {
           console.error("Headcount pipeline request failed:", error);
           return Response.json({ status: "error", message: "Unable to reach the headcount service." }, { status: 502 });

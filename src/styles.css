@@ -127,40 +127,40 @@
 
 .dark {
   /* Deep obsidian midnight slate */
-  --background: oklch(0.12 0.015 255);
-  --foreground: oklch(0.97 0.006 255);
-  --card: oklch(0.16 0.02 255);
-  --card-foreground: oklch(0.97 0.006 255);
-  --popover: oklch(0.16 0.02 255);
-  --popover-foreground: oklch(0.97 0.006 255);
-  /* Luminous Electric Sapphire */
-  --primary: oklch(0.65 0.19 252);
-  --primary-foreground: oklch(0.10 0.02 255);
-  --secondary: oklch(0.22 0.02 255);
-  --secondary-foreground: oklch(0.96 0.008 255);
-  --muted: oklch(0.20 0.015 255);
-  --muted-foreground: oklch(0.68 0.015 255);
-  --accent: oklch(0.23 0.03 252);
-  --accent-foreground: oklch(0.97 0.008 252);
+  --background: oklch(0.13 0.018 250);
+  --foreground: oklch(0.98 0.005 250);
+  --card: oklch(0.17 0.022 250);
+  --card-foreground: oklch(0.98 0.005 250);
+  --popover: oklch(0.19 0.025 250);
+  --popover-foreground: oklch(0.98 0.005 250);
+  /* Executive Refined Sapphire / Cobalt */
+  --primary: oklch(0.60 0.175 252);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.23 0.022 250);
+  --secondary-foreground: oklch(0.96 0.008 250);
+  --muted: oklch(0.21 0.018 250);
+  --muted-foreground: oklch(0.72 0.018 250);
+  --accent: oklch(0.24 0.032 250);
+  --accent-foreground: oklch(0.98 0.008 250);
   --destructive: oklch(0.62 0.21 25);
-  --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.23 0.015 255);
-  --input: oklch(0.23 0.015 255);
-  --ring: oklch(0.65 0.19 252);
-  --success: oklch(0.72 0.11 165);
-  --warning: oklch(0.78 0.12 75);
-  --info: oklch(0.72 0.12 235);
+  --destructive-foreground: oklch(0.99 0 0);
+  --border: oklch(0.26 0.02 250);
+  --input: oklch(0.26 0.02 250);
+  --ring: oklch(0.60 0.175 252);
+  --success: oklch(0.72 0.12 162);
+  --warning: oklch(0.78 0.13 75);
+  --info: oklch(0.72 0.13 235);
 
-  /* Deep Harmonized Accent Tints */
-  --pastel-pink: oklch(0.22 0.025 15);
-  --pastel-peach: oklch(0.22 0.03 55);
-  --pastel-yellow: oklch(0.22 0.035 85);
-  --pastel-mint: oklch(0.22 0.025 155);
-  --pastel-blue: oklch(0.22 0.03 245);
-  --pastel-lavender: oklch(0.22 0.025 285);
-  --pastel-rose: oklch(0.22 0.025 25);
-  --pastel-teal: oklch(0.22 0.025 215);
-  --pastel-sky: oklch(0.22 0.03 235);
+  /* Harmonized Accent Tints (Sophisticated, translucent on dark backgrounds) */
+  --pastel-pink: oklch(0.23 0.035 15);
+  --pastel-peach: oklch(0.23 0.04 55);
+  --pastel-yellow: oklch(0.23 0.045 85);
+  --pastel-mint: oklch(0.23 0.035 155);
+  --pastel-blue: oklch(0.23 0.04 245);
+  --pastel-lavender: oklch(0.23 0.035 285);
+  --pastel-rose: oklch(0.23 0.035 25);
+  --pastel-teal: oklch(0.23 0.035 215);
+  --pastel-sky: oklch(0.23 0.04 235);
 
   --viz-1: #60a5fa;
   --viz-2: #34d399;
@@ -175,14 +175,14 @@
   --chart-4: #fbbf24;
   --chart-5: #fb7185;
 
-  --sidebar: oklch(0.14 0.018 255);
-  --sidebar-foreground: oklch(0.97 0.006 255);
-  --sidebar-primary: oklch(0.65 0.19 252);
-  --sidebar-primary-foreground: oklch(0.10 0.02 255);
-  --sidebar-accent: oklch(0.21 0.02 255);
-  --sidebar-accent-foreground: oklch(0.97 0.008 255);
-  --sidebar-border: oklch(0.21 0.015 255);
-  --sidebar-ring: oklch(0.65 0.19 252);
+  --sidebar: oklch(0.15 0.02 250);
+  --sidebar-foreground: oklch(0.98 0.005 250);
+  --sidebar-primary: oklch(0.60 0.175 252);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-accent: oklch(0.22 0.022 250);
+  --sidebar-accent-foreground: oklch(0.98 0.008 250);
+  --sidebar-border: oklch(0.24 0.02 250);
+  --sidebar-ring: oklch(0.60 0.175 252);
 }
 
 @layer base {
@@ -531,5 +531,29 @@
   animation: bar-fill 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* ── Global Recharts Tooltip & Data Hover High-Contrast Support ── */
+.recharts-default-tooltip {
+  background-color: var(--color-popover) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: 0.65rem !important;
+  color: var(--color-popover-foreground) !important;
+  box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.4), 0 4px 12px -2px rgba(0, 0, 0, 0.2) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  padding: 8px 12px !important;
+}
 
+.recharts-tooltip-label {
+  color: var(--color-popover-foreground) !important;
+  font-weight: 700 !important;
+  font-size: 0.75rem !important;
+  margin-bottom: 4px !important;
+}
 
+.recharts-tooltip-item,
+.recharts-tooltip-item-name,
+.recharts-tooltip-item-value,
+.recharts-tooltip-item-unit {
+  color: var(--color-popover-foreground) !important;
+  font-size: 0.75rem !important;
+}

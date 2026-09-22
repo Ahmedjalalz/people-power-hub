@@ -36,6 +36,7 @@ import {
   type SemanticFamily,
 } from "@/services/ontology";
 import { cn } from "@/lib/utils";
+import { useTheme } from "@/lib/theme";
 
 type Props = {
   mode: "live" | "schema";
@@ -66,6 +67,8 @@ export function OntologyGraphCanvas({
 }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
 
   // View style: Interactive Graph Canvas vs Structured Directory Matrix
   const [viewStyle, setViewStyle] = useState<ViewStyle>("canvas");
@@ -182,7 +185,7 @@ export function OntologyGraphCanvas({
     return "structure";
   };
 
-  // Theme-adaptive colors per domain
+  // Theme-adaptive colors per domain (bright luminous in dark mode, crisp in light mode)
   const domainColors: Record<SemanticFamily, {
     accent: string;
     fillLight: string;
@@ -190,32 +193,32 @@ export function OntologyGraphCanvas({
     text: string;
     label: string;
     icon: any;
-  }> = {
+  }> = useMemo(() => ({
     structure: {
-      accent: "#0284c7", // Sky blue
-      fillLight: "#e0f2fe",
-      border: "#0284c7",
-      text: "#0284c7",
+      accent: isDark ? "#38bdf8" : "#0284c7", // Luminous cyan-sky
+      fillLight: isDark ? "rgba(56, 189, 248, 0.16)" : "#e0f2fe",
+      border: isDark ? "#38bdf8" : "#0284c7",
+      text: isDark ? "#38bdf8" : "#0284c7",
       label: "Organization & Structure",
       icon: Building2,
     },
     talent: {
-      accent: "#8b5cf6", // Purple / Violet
-      fillLight: "#ede9fe",
-      border: "#8b5cf6",
-      text: "#8b5cf6",
+      accent: isDark ? "#c084fc" : "#8b5cf6", // Luminous soft lavender/violet
+      fillLight: isDark ? "rgba(192, 132, 252, 0.16)" : "#ede9fe",
+      border: isDark ? "#c084fc" : "#8b5cf6",
+      text: isDark ? "#c084fc" : "#8b5cf6",
       label: "Talent & Workforce",
       icon: Users2,
     },
     planning: {
-      accent: "#d97706", // Amber
-      fillLight: "#fef3c7",
-      border: "#d97706",
-      text: "#d97706",
+      accent: isDark ? "#fbbf24" : "#d97706", // Luminous golden amber
+      fillLight: isDark ? "rgba(251, 191, 36, 0.16)" : "#fef3c7",
+      border: isDark ? "#fbbf24" : "#d97706",
+      text: isDark ? "#fbbf24" : "#d97706",
       label: "Planning & Governance",
       icon: Target,
     },
-  };
+  }), [isDark]);
 
   // Helper to pick node vector icon
   const getNodeIconComponent = (typeOrId: string) => {
@@ -888,7 +891,9 @@ export function OntologyGraphCanvas({
               isDragging && "cursor-grabbing",
             )}
             style={{
-              background: "radial-gradient(circle at 50% 50%, var(--border, #e2e8f0) 1px, transparent 1px)",
+              background: isDark
+                ? "radial-gradient(circle at 50% 50%, color-mix(in oklab, var(--border) 70%, transparent) 1.2px, transparent 1.2px), oklch(0.12 0.016 250)"
+                : "radial-gradient(circle at 50% 50%, var(--border, #e2e8f0) 1px, transparent 1px), var(--background)",
               backgroundSize: "28px 28px",
             }}
           >
@@ -902,24 +907,24 @@ export function OntologyGraphCanvas({
               <defs>
                 {/* Arrow markers */}
                 <marker id="arrow-structure-node" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
-                  <path d="M0,0 L0,6 L7,3 z" fill="#0284c7" />
+                  <path d="M0,0 L0,6 L7,3 z" fill={domainColors.structure.accent} />
                 </marker>
                 <marker id="arrow-talent-node" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
-                  <path d="M0,0 L0,6 L7,3 z" fill="#8b5cf6" />
+                  <path d="M0,0 L0,6 L7,3 z" fill={domainColors.talent.accent} />
                 </marker>
                 <marker id="arrow-planning-node" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
-                  <path d="M0,0 L0,6 L7,3 z" fill="#d97706" />
+                  <path d="M0,0 L0,6 L7,3 z" fill={domainColors.planning.accent} />
                 </marker>
 
                 {/* Drop Shadows & Glow Filters */}
-                <filter id="node-shadow" x="-30%" y="-30%" width="160%" height="160%">
-                  <feDropShadow dx="0" dy="2" stdDeviation="4" floodOpacity="0.12" />
+                <filter id="node-shadow" x="-40%" y="-40%" width="180%" height="180%">
+                  <feDropShadow dx="0" dy="3" stdDeviation="5" floodColor={isDark ? "#000000" : "#64748b"} floodOpacity={isDark ? 0.7 : 0.15} />
                 </filter>
-                <filter id="node-glow-active" x="-50%" y="-50%" width="200%" height="200%">
-                  <feDropShadow dx="0" dy="0" stdDeviation="6" floodColor="#3b82f6" floodOpacity="0.8" />
+                <filter id="node-glow-active" x="-60%" y="-60%" width="220%" height="220%">
+                  <feDropShadow dx="0" dy="0" stdDeviation="8" floodColor={isDark ? "#60a5fa" : "#3b82f6"} floodOpacity={isDark ? 0.9 : 0.8} />
                 </filter>
-                <filter id="node-glow-focal" x="-50%" y="-50%" width="200%" height="200%">
-                  <feDropShadow dx="0" dy="0" stdDeviation="8" floodColor="#10b981" floodOpacity="0.85" />
+                <filter id="node-glow-focal" x="-60%" y="-60%" width="220%" height="220%">
+                  <feDropShadow dx="0" dy="0" stdDeviation="9" floodColor="#10b981" floodOpacity="0.9" />
                 </filter>
               </defs>
 
@@ -938,11 +943,11 @@ export function OntologyGraphCanvas({
                             width="320"
                             height="36"
                             rx="8"
-                            fill="var(--card)"
+                            fill={isDark ? "oklch(0.18 0.024 250)" : "var(--card)"}
                             stroke={cfg.accent}
                             strokeWidth="1.5"
                             strokeDasharray="4 3"
-                            opacity="0.8"
+                            opacity="0.9"
                           />
                           <text
                             y="4"
@@ -983,7 +988,7 @@ export function OntologyGraphCanvas({
                         key={edge.id}
                         className={cn(
                           "graph-interactive-edge transition-opacity duration-150 cursor-pointer",
-                          isDimmed ? "opacity-15" : "opacity-100",
+                          isDimmed ? (isDark ? "opacity-30" : "opacity-15") : "opacity-100",
                         )}
                         onMouseEnter={() => setHoveredEdgeId(edge.id)}
                         onMouseLeave={() => setHoveredEdgeId(null)}
@@ -996,8 +1001,8 @@ export function OntologyGraphCanvas({
                           d={edge.path}
                           fill="none"
                           stroke={colorCfg.accent}
-                          strokeWidth={isHighlighted ? 3.4 : 1.6}
-                          strokeOpacity={isHighlighted ? 1 : 0.65}
+                          strokeWidth={isHighlighted ? 3.4 : (isDark ? 2 : 1.6)}
+                          strokeOpacity={isHighlighted ? 1 : (isDark ? 0.82 : 0.65)}
                           markerEnd={`url(#arrow-${edge.family}-node)`}
                           className="transition-all duration-150"
                         />
@@ -1014,15 +1019,15 @@ export function OntologyGraphCanvas({
                               width={edge.relation.length * 8.4 + 28}
                               height="20"
                               rx="10"
-                              fill="var(--card)"
-                              stroke={isHighlighted ? colorCfg.accent : "var(--border)"}
+                              fill={isDark ? "oklch(0.19 0.025 250)" : "var(--card)"}
+                              stroke={isHighlighted ? colorCfg.accent : isDark ? "oklch(0.32 0.02 250)" : "var(--border)"}
                               strokeWidth={isHighlighted ? 2 : 1}
                               className="shadow-sm"
                             />
                             <text
                               y="3.5"
                               textAnchor="middle"
-                              fill={isHighlighted ? colorCfg.accent : "var(--foreground)"}
+                              fill={isHighlighted ? colorCfg.accent : (isDark ? "#ffffff" : "var(--foreground)")}
                               fontSize="9"
                               fontWeight={isHighlighted ? "800" : "600"}
                               letterSpacing="0.04em"
@@ -1065,7 +1070,7 @@ export function OntologyGraphCanvas({
                         onMouseLeave={() => setHoveredNodeId(null)}
                         className={cn(
                           "graph-interactive-node cursor-pointer select-none transition-opacity duration-150",
-                          isDimmed ? "opacity-20" : "opacity-100",
+                          isDimmed ? (isDark ? "opacity-35" : "opacity-20") : "opacity-100",
                         )}
                       >
                         {/* Outer Glow Halo for Focal / Active Nodes */}
@@ -1095,8 +1100,8 @@ export function OntologyGraphCanvas({
                         {/* Node Center Circle */}
                         <circle
                           r={r}
-                          fill="var(--card)"
-                          stroke={isFocal ? "#10b981" : isActive ? "#3b82f6" : cfg.border}
+                          fill={isDark ? "oklch(0.18 0.024 250)" : "var(--card)"}
+                          stroke={isFocal ? "#10b981" : isActive ? (isDark ? "#60a5fa" : "#3b82f6") : cfg.border}
                           strokeWidth={isActive ? 3.5 : isFocal ? 3 : 2.2}
                           filter={isFocal ? "url(#node-glow-focal)" : isActive ? "url(#node-glow-active)" : "url(#node-shadow)"}
                         />
@@ -1105,10 +1110,10 @@ export function OntologyGraphCanvas({
                         <circle
                           r={r - 4}
                           fill={cfg.accent}
-                          fillOpacity="0.16"
+                          fillOpacity={isDark ? 0.22 : 0.16}
                           stroke={cfg.accent}
                           strokeWidth="1"
-                          strokeOpacity="0.3"
+                          strokeOpacity={isDark ? 0.5 : 0.3}
                         />
 
                         {/* Vector Node Icon */}
@@ -1145,9 +1150,9 @@ export function OntologyGraphCanvas({
                             width={boxW}
                             height="30"
                             rx="6"
-                            fill="var(--card)"
-                            stroke={isActive ? cfg.accent : "var(--border)"}
-                            strokeWidth={isActive ? 1.8 : 1}
+                            fill={isDark ? "oklch(0.19 0.025 250)" : "var(--card)"}
+                            stroke={isActive ? cfg.accent : isDark ? "oklch(0.32 0.02 250)" : "var(--border)"}
+                            strokeWidth={isActive ? 2 : 1}
                             className="shadow-sm"
                           />
 
@@ -1155,7 +1160,7 @@ export function OntologyGraphCanvas({
                           <text
                             y="4"
                             textAnchor="middle"
-                            fill="var(--foreground)"
+                            fill={isDark ? "#ffffff" : "var(--foreground)"}
                             fontSize="10.5"
                             fontWeight={isActive ? "800" : "700"}
                           >
@@ -1226,15 +1231,15 @@ export function OntologyGraphCanvas({
               <p className="mb-1 text-[8.5px] font-bold uppercase tracking-wider text-muted-foreground">Domain Families</p>
               <div className="space-y-1 text-xs">
                 <div className="flex items-center gap-2">
-                  <span className="size-2 rounded-full bg-sky-500" />
+                  <span className="size-2 rounded-full" style={{ background: domainColors.structure.accent }} />
                   <span className="font-semibold text-foreground text-[10.5px]">Organization & Structure</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="size-2 rounded-full bg-purple-500" />
+                  <span className="size-2 rounded-full" style={{ background: domainColors.talent.accent }} />
                   <span className="font-semibold text-foreground text-[10.5px]">Talent & Workforce</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="size-2 rounded-full bg-amber-500" />
+                  <span className="size-2 rounded-full" style={{ background: domainColors.planning.accent }} />
                   <span className="font-semibold text-foreground text-[10.5px]">Planning & Governance</span>
                 </div>
               </div>

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { sendChatMessage } from "@/services/chat";
+import { sendChatMessage, streamChat } from "@/services/chat";
 import type { ChatMetadata, ChatMessage } from "@/types/chat";
 import { extractVisualDataFromResponse } from "@/lib/visual-extractor";
 import {
@@ -143,7 +143,7 @@ export function useChat({ welcomeMessage }: UseChatOptions) {
 
     setMessages((current) => {
       const updated = current.map((item) => {
-        if (item.status === "thinking") {
+        if (item.status === "thinking" || item.status === "typing") {
           return {
             ...item,
             status: "done" as const,
@@ -318,54 +318,135 @@ export function useChat({ welcomeMessage }: UseChatOptions) {
         });
       };
 
+      let streamedContent = "";
+      let hasReceivedDone = false;
+
       try {
-        const res = await sendChatMessage({
+        await streamChat({
           message,
           threadId: activeThreadId,
           signal: controller.signal,
+          onEvent: (event) => {
+            if (event.type === "meta") {
+              if (event.thread_id) {
+                activeThreadId = event.thread_id;
+                setThreadId(event.thread_id);
+              }
+            } else if (event.type === "status") {
+              if (event.text) {
+                setStatusText(event.text);
+                updateAssistant({
+                  statusText: event.text,
+                });
+              }
+            } else if (event.type === "token") {
+              if (event.text) {
+                streamedContent += event.text;
+                updateAssistant({
+                  content: streamedContent,
+                  status: "typing",
+                  statusText: undefined,
+                });
+              }
+            } else if (event.type === "done") {
+              hasReceivedDone = true;
+              if (event.thread_id) {
+                activeThreadId = event.thread_id;
+                setThreadId(event.thread_id);
+              }
+
+              setMetadata({
+                type: "done",
+                thread_id: event.thread_id,
+                selected_employee_id: event.selected_employee_id ?? undefined,
+                selected_employee_name: event.selected_employee_name ?? undefined,
+                last_tool_status: event.last_tool_status ?? undefined,
+                elapsed_ms: event.elapsed_ms ?? undefined,
+              });
+
+              const finalReply = event.reply || streamedContent;
+              const visualInfo = extractVisualDataFromResponse(
+                finalReply,
+                event.chart_data,
+                event.chart_type,
+                event.visualization_reason
+              );
+
+              updateAssistant({
+                content: finalReply,
+                status: "done",
+                statusText: undefined,
+                visualization: visualInfo.visualization,
+                chartType: visualInfo.chartType,
+                chartData: visualInfo.chartData,
+                chartUrl: event.chart_url ?? null,
+                visualizationReason: visualInfo.visualizationReason,
+              });
+            } else if (event.type === "error") {
+              updateAssistant({
+                content: event.message || FRIENDLY_ERROR,
+                status: "done",
+                statusText: undefined,
+              });
+            }
+          },
         });
 
-        if (res.thread_id) {
-          activeThreadId = res.thread_id;
-          setThreadId(res.thread_id);
+        if (!hasReceivedDone && streamedContent) {
+          const visualInfo = extractVisualDataFromResponse(streamedContent);
+          updateAssistant({
+            content: streamedContent,
+            status: "done",
+            statusText: undefined,
+            visualization: visualInfo.visualization,
+            chartType: visualInfo.chartType,
+            chartData: visualInfo.chartData,
+            visualizationReason: visualInfo.visualizationReason,
+          });
         }
-
-        setMetadata({
-          type: "done",
-          thread_id: res.thread_id,
-          selected_employee_id: res.selected_employee_id ?? undefined,
-          selected_employee_name: res.selected_employee_name ?? undefined,
-          last_tool_status: res.last_tool_status ?? undefined,
-          elapsed_ms: res.elapsed_ms ?? undefined,
-        });
-
-        const visualInfo = extractVisualDataFromResponse(
-          res.reply || "",
-          res.chart_data,
-          res.chart_type,
-          res.visualization_reason
-        );
-
-        updateAssistant({
-          content: res.reply || "",
-          status: "done",
-          statusText: undefined,
-          visualization: visualInfo.visualization,
-          chartType: visualInfo.chartType,
-          chartData: visualInfo.chartData,
-          chartUrl: res.chart_url ?? null,
-          visualizationReason: visualInfo.visualizationReason,
-        });
       } catch (err: any) {
         if (controller.signal.aborted) {
           updateAssistant({
-            content: "Response generation was stopped.",
+            content: streamedContent || "Response generation was stopped.",
             status: "done",
             statusText: undefined,
           });
         } else {
+          if (!streamedContent) {
+            try {
+              const res = await sendChatMessage({
+                message,
+                threadId: activeThreadId,
+                signal: controller.signal,
+              });
+              if (res.thread_id) {
+                activeThreadId = res.thread_id;
+                setThreadId(res.thread_id);
+              }
+              const visualInfo = extractVisualDataFromResponse(
+                res.reply || "",
+                res.chart_data,
+                res.chart_type,
+                res.visualization_reason
+              );
+              updateAssistant({
+                content: res.reply || "",
+                status: "done",
+                statusText: undefined,
+                visualization: visualInfo.visualization,
+                chartType: visualInfo.chartType,
+                chartData: visualInfo.chartData,
+                chartUrl: res.chart_url ?? null,
+                visualizationReason: visualInfo.visualizationReason,
+              });
+              return;
+            } catch {
+              // fallback failed
+            }
+          }
+
           updateAssistant({
-            content: FRIENDLY_ERROR,
+            content: streamedContent || FRIENDLY_ERROR,
             status: "done",
             statusText: undefined,
           });
@@ -461,45 +542,126 @@ export function useChat({ welcomeMessage }: UseChatOptions) {
         });
       };
 
+      let streamedContent = "";
+      let hasReceivedDone = false;
+
       try {
-        const res = await sendChatMessage({
+        await streamChat({
           message: trimmed,
           threadId: activeThreadId,
           signal: controller.signal,
+          onEvent: (event) => {
+            if (event.type === "meta") {
+              if (event.thread_id) {
+                activeThreadId = event.thread_id;
+                setThreadId(event.thread_id);
+              }
+            } else if (event.type === "status") {
+              if (event.text) {
+                setStatusText(event.text);
+                updateAssistant({
+                  statusText: event.text,
+                });
+              }
+            } else if (event.type === "token") {
+              if (event.text) {
+                streamedContent += event.text;
+                updateAssistant({
+                  content: streamedContent,
+                  status: "typing",
+                  statusText: undefined,
+                });
+              }
+            } else if (event.type === "done") {
+              hasReceivedDone = true;
+              if (event.thread_id) {
+                activeThreadId = event.thread_id;
+                setThreadId(event.thread_id);
+              }
+
+              const finalReply = event.reply || streamedContent;
+              const visualInfo = extractVisualDataFromResponse(
+                finalReply,
+                event.chart_data,
+                event.chart_type,
+                event.visualization_reason
+              );
+
+              updateAssistant({
+                content: finalReply,
+                status: "done",
+                statusText: undefined,
+                visualization: visualInfo.visualization,
+                chartType: visualInfo.chartType,
+                chartData: visualInfo.chartData,
+                chartUrl: event.chart_url ?? null,
+                visualizationReason: visualInfo.visualizationReason,
+              });
+            } else if (event.type === "error") {
+              updateAssistant({
+                content: event.message || FRIENDLY_ERROR,
+                status: "done",
+                statusText: undefined,
+              });
+            }
+          },
         });
 
-        if (res.thread_id) {
-          activeThreadId = res.thread_id;
-          setThreadId(res.thread_id);
+        if (!hasReceivedDone && streamedContent) {
+          const visualInfo = extractVisualDataFromResponse(streamedContent);
+          updateAssistant({
+            content: streamedContent,
+            status: "done",
+            statusText: undefined,
+            visualization: visualInfo.visualization,
+            chartType: visualInfo.chartType,
+            chartData: visualInfo.chartData,
+            visualizationReason: visualInfo.visualizationReason,
+          });
         }
-
-        const visualInfo = extractVisualDataFromResponse(
-          res.reply || "",
-          res.chart_data,
-          res.chart_type,
-          res.visualization_reason
-        );
-
-        updateAssistant({
-          content: res.reply || "",
-          status: "done",
-          statusText: undefined,
-          visualization: visualInfo.visualization,
-          chartType: visualInfo.chartType,
-          chartData: visualInfo.chartData,
-          chartUrl: res.chart_url ?? null,
-          visualizationReason: visualInfo.visualizationReason,
-        });
       } catch {
         if (controller.signal.aborted) {
           updateAssistant({
-            content: "Response generation was stopped.",
+            content: streamedContent || "Response generation was stopped.",
             status: "done",
             statusText: undefined,
           });
         } else {
+          if (!streamedContent) {
+            try {
+              const res = await sendChatMessage({
+                message: trimmed,
+                threadId: activeThreadId,
+                signal: controller.signal,
+              });
+              if (res.thread_id) {
+                activeThreadId = res.thread_id;
+                setThreadId(res.thread_id);
+              }
+              const visualInfo = extractVisualDataFromResponse(
+                res.reply || "",
+                res.chart_data,
+                res.chart_type,
+                res.visualization_reason
+              );
+              updateAssistant({
+                content: res.reply || "",
+                status: "done",
+                statusText: undefined,
+                visualization: visualInfo.visualization,
+                chartType: visualInfo.chartType,
+                chartData: visualInfo.chartData,
+                chartUrl: res.chart_url ?? null,
+                visualizationReason: visualInfo.visualizationReason,
+              });
+              return;
+            } catch {
+              // fallback failed
+            }
+          }
+
           updateAssistant({
-            content: FRIENDLY_ERROR,
+            content: streamedContent || FRIENDLY_ERROR,
             status: "done",
             statusText: undefined,
           });

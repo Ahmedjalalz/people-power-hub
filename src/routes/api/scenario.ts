@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { forwardUpstreamResponse } from "@/lib/proxy-helper";
 
 const API_BASE =
   process.env["NEXT_PUBLIC_API_BASE_URL"]?.trim().replace(/\/$/, "") ||
@@ -111,20 +112,7 @@ async function proxyRequest({ request }: { request: Request }): Promise<Response
       upstreamInit.body = await request.text();
     }
 
-    const upstream = await fetch(`${API_BASE}${upstreamPath}`, upstreamInit);
-    clearTimeout(timeout);
-
-    const responseBody = await upstream.text();
-    if (!upstream.ok) {
-      console.error(`Simulation API failed [${upstream.status}] ${upstreamPath}: ${responseBody}`);
-    }
-
-    return new Response(responseBody, {
-      status: upstream.status,
-      headers: {
-        "Content-Type": upstream.headers.get("Content-Type") ?? "application/json",
-      },
-    });
+    return await forwardUpstreamResponse(upstream, `Simulation API [${upstreamPath}]`);
   } catch (error) {
     clearTimeout(timeout);
     const isTimeout =
