@@ -34,11 +34,25 @@ export function OntologyCoverageView({ coverage }: Props) {
       {/* Grid of Service Coverage Cards */}
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
         {entries.map(([serviceName, item]) => {
-          const covered = item.covered_fields ?? 0;
-          const total = item.contract_fields ?? 1;
-          const pct = item.coverage_percent ?? Math.round((covered / total) * 100);
+          const anyItem = item as Record<string, any>;
+          const covered =
+            item.covered_fields ??
+            anyItem.mapped_paths ??
+            anyItem.classified_columns ??
+            0;
+          const total =
+            item.contract_fields ??
+            anyItem.explicit_ontology_paths ??
+            anyItem.metric_source_or_filter_fields ??
+            anyItem.source_columns ??
+            (covered || 1);
+          const pct =
+            item.coverage_percent ?? (total > 0 ? Math.round((covered / total) * 100) : 100);
           const missing = item.missing_paths || item.missing_fields || item.core_unmodeled_columns || [];
           const isFull = pct >= 95;
+          const formattedTitle = serviceName
+            .replace(/_/g, " ")
+            .replace(/\b\w/g, (c) => c.toUpperCase());
 
           return (
             <div
@@ -48,7 +62,7 @@ export function OntologyCoverageView({ coverage }: Props) {
               <div>
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <h4 className="text-sm font-bold text-foreground">{serviceName}</h4>
+                    <h4 className="text-sm font-bold text-foreground">{formattedTitle}</h4>
                     <p className="mt-0.5 text-xs text-muted-foreground">
                       {covered} of {total} contract parameters verified
                     </p>

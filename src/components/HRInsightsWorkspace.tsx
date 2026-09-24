@@ -138,9 +138,9 @@ export function HRInsightsWorkspace({ criticalTriggers }: { criticalTriggers: nu
             <TabsTrigger value="performance" className="gap-2 rounded-none border-b-2 border-transparent px-4 py-4 shadow-none data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none"><Target className="size-4" />Performance</TabsTrigger>
           </TabsList>
         </div>
-        <TabsContent value="attrition" className="mt-0"><AttritionView onOpenFull={() => setFullView("attrition")} /></TabsContent>
-        <TabsContent value="headcount" className="mt-0"><HeadcountView onOpenFull={() => setFullView("headcount")} /></TabsContent>
-        <TabsContent value="performance" className="mt-0"><PerformanceView onOpenFull={() => setFullView("performance")} /></TabsContent>
+        <TabsContent value="attrition" forceMount className="mt-0 data-[state=inactive]:hidden"><AttritionView onOpenFull={() => setFullView("attrition")} /></TabsContent>
+        <TabsContent value="headcount" forceMount className="mt-0 data-[state=inactive]:hidden"><HeadcountView onOpenFull={() => setFullView("headcount")} /></TabsContent>
+        <TabsContent value="performance" forceMount className="mt-0 data-[state=inactive]:hidden"><PerformanceView onOpenFull={() => setFullView("performance")} /></TabsContent>
       </Tabs>
 
       <AttritionPanel open={fullView === "attrition"} onClose={() => setFullView(null)} />
@@ -192,7 +192,7 @@ function AttritionView({ onOpenFull }: { onOpenFull: () => void }) {
             <div className="divide-y divide-border">{people.data?.employees.slice(0, 6).map((employee) => (
               <div key={employee.employee_id} className="grid gap-3 py-4 sm:grid-cols-[minmax(0,1fr)_9rem_7rem] sm:items-center">
                 <div className="min-w-0"><Link to="/employee/$employeeId" params={{ employeeId: employee.employee_id }} className="font-bold text-foreground hover:text-primary hover:underline">{employee.employee_name}</Link><p className="mt-1 truncate text-xs text-muted-foreground">{employee.position_title} · {employee.department}</p></div>
-                <p className="text-xs leading-5 text-muted-foreground">{employee.attrition_factors.slice(0, 2).join(" · ")}</p>
+                <p className="text-xs leading-5 text-muted-foreground">{(employee.attrition_factors || employee.top_drivers?.map((d) => d.label) || []).slice(0, 2).join(" · ")}</p>
                 <div className="sm:text-right"><p className="text-lg font-bold text-destructive tabular-nums">{employee.risk_score_percent}%</p><p className="text-[11px] text-muted-foreground">model score</p></div>
               </div>
             ))}</div>

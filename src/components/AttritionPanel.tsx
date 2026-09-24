@@ -34,12 +34,12 @@ export function AttritionPanel({ open, onClose }: { open: boolean; onClose: () =
   const [sub, setSub] = useState<SubView | null>(null);
   const [personId, setPersonId] = useState<string | null>(null);
   const queryClient = useQueryClient();
-  const summaryQuery = useQuery({ queryKey: ["attrition", "summary"], queryFn: getAttritionSummary });
-  const attritionRateQuery = useQuery({ queryKey: ["attrition", "rate"], queryFn: getAttritionRate, enabled: sub === "trend" });
-  const departmentRiskQuery = useQuery({ queryKey: ["attrition", "department-risk"], queryFn: getDepartmentRisk, enabled: sub === "departments" });
-  const topRiskDriversQuery = useQuery({ queryKey: ["attrition", "top-risk-drivers"], queryFn: () => getTopRiskDrivers(3), enabled: true });
+  const summaryQuery = useQuery({ queryKey: ["attrition", "summary"], queryFn: getAttritionSummary, enabled: open });
+  const attritionRateQuery = useQuery({ queryKey: ["attrition", "rate"], queryFn: getAttritionRate, enabled: open && sub === "trend" });
+  const departmentRiskQuery = useQuery({ queryKey: ["attrition", "department-risk"], queryFn: getDepartmentRisk, enabled: open && sub === "departments" });
+  const topRiskDriversQuery = useQuery({ queryKey: ["attrition", "top-risk-drivers"], queryFn: () => getTopRiskDrivers(3), enabled: open });
   const peopleQuery = useQuery({
-    queryKey: ["attrition", "people-at-risk"], queryFn: () => getPeopleAtRisk(200), enabled: sub === "people",
+    queryKey: ["attrition", "people-at-risk"], queryFn: () => getPeopleAtRisk(200), enabled: open && sub === "people",
   });
   const personQuery = useQuery({
     queryKey: ["attrition", "person", personId], queryFn: () => getPersonAtRiskDetail(personId!), enabled: Boolean(personId),
@@ -158,7 +158,7 @@ export function AttritionPanel({ open, onClose }: { open: boolean; onClose: () =
                 <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-foreground/5">
                   <div className={cn("h-full rounded-full", riskTone(employee.risk_score_percent))} style={{ width: `${employee.risk_score_percent}%` }} />
                 </div>
-                <p className="mt-2 text-xs text-muted-foreground">{employee.attrition_factors.join(" · ")}</p>
+                <p className="mt-2 text-xs text-muted-foreground">{(employee.attrition_factors || employee.top_drivers?.map((d) => d.label) || []).join(" · ")}</p>
               </button>
             ))}
           </div>

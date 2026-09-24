@@ -6,7 +6,7 @@ const API_BASE =
   process.env["VITE_API_URL"]?.trim().replace(/\/$/, "") ||
   "https://hr-work-force.onrender.com";
 
-const UPSTREAM_TIMEOUT_MS = 120_000;
+const UPSTREAM_TIMEOUT_MS = 3_000;
 
 const resources = new Set([
   "overview",
@@ -99,6 +99,7 @@ async function forward(request: Request): Promise<Response> {
       signal: controller.signal,
     });
 
+    clearTimeout(timeout);
     return await forwardUpstreamResponse(upstream, `Performance API [${upstreamUrl.pathname}]`);
   } catch (error) {
     clearTimeout(timeout);

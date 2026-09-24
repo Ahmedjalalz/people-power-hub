@@ -75,13 +75,14 @@ export function AppSidebar() {
       <nav aria-label="Primary navigation" className="flex-1 space-y-1 overflow-y-auto px-3 py-5">
         <p className="mb-3 px-3 text-xs font-semibold text-muted-foreground">Workspace</p>
         {navigation.map((item) => {
-          const active = pathname === item.to;
+          const active = item.to === "/" ? pathname === "/" : pathname.startsWith(item.to);
           const Icon = item.icon;
           const badge = item.to === "/triggers" ? criticalCount : 0;
           return (
             <Link
               key={item.to}
               to={item.to}
+              preload="intent"
               onClick={onNavigate}
               aria-current={active ? "page" : undefined}
               className={cn(

@@ -18,6 +18,7 @@ import { OrganizationDataSyncPanel } from "@/components/ontology/OrganizationDat
 import {
   fetchTenants,
   fetchOrganization,
+  defaultTenants,
   type TenantItem,
   type OrganizationDetail,
 } from "@/services/ontology";
@@ -44,6 +45,7 @@ export function TenantDataSyncPage() {
   const tenantsQuery = useQuery({
     queryKey: ["ontology", "tenants"],
     queryFn: fetchTenants,
+    placeholderData: defaultTenants,
   });
 
   const organizationQuery = useQuery({

@@ -295,13 +295,77 @@ const LOCAL_STORAGE_KEY_REVIEWS = "pph_ontology_mapping_reviews";
 const LOCAL_STORAGE_KEY_CHANGES = "pph_ontology_change_requests";
 const LOCAL_STORAGE_KEY_ORGS = "pph_ontology_custom_tenants";
 
-const defaultTenants: TenantItem[] = [
-  { tenant_id: "ORGANIZATION-001", name: "PeopleLens Global Enterprise", status: "active", country: "United Kingdom", currency: "GBP" },
+export const defaultTenants: TenantItem[] = [
+  { tenant_id: "ORGANIZATION-001", name: "Current Organization", status: "active", country: "United Kingdom", currency: "GBP" },
+  { tenant_id: "NEXACORE-HR-001", name: "NexaCore Technologies Pvt Ltd", status: "draft", country: "Pakistan", currency: "PKR" },
   { tenant_id: "ACME-HR-001", name: "Acme Workforce Group", status: "active", country: "United States", currency: "USD" },
-  { tenant_id: "NEXA-RETAIL-002", name: "Nexa Retail International", status: "staged", country: "Germany", currency: "EUR" },
 ];
 
-const defaultEntities: OntologyEntity[] = [
+export const defaultNexaLiveNodes: LiveGraphNode[] = [
+  { graph_id: "03344b72-cbbb-5bb5-8251-265163fbd2ed", entity_type: "Employee", label: "Talha Shah", center: true },
+  { graph_id: "0ce1e113-99a2-5e89-8805-33f3082fd8ba", entity_type: "Department", label: "Finance" },
+  { graph_id: "050150e0-dd08-51b7-8d9c-391f550aebcf", entity_type: "BusinessUnit", label: "Corporate Services" },
+  { graph_id: "055b1766-7917-5f2f-861a-5891cfaeb61d", entity_type: "Position", label: "Senior Financial Analyst" },
+  { graph_id: "02e7dec2-c510-51e0-bc4f-915f4c2a05d2", entity_type: "AttendanceRecord", label: "Attendance NC023" },
+  { graph_id: "043198ea-d855-5346-b16d-ca3631284634", entity_type: "CompensationRecord", label: "Comp Band Grade-8" },
+  { graph_id: "2df5515e-3df0-5def-8d1d-0f62a7175662", entity_type: "Organization", label: "NexaCore Technologies" },
+];
+
+export const defaultNexaLiveEdges: LiveGraphEdge[] = [
+  { source_graph_id: "2df5515e-3df0-5def-8d1d-0f62a7175662", target_graph_id: "050150e0-dd08-51b7-8d9c-391f550aebcf", source_entity_type: "Organization", target_entity_type: "BusinessUnit", relation_type: "HAS_BUSINESS_UNIT" },
+  { source_graph_id: "050150e0-dd08-51b7-8d9c-391f550aebcf", target_graph_id: "0ce1e113-99a2-5e89-8805-33f3082fd8ba", source_entity_type: "BusinessUnit", target_entity_type: "Department", relation_type: "HAS_DEPARTMENT" },
+  { source_graph_id: "03344b72-cbbb-5bb5-8251-265163fbd2ed", target_graph_id: "0ce1e113-99a2-5e89-8805-33f3082fd8ba", source_entity_type: "Employee", target_entity_type: "Department", relation_type: "MEMBER_OF" },
+  { source_graph_id: "03344b72-cbbb-5bb5-8251-265163fbd2ed", target_graph_id: "055b1766-7917-5f2f-861a-5891cfaeb61d", source_entity_type: "Employee", target_entity_type: "Position", relation_type: "HOLDS_POSITION" },
+  { source_graph_id: "03344b72-cbbb-5bb5-8251-265163fbd2ed", target_graph_id: "02e7dec2-c510-51e0-bc4f-915f4c2a05d2", source_entity_type: "Employee", target_entity_type: "AttendanceRecord", relation_type: "HAS_ATTENDANCE" },
+  { source_graph_id: "03344b72-cbbb-5bb5-8251-265163fbd2ed", target_graph_id: "043198ea-d855-5346-b16d-ca3631284634", source_entity_type: "Employee", target_entity_type: "CompensationRecord", relation_type: "HAS_COMPENSATION" },
+  { source_graph_id: "055b1766-7917-5f2f-861a-5891cfaeb61d", target_graph_id: "2df5515e-3df0-5def-8d1d-0f62a7175662", source_entity_type: "Position", target_entity_type: "Organization", relation_type: "WORKS_FOR" },
+];
+
+export const defaultNexaDatasets: DatasetSummary[] = [
+  { source_file: "NexaCore_Raw_Employee_Feed.csv", column_count: 30, ontology_path_count: 28, attention_count: 0 },
+  { source_file: "Business_Unit_Master.csv", column_count: 7, ontology_path_count: 6, attention_count: 0 },
+  { source_file: "Cost_Center_Master.csv", column_count: 10, ontology_path_count: 9, attention_count: 0 },
+  { source_file: "Current_Headcount_Summary.csv", column_count: 18, ontology_path_count: 14, attention_count: 0 },
+  { source_file: "Department_Master.csv", column_count: 15, ontology_path_count: 11, attention_count: 0 },
+];
+
+export function getDefaultDatasets(tenantId?: string): DatasetSummary[] {
+  if (tenantId === "NEXACORE-HR-001") {
+    return defaultNexaDatasets;
+  }
+  return defaultDatasets;
+}
+
+export function getDefaultLiveGraph(tenantId: string = "ORGANIZATION-001"): LiveGraphData {
+  if (tenantId === "NEXACORE-HR-001") {
+    return {
+      tenant_id: "NEXACORE-HR-001",
+      node_count_total: 527,
+      relationship_count_total: 615,
+      displayed_node_count: defaultNexaLiveNodes.length,
+      entity_types: [
+        "AttendanceRecord",
+        "BusinessUnit",
+        "CompensationRecord",
+        "Department",
+        "Employee",
+        "Organization",
+        "Position",
+      ],
+      nodes: defaultNexaLiveNodes,
+      edges: defaultNexaLiveEdges,
+      outgoing_count: 4,
+      incoming_count: 0,
+      neighbor_count: 4,
+    };
+  }
+  return {
+    ...defaultLiveGraph,
+    tenant_id: tenantId || "ORGANIZATION-001",
+  };
+}
+
+export const defaultEntities: OntologyEntity[] = [
   {
     name: "Employee",
     description: "Core workforce member entity representing active, on-leave, or former personnel.",
@@ -421,7 +485,7 @@ const defaultEntities: OntologyEntity[] = [
   },
 ];
 
-const defaultSchemaGraph: SchemaGraphData = {
+export const defaultSchemaGraph: SchemaGraphData = {
   node_count: 8,
   edge_count: 12,
   nodes: [
@@ -450,7 +514,7 @@ const defaultSchemaGraph: SchemaGraphData = {
   ],
 };
 
-const defaultLiveGraph: LiveGraphData = {
+export const defaultLiveGraph: LiveGraphData = {
   tenant_id: "ORGANIZATION-001",
   node_count_total: 1248,
   relationship_count_total: 3410,
@@ -511,7 +575,7 @@ const defaultLiveGraph: LiveGraphData = {
   neighbor_count: 7,
 };
 
-const defaultDatasets: DatasetSummary[] = [
+export const defaultDatasets: DatasetSummary[] = [
   { source_file: "employees_master_2025.csv", column_count: 24, ontology_path_count: 22, attention_count: 1 },
   { source_file: "performance_reviews_h2.json", column_count: 16, ontology_path_count: 15, attention_count: 0 },
   { source_file: "headcount_allocations_fy25.xlsx", column_count: 18, ontology_path_count: 16, attention_count: 2 },
@@ -519,7 +583,7 @@ const defaultDatasets: DatasetSummary[] = [
   { source_file: "attrition_risk_predictions.csv", column_count: 12, ontology_path_count: 11, attention_count: 1 },
 ];
 
-const defaultReviews: MappingReview[] = [
+export const defaultReviews: MappingReview[] = [
   {
     id: "REV-101",
     source_file: "employees_master_2025.csv",
@@ -552,7 +616,7 @@ const defaultReviews: MappingReview[] = [
   },
 ];
 
-const defaultChanges: ChangeRequest[] = [
+export const defaultChanges: ChangeRequest[] = [
   {
     id: "CR-001",
     kind: "property",
@@ -609,19 +673,30 @@ function setStored<T>(key: string, value: T): void {
 const API_BASE_PROXY = "/api/ontology";
 
 async function requestProxy<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const res = await fetch(`${API_BASE_PROXY}?path=${encodeURIComponent(path)}`, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...getAuthHeader(),
-      ...(options.headers || {}),
-    },
-  });
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`HTTP ${res.status}: ${text || res.statusText}`);
+  const controller = new AbortController();
+  const timeoutMs = 25_000;
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const res = await fetch(`${API_BASE_PROXY}?path=${encodeURIComponent(path)}`, {
+      ...options,
+      signal: options.signal || controller.signal,
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeader(),
+        ...(options.headers || {}),
+      },
+    });
+    clearTimeout(timeoutId);
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`HTTP ${res.status}: ${text || res.statusText}`);
+    }
+    return res.json();
+  } catch (err) {
+    clearTimeout(timeoutId);
+    throw err;
   }
-  return res.json();
 }
 
 export async function fetchTenants(): Promise<TenantItem[]> {
@@ -637,36 +712,36 @@ export async function fetchTenants(): Promise<TenantItem[]> {
   return [...defaultTenants, ...custom];
 }
 
-export async function fetchOntologyDashboard(tenantId: string): Promise<DashboardData> {
-  try {
-    const res = await requestProxy<DashboardData>(`/ontology-studio/api/dashboard?tenant_id=${encodeURIComponent(tenantId)}`);
-    if (res?.ontology) return res;
-  } catch (e) {
-    console.warn("Using default ontology dashboard fallback:", e);
-  }
-
+export function getDefaultDashboard(tenantId: string = "ORGANIZATION-001"): DashboardData {
   const reviews = getStored<MappingReview[]>(LOCAL_STORAGE_KEY_REVIEWS, defaultReviews);
   const changes = getStored<ChangeRequest[]>(LOCAL_STORAGE_KEY_CHANGES, defaultChanges);
+
+  const isNexa = tenantId === "NEXACORE-HR-001";
+  const isDefaultOrg = tenantId === "ORGANIZATION-001";
+
+  const nodeCount = isNexa ? 527 : isDefaultOrg ? 41291 : 0;
+  const relationshipCount = isNexa ? 615 : isDefaultOrg ? 62631 : 0;
+  const sourceDatasetCount = isNexa ? 5 : isDefaultOrg ? 58 : 1;
 
   return {
     tenant_id: tenantId || "ORGANIZATION-001",
     ontology: {
-      version: "v2.3.0-enterprise",
+      version: isNexa ? "1.0.2-draft" : "v2.3.0-enterprise",
       status: "Production Verified",
       entity_count: defaultEntities.length,
       module_count: 3,
       relationship_count: defaultSchemaGraph.edge_count,
     },
     mapping: {
-      source_column_count: 142,
-      source_dataset_count: defaultDatasets.length,
+      source_column_count: isNexa ? 120 : isDefaultOrg ? 975 : 142,
+      source_dataset_count: sourceDatasetCount,
     },
     graph: {
       available: true,
-      node_count: 1248,
-      relationship_count: 3410,
-      repository: "GraphRepository",
-      backend: "Supabase pgvector / Knowledge Graph",
+      node_count: nodeCount,
+      relationship_count: relationshipCount,
+      repository: "SupabaseGraphRepository",
+      backend: "supabase",
     },
     safety: {
       active_ontology_mutation_enabled: false,
@@ -675,8 +750,8 @@ export async function fetchOntologyDashboard(tenantId: string): Promise<Dashboar
       note: "Live production ontologies are strictly locked. All changes and mapping revisions are staged for review before activation.",
     },
     pending_semantic_items: [
-      { concept: "PerformanceRecord.peerReview360Score", reason: "Proposed calibration metric awaiting peer review confirmation." },
-      { concept: "HeadcountPlan.unfunded_growth_buffer", reason: "Classified as raw storage only (outside standard ontology domain)." },
+      { concept: "PerformanceRecord.performanceTrend6M", reason: "Current scale differs materially from historical baseline; normalization pending." },
+      { concept: "AttritionRiskPrediction historical optimized threshold", reason: "Current production threshold 0.50 is confirmed; optimal tuning pending." },
     ],
     review_counts: {
       mapping_pending: reviews.filter((r) => r.status === "pending").length,
@@ -684,31 +759,55 @@ export async function fetchOntologyDashboard(tenantId: string): Promise<Dashboar
     },
     service_coverage: {
       "Attrition Risk Pipeline": {
-        coverage_percent: 96,
-        covered_fields: 24,
-        contract_fields: 25,
-        missing_paths: ["Employee.secondaryEmergencyPhone"],
+        coverage_percent: 100,
+        covered_fields: 14,
+        contract_fields: 14,
+        missing_paths: [],
       },
       "Headcount & Vacancy Pipeline": {
         coverage_percent: 100,
-        covered_fields: 18,
-        contract_fields: 18,
+        covered_fields: 40,
+        contract_fields: 40,
         missing_paths: [],
       },
       "Performance Trend & Calibration": {
-        coverage_percent: 92,
-        covered_fields: 22,
-        contract_fields: 24,
-        missing_paths: ["PerformanceRecord.peerReview360Score"],
+        coverage_percent: 100,
+        covered_fields: 7,
+        contract_fields: 7,
+        missing_paths: [],
       },
       "Workforce Scenario Modeling": {
-        coverage_percent: 94,
-        covered_fields: 16,
-        contract_fields: 17,
-        missing_paths: ["CompensationBand.regionalTaxMultiplier"],
+        coverage_percent: 100,
+        covered_fields: 25,
+        contract_fields: 25,
+        missing_paths: [],
+      },
+      "Decision Intelligence & Cases": {
+        coverage_percent: 100,
+        covered_fields: 23,
+        contract_fields: 23,
+        missing_paths: [],
       },
     },
   };
+}
+
+export async function fetchOntologyDashboard(tenantId: string): Promise<DashboardData> {
+  try {
+    const res = await requestProxy<DashboardData>(
+      `/ontology-studio/api/dashboard?tenant_id=${encodeURIComponent(tenantId)}`,
+      {
+        headers: {
+          "X-Organization-ID": tenantId,
+        },
+      }
+    );
+    if (res?.ontology) return res;
+  } catch (e) {
+    console.warn("Using default ontology dashboard fallback:", e);
+  }
+
+  return getDefaultDashboard(tenantId);
 }
 
 export async function fetchSchemaGraph(): Promise<SchemaGraphData> {
@@ -731,19 +830,46 @@ export async function fetchEntities(): Promise<OntologyEntity[]> {
   return defaultEntities;
 }
 
-export async function fetchDatasets(): Promise<DatasetSummary[]> {
+export async function fetchDatasets(tenantId?: string): Promise<DatasetSummary[]> {
+  if (tenantId) {
+    try {
+      const summaryRes = await requestProxy<{ organization?: { datasets?: any[] } }>(
+        `/tenant-management/api/tenants/${encodeURIComponent(tenantId)}/summary`,
+        { headers: { "X-Organization-ID": tenantId } }
+      );
+      const orgDatasets = summaryRes?.organization?.datasets;
+      if (Array.isArray(orgDatasets) && orgDatasets.length > 0) {
+        return orgDatasets.map((d: any) => ({
+          source_file: d.source_object || d.dataset_id || "dataset.csv",
+          column_count: d.column_count || 30,
+          ontology_path_count: d.load_result?.node_upserts ? Math.min(d.column_count || 30, 28) : 0,
+          attention_count: d.last_error ? 1 : 0,
+        }));
+      }
+    } catch (e) {
+      // Continue to standard datasets endpoint
+    }
+  }
+
   try {
-    const res = await requestProxy<DatasetSummary[]>("/ontology-studio/api/datasets");
+    const res = await requestProxy<DatasetSummary[]>("/ontology-studio/api/datasets", {
+      headers: tenantId ? { "X-Organization-ID": tenantId } : {},
+    });
     if (Array.isArray(res) && res.length) return res;
   } catch (e) {
     console.warn("Using default datasets fallback:", e);
   }
-  return defaultDatasets;
+  return getDefaultDatasets(tenantId);
 }
 
-export async function fetchDatasetDetail(file: string): Promise<DatasetDetail> {
+export async function fetchDatasetDetail(file: string, tenantId?: string): Promise<DatasetDetail> {
   try {
-    const res = await requestProxy<DatasetDetail>(`/ontology-studio/api/datasets/${encodeURIComponent(file)}`);
+    const res = await requestProxy<DatasetDetail>(
+      `/ontology-studio/api/datasets/${encodeURIComponent(file)}`,
+      {
+        headers: tenantId ? { "X-Organization-ID": tenantId } : {},
+      }
+    );
     if (res?.columns?.length) return res;
   } catch (e) {
     console.warn("Using default dataset detail fallback:", e);
@@ -774,59 +900,65 @@ export async function fetchLiveGraph(params: {
   entityType?: string;
   limit?: number;
 }): Promise<LiveGraphData> {
+  const currentTenant = params.tenantId || "ORGANIZATION-001";
   try {
     const searchParams = new URLSearchParams({
-      tenant_id: params.tenantId || "ORGANIZATION-001",
-      limit: String(params.limit || 160),
+      tenant_id: currentTenant,
+      limit: String(params.limit || 80),
     });
     if (params.search) searchParams.set("search", params.search);
     if (params.entityType) searchParams.set("entity_type", params.entityType);
 
-    const res = await requestProxy<LiveGraphData>(`/ontology-studio/api/live-graph?${searchParams.toString()}`);
+    const res = await requestProxy<LiveGraphData>(
+      `/ontology-studio/api/live-graph?${searchParams.toString()}`,
+      {
+        headers: {
+          "X-Organization-ID": currentTenant,
+        },
+      }
+    );
     if (res?.nodes?.length) return res;
   } catch (e) {
     console.warn("Using default live graph fallback:", e);
   }
 
-  // Filter default live graph according to params
-  let nodes = [...defaultLiveGraph.nodes];
+  const base = getDefaultLiveGraph(currentTenant);
+  let nodes = [...base.nodes];
   if (params.entityType) {
     nodes = nodes.filter((n) => n.entity_type === params.entityType);
   }
   if (params.search) {
     const q = params.search.toLowerCase();
-    nodes = nodes.filter((n) => n.label.toLowerCase().includes(q) || n.graph_id.toLowerCase().includes(q) || n.entity_type.toLowerCase().includes(q));
+    nodes = nodes.filter(
+      (n) =>
+        n.label.toLowerCase().includes(q) ||
+        n.graph_id.toLowerCase().includes(q) ||
+        n.entity_type.toLowerCase().includes(q)
+    );
   }
   const validIds = new Set(nodes.map((n) => n.graph_id));
-  const edges = defaultLiveGraph.edges.filter((e) => validIds.has(e.source_graph_id) && validIds.has(e.target_graph_id));
+  const edges = base.edges.filter(
+    (e) => validIds.has(e.source_graph_id) && validIds.has(e.target_graph_id)
+  );
 
   return {
-    ...defaultLiveGraph,
-    tenant_id: params.tenantId || "ORGANIZATION-001",
+    ...base,
+    tenant_id: currentTenant,
     displayed_node_count: nodes.length,
     nodes,
     edges,
   };
 }
 
-export async function fetchLiveNode(graphId: string, tenantId: string): Promise<LiveGraphData> {
-  try {
-    const res = await requestProxy<LiveGraphData>(
-      `/ontology-studio/api/live-graph/nodes/${encodeURIComponent(graphId)}?tenant_id=${encodeURIComponent(tenantId)}&limit=120`,
-    );
-    if (res?.nodes?.length) return res;
-  } catch (e) {
-    console.warn("Using default live node detail fallback:", e);
-  }
-
-  // Build centered 1-hop view for selected node
-  const target = defaultLiveGraph.nodes.find((n) => n.graph_id === graphId) || {
+export function buildLiveNodeDetail(graphId: string, tenantId: string = "ORGANIZATION-001", baseGraph?: LiveGraphData | null): LiveGraphData {
+  const g = baseGraph?.nodes?.length ? baseGraph : defaultLiveGraph;
+  const target = g.nodes.find((n) => n.graph_id === graphId) || {
     graph_id: graphId,
     entity_type: "CustomNode",
     label: graphId,
   };
 
-  const connectedEdges = defaultLiveGraph.edges.filter((e) => e.source_graph_id === graphId || e.target_graph_id === graphId);
+  const connectedEdges = g.edges.filter((e) => e.source_graph_id === graphId || e.target_graph_id === graphId);
   const neighborIds = new Set<string>();
   connectedEdges.forEach((e) => {
     neighborIds.add(e.source_graph_id);
@@ -834,16 +966,16 @@ export async function fetchLiveNode(graphId: string, tenantId: string): Promise<
   });
   neighborIds.add(graphId);
 
-  const subNodes = defaultLiveGraph.nodes
+  const subNodes = g.nodes
     .filter((n) => neighborIds.has(n.graph_id))
     .map((n) => ({ ...n, center: n.graph_id === graphId }));
 
   return {
     tenant_id: tenantId || "ORGANIZATION-001",
-    node_count_total: defaultLiveGraph.node_count_total,
-    relationship_count_total: defaultLiveGraph.relationship_count_total,
+    node_count_total: g.node_count_total || defaultLiveGraph.node_count_total,
+    relationship_count_total: g.relationship_count_total || defaultLiveGraph.relationship_count_total,
     displayed_node_count: subNodes.length,
-    entity_types: defaultLiveGraph.entity_types,
+    entity_types: g.entity_types || defaultLiveGraph.entity_types,
     nodes: subNodes,
     edges: connectedEdges,
     node_detail: {
@@ -867,8 +999,26 @@ export async function fetchLiveNode(graphId: string, tenantId: string): Promise<
     },
     outgoing_count: connectedEdges.filter((e) => e.source_graph_id === graphId).length,
     incoming_count: connectedEdges.filter((e) => e.target_graph_id === graphId).length,
-    neighbor_count: subNodes.length - 1,
+    neighbor_count: Math.max(0, subNodes.length - 1),
   };
+}
+
+export async function fetchLiveNode(graphId: string, tenantId: string, baseGraph?: LiveGraphData | null): Promise<LiveGraphData> {
+  try {
+    const res = await requestProxy<LiveGraphData>(
+      `/ontology-studio/api/live-graph/nodes/${encodeURIComponent(graphId)}?tenant_id=${encodeURIComponent(tenantId)}&limit=120`,
+      {
+        headers: {
+          "X-Organization-ID": tenantId,
+        },
+      }
+    );
+    if (res?.nodes?.length) return res;
+  } catch (e) {
+    // Return fast fallback
+  }
+
+  return buildLiveNodeDetail(graphId, tenantId, baseGraph);
 }
 
 export async function fetchMappingReviewOptions(): Promise<MappingReviewOptions> {

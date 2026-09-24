@@ -89,6 +89,9 @@ export function OntologyGraphCanvas({
 
   // Pan & Zoom state
   const [zoom, setZoom] = useState({ scale: 0.85, x: 40, y: 30 });
+  const zoomRef = useRef(zoom);
+  zoomRef.current = zoom;
+
   const [isDragging, setIsDragging] = useState(false);
   const dragStartRef = useRef<{ x: number; y: number; zoomX: number; zoomY: number } | null>(null);
 
@@ -129,6 +132,15 @@ export function OntologyGraphCanvas({
         const scaleRatio = newScale / prev.scale;
         const newX = mouseX - (mouseX - prev.x) * scaleRatio;
         const newY = mouseY - (mouseY - prev.y) * scaleRatio;
+
+        // If user is zooming while dragging, sync drag anchor coordinates to prevent jumping
+        if (dragStartRef.current) {
+          dragStartRef.current.zoomX = newX;
+          dragStartRef.current.zoomY = newY;
+          dragStartRef.current.x = e.clientX;
+          dragStartRef.current.y = e.clientY;
+        }
+
         return { scale: newScale, x: newX, y: newY };
       });
     };
@@ -142,32 +154,47 @@ export function OntologyGraphCanvas({
   // Pan & Drag Handlers
   const handlePointerDown = (e: React.PointerEvent) => {
     if ((e.target as HTMLElement).closest(".graph-interactive-node, .graph-interactive-edge, button")) return;
+    if (e.button !== 0) return; // Only drag on primary click
     setIsDragging(true);
     dragStartRef.current = {
       x: e.clientX,
       y: e.clientY,
-      zoomX: zoom.x,
-      zoomY: zoom.y,
+      zoomX: zoomRef.current.x,
+      zoomY: zoomRef.current.y,
     };
-    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    try {
+      (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    } catch {
+      // ignore
+    }
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
-    if (!isDragging || !dragStartRef.current) return;
-    const dx = e.clientX - dragStartRef.current.x;
-    const dy = e.clientY - dragStartRef.current.y;
-    setZoom((prev) => ({
-      ...prev,
-      x: dragStartRef.current!.zoomX + dx,
-      y: dragStartRef.current!.zoomY + dy,
-    }));
+    const start = dragStartRef.current;
+    if (!isDragging || !start) return;
+    const dx = e.clientX - start.x;
+    const dy = e.clientY - start.y;
+    const targetX = start.zoomX + dx;
+    const targetY = start.zoomY + dy;
+
+    setZoom((prev) => {
+      // Guard against pointer release occurring before queued update runs
+      if (!dragStartRef.current) return prev;
+      return {
+        ...prev,
+        x: targetX,
+        y: targetY,
+      };
+    });
   };
 
   const handlePointerUp = (e: React.PointerEvent) => {
     setIsDragging(false);
     dragStartRef.current = null;
     try {
-      (e.target as HTMLElement).releasePointerCapture(e.pointerId);
+      if ((e.target as HTMLElement).hasPointerCapture?.(e.pointerId)) {
+        (e.target as HTMLElement).releasePointerCapture(e.pointerId);
+      }
     } catch {
       // ignore
     }
@@ -192,7 +219,7 @@ export function OntologyGraphCanvas({
     border: string;
     text: string;
     label: string;
-    icon: any;
+    icon: React.ElementType;
   }> = useMemo(() => ({
     structure: {
       accent: isDark ? "#38bdf8" : "#0284c7", // Luminous cyan-sky
@@ -886,6 +913,7 @@ export function OntologyGraphCanvas({
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
+            onPointerCancel={handlePointerUp}
             className={cn(
               "relative flex-1 min-h-0 w-full cursor-grab overflow-hidden select-none",
               isDragging && "cursor-grabbing",

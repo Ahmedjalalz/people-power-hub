@@ -13,7 +13,6 @@ export const Route = createFileRoute("/_authenticated")({
 
 function AuthenticatedLayout() {
   const isChatbotPage = useRouterState({ select: (state) => state.location.pathname === "/chatbot" });
-  const pathname = useRouterState({ select: (state) => state.location.pathname });
 
   return (
     <SidebarProvider>
@@ -23,9 +22,8 @@ function AuthenticatedLayout() {
           <Header />
           <div className={cn("flex-1 flex flex-col min-w-0", isChatbotPage ? "min-h-0 overflow-hidden" : "")}>
             <div
-              key={pathname}
               className={cn(
-                "page-enter flex-1 flex flex-col min-w-0",
+                "flex-1 flex flex-col min-w-0",
                 isChatbotPage && "h-full min-h-0 overflow-hidden"
               )}
             >

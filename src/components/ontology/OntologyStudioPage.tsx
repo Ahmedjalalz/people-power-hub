@@ -34,6 +34,18 @@ import {
   fetchChangeRequests,
   createChangeRequest,
   decideChangeRequest,
+  defaultTenants,
+  defaultEntities,
+  defaultSchemaGraph,
+  defaultLiveGraph,
+  defaultDatasets,
+  defaultReviews,
+  defaultChanges,
+  getDefaultDashboard,
+  getDefaultLiveGraph,
+  getDefaultDatasets,
+  buildLiveNodeDetail,
+  type LiveNodeDetail,
 } from "@/services/ontology";
 import { OntologyGraphCanvas } from "./OntologyGraphCanvas";
 import { OntologyNodeDetailPanel } from "./OntologyNodeDetailPanel";
@@ -51,15 +63,23 @@ export function OntologyStudioPage() {
   // Tenant state
   const [tenantId, setTenantId] = useState(() => {
     if (typeof window !== "undefined") {
-      return localStorage.getItem("pph_ontology_tenant") || "ORGANIZATION-001";
+      return (
+        localStorage.getItem("pph_ontology_tenant") ||
+        localStorage.getItem("pph_current_tenant_id") ||
+        "ORGANIZATION-001"
+      );
     }
     return "ORGANIZATION-001";
   });
 
   const handleTenantChange = (newTenant: string) => {
     setTenantId(newTenant);
+    setSelectedNodeId(null);
+    setNodeHistory([]);
+    setHistoryIndex(0);
     if (typeof window !== "undefined") {
       localStorage.setItem("pph_ontology_tenant", newTenant);
+      localStorage.setItem("pph_current_tenant_id", newTenant);
     }
   };
 
@@ -75,62 +95,92 @@ export function OntologyStudioPage() {
   // Selected dataset for Mappings view
   const [selectedDatasetFile, setSelectedDatasetFile] = useState<string>("employees_master_2025.csv");
 
-  // Queries
+  // Queries with instant default placeholderData
   const tenantsQuery = useQuery({
     queryKey: ["ontology", "tenants"],
     queryFn: fetchTenants,
+    placeholderData: defaultTenants,
+    staleTime: 5 * 60 * 1000,
   });
 
   const dashboardQuery = useQuery({
     queryKey: ["ontology", "dashboard", tenantId],
     queryFn: () => fetchOntologyDashboard(tenantId),
+    placeholderData: (prev) => prev ?? getDefaultDashboard(tenantId),
+    staleTime: 60 * 1000,
   });
 
   const schemaGraphQuery = useQuery({
     queryKey: ["ontology", "schemaGraph"],
     queryFn: fetchSchemaGraph,
+    placeholderData: defaultSchemaGraph,
+    staleTime: 5 * 60 * 1000,
   });
 
   const liveGraphQuery = useQuery({
     queryKey: ["ontology", "liveGraph", tenantId],
     queryFn: () => fetchLiveGraph({ tenantId }),
+    placeholderData: (prev) => prev ?? getDefaultLiveGraph(tenantId),
+    staleTime: 60 * 1000,
   });
 
   const liveNodeDetailQuery = useQuery({
     queryKey: ["ontology", "liveNode", selectedNodeId, tenantId],
-    queryFn: () => (selectedNodeId ? fetchLiveNode(selectedNodeId, tenantId) : null),
+    queryFn: () => (selectedNodeId ? fetchLiveNode(selectedNodeId, tenantId, liveGraphQuery.data) : null),
+    placeholderData: (prev) => prev ?? (selectedNodeId ? buildLiveNodeDetail(selectedNodeId, tenantId, liveGraphQuery.data) : null),
     enabled: Boolean(selectedNodeId) && graphMode === "live",
+    staleTime: 60 * 1000,
   });
 
   const entitiesQuery = useQuery({
     queryKey: ["ontology", "entities"],
     queryFn: fetchEntities,
+    placeholderData: defaultEntities,
+    staleTime: 5 * 60 * 1000,
   });
 
   const datasetsQuery = useQuery({
-    queryKey: ["ontology", "datasets"],
-    queryFn: fetchDatasets,
+    queryKey: ["ontology", "datasets", tenantId],
+    queryFn: () => fetchDatasets(tenantId),
+    placeholderData: (prev) => prev ?? getDefaultDatasets(tenantId),
+    staleTime: 60 * 1000,
   });
 
   const datasetDetailQuery = useQuery({
-    queryKey: ["ontology", "datasetDetail", selectedDatasetFile],
-    queryFn: () => fetchDatasetDetail(selectedDatasetFile),
+    queryKey: ["ontology", "datasetDetail", selectedDatasetFile, tenantId],
+    queryFn: () => fetchDatasetDetail(selectedDatasetFile, tenantId),
     enabled: Boolean(selectedDatasetFile),
+    staleTime: 60 * 1000,
   });
+
+  // Keep selectedDatasetFile synchronized with available datasets
+  useEffect(() => {
+    if (datasetsQuery.data && datasetsQuery.data.length > 0) {
+      const exists = datasetsQuery.data.some((d) => d.source_file === selectedDatasetFile);
+      if (!exists && datasetsQuery.data[0]) {
+        setSelectedDatasetFile(datasetsQuery.data[0].source_file);
+      }
+    }
+  }, [datasetsQuery.data, selectedDatasetFile]);
 
   const reviewOptionsQuery = useQuery({
     queryKey: ["ontology", "reviewOptions"],
     queryFn: fetchMappingReviewOptions,
+    staleTime: 5 * 60 * 1000,
   });
 
   const reviewsQuery = useQuery({
     queryKey: ["ontology", "reviews"],
     queryFn: fetchMappingReviews,
+    placeholderData: defaultReviews,
+    staleTime: 5 * 60 * 1000,
   });
 
   const changesQuery = useQuery({
     queryKey: ["ontology", "changes"],
     queryFn: fetchChangeRequests,
+    placeholderData: defaultChanges,
+    staleTime: 5 * 60 * 1000,
   });
 
   // Handle node selection with history tracking
@@ -160,10 +210,49 @@ export function OntologyStudioPage() {
   };
 
   const dashboard = dashboardQuery.data;
-  const tenants = tenantsQuery.data || [];
+  const tenants = tenantsQuery.data || defaultTenants;
+
+  const tenantOptions = React.useMemo(() => {
+    const list = [...tenants];
+    if (tenantId && !list.some((t) => t.tenant_id === tenantId)) {
+      list.unshift({ tenant_id: tenantId, name: tenantId, status: "active" });
+    }
+    return list;
+  }, [tenants, tenantId]);
 
   // Schema node matching selectedNodeId
   const selectedSchemaNode = schemaGraphQuery.data?.nodes.find((n) => n.id === selectedNodeId) || null;
+
+  // Immediate live detail resolution: synchronous fallback from liveGraph so inspector never hangs
+  const selectedLiveNodeDetail: LiveNodeDetail | null = React.useMemo(() => {
+    if (!selectedNodeId) return null;
+    if (liveNodeDetailQuery.data?.node_detail?.graph_id === selectedNodeId) {
+      return liveNodeDetailQuery.data.node_detail;
+    }
+    const allLiveNodes = liveGraphQuery.data?.nodes || getDefaultLiveGraph(tenantId).nodes;
+    const target = allLiveNodes.find((n) => n.graph_id === selectedNodeId);
+    if (!target) return null;
+
+    return {
+      graph_id: target.graph_id,
+      entity_type: target.entity_type,
+      label: target.label,
+      properties: {
+        recordKey: target.graph_id,
+        classification: target.entity_type,
+        tenantScope: tenantId || "ORGANIZATION-001",
+        verifiedSemanticModel: true,
+        lastSynchronized: new Date().toISOString().split("T")[0],
+      },
+      provenance: [
+        {
+          source_system: "KnowledgeGraph",
+          source_object: target.entity_type,
+          source_record_key: target.graph_id,
+        },
+      ],
+    };
+  }, [selectedNodeId, liveNodeDetailQuery.data, liveGraphQuery.data, tenantId]);
 
   return (
     <div className="space-y-6">
@@ -196,7 +285,7 @@ export function OntologyStudioPage() {
               onChange={(e) => handleTenantChange(e.target.value)}
               className="bg-transparent font-bold text-foreground focus:outline-none cursor-pointer"
             >
-              {tenants.map((t) => (
+              {tenantOptions.map((t) => (
                 <option key={t.tenant_id} value={t.tenant_id}>
                   {t.name ? `${t.name} (${t.tenant_id})` : t.tenant_id}
                 </option>
@@ -295,8 +384,9 @@ export function OntologyStudioPage() {
       </div>
 
       {/* Sub-view Content */}
-      {subTab === "overview" && dashboard && (
-        <div className="space-y-6">
+      <div className={subTab === "overview" ? "space-y-6" : "hidden"}>
+        {dashboard && (
+          <div className="space-y-6">
           {/* Key Metrics Grid */}
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
             <div className="rounded-xl border border-border bg-card p-4 shadow-sm">
@@ -448,76 +538,71 @@ export function OntologyStudioPage() {
               </div>
             </div>
           </div>
-        </div>
-      )}
+          </div>
+        )}
+      </div>
 
       {/* Sub-view: Knowledge Graph Canvas & Inspector */}
-      {subTab === "graph" && (
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_380px] min-h-[760px] h-[780px]">
-          <OntologyGraphCanvas
-            mode={graphMode}
-            onModeChange={setGraphMode}
-            tenantId={tenantId}
-            schemaData={schemaGraphQuery.data}
-            liveData={
-              graphMode === "live" && selectedNodeId && liveNodeDetailQuery.data?.nodes?.length
-                ? liveNodeDetailQuery.data
-                : liveGraphQuery.data
-            }
-            selectedNodeId={selectedNodeId}
-            onSelectNode={handleSelectNode}
-            onRefreshLive={() => liveGraphQuery.refetch()}
-            isLoading={liveGraphQuery.isFetching}
-          />
+      <div className={cn("min-h-[760px] h-[780px]", subTab === "graph" ? "grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_380px]" : "hidden")}>
+        <OntologyGraphCanvas
+          mode={graphMode}
+          onModeChange={setGraphMode}
+          tenantId={tenantId}
+          schemaData={schemaGraphQuery.data || defaultSchemaGraph}
+          liveData={liveGraphQuery.data || getDefaultLiveGraph(tenantId)}
+          selectedNodeId={selectedNodeId}
+          onSelectNode={handleSelectNode}
+          onRefreshLive={() => liveGraphQuery.refetch()}
+          isLoading={liveGraphQuery.isFetching}
+        />
 
-          <OntologyNodeDetailPanel
-            mode={graphMode}
-            liveDetail={liveNodeDetailQuery.data?.node_detail}
-            schemaNode={selectedSchemaNode}
-            schemaEdges={schemaGraphQuery.data?.edges}
-            onSelectNode={handleSelectNode}
-            onClose={() => setSelectedNodeId(null)}
-            history={nodeHistory}
-            historyIndex={historyIndex}
-            onNavigateHistory={handleNavigateHistory}
-          />
-        </div>
-      )}
+        <OntologyNodeDetailPanel
+          mode={graphMode}
+          liveDetail={selectedLiveNodeDetail}
+          schemaNode={selectedSchemaNode}
+          schemaEdges={schemaGraphQuery.data?.edges || defaultSchemaGraph.edges}
+          onSelectNode={handleSelectNode}
+          onClose={() => setSelectedNodeId(null)}
+          history={nodeHistory}
+          historyIndex={historyIndex}
+          onNavigateHistory={handleNavigateHistory}
+        />
+      </div>
 
       {/* Sub-view: Entities & Properties */}
-      {subTab === "entities" && (
+      <div className={subTab === "entities" ? "block" : "hidden"}>
         <OntologyEntitiesView
-          entities={entitiesQuery.data || []}
+          entities={entitiesQuery.data || defaultEntities}
           onSelectEntity={(name) => {
             setSelectedNodeId(name);
             setGraphMode("schema");
             setSubTab("graph");
           }}
         />
-      )}
+      </div>
 
       {/* Sub-view: Source Mappings */}
-      {subTab === "mappings" && (
+      <div className={subTab === "mappings" ? "block" : "hidden"}>
         <OntologyMappingsView
-          datasets={datasetsQuery.data || []}
+          datasets={datasetsQuery.data || defaultDatasets}
           selectedDetail={datasetDetailQuery.data || null}
           onSelectDataset={setSelectedDatasetFile}
           isLoadingDetail={datasetDetailQuery.isFetching}
         />
-      )}
+      </div>
 
       {/* Sub-view: AI Contract Coverage */}
-      {subTab === "coverage" && (
+      <div className={subTab === "coverage" ? "block" : "hidden"}>
         <OntologyCoverageView coverage={dashboard?.service_coverage || {}} />
-      )}
+      </div>
 
       {/* Sub-view: Governance & Reviews */}
-      {subTab === "governance" && (
+      <div className={subTab === "governance" ? "block" : "hidden"}>
         <OntologyGovernanceView
-          reviews={reviewsQuery.data || []}
-          changeRequests={changesQuery.data || []}
+          reviews={reviewsQuery.data || defaultReviews}
+          changeRequests={changesQuery.data || defaultChanges}
           reviewOptions={reviewOptionsQuery.data || null}
-          datasets={datasetsQuery.data || []}
+          datasets={datasetsQuery.data || defaultDatasets}
           onCreateReview={async (payload) => {
             await createMappingReview(payload);
             reviewsQuery.refetch();
@@ -539,7 +624,7 @@ export function OntologyStudioPage() {
             dashboardQuery.refetch();
           }}
         />
-      )}
+      </div>
     </div>
   );
 }

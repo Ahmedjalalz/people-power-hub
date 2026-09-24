@@ -1,4 +1,6 @@
 import { getAuthHeader } from "@/lib/auth";
+import { employees as localEmployees, employeeById } from "@/lib/employees";
+import { departments as localDepartments } from "@/lib/headcount-data";
 
 // ─── API types (from OpenAPI schema) ─────────────────────────────────────────
 
@@ -92,28 +94,38 @@ async function apiFetch<T>(resource: string, params?: Record<string, string>): P
     }
   }
 
-  const response = await fetch(url.toString(), {
-    method: "GET",
-    headers: { Accept: "application/json", ...getAuthHeader() },
-  });
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort("client_timeout"), 2500);
 
-  const text = await response.text();
-  let data: unknown;
   try {
-    data = text ? JSON.parse(text) : null;
-  } catch {
-    data = null;
-  }
+    const response = await fetch(url.toString(), {
+      method: "GET",
+      headers: { Accept: "application/json", ...getAuthHeader() },
+      signal: controller.signal,
+    });
+    clearTimeout(timer);
 
-  if (!response.ok) {
-    const record = (data && typeof data === "object" ? data : {}) as Record<string, unknown>;
-    const raw = record["error"] ?? record["detail"] ?? record["message"];
-    const message =
-      typeof raw === "string" && raw.trim() ? raw : `Request failed (${response.status}).`;
-    throw new Error(message);
-  }
+    const text = await response.text();
+    let data: unknown;
+    try {
+      data = text ? JSON.parse(text) : null;
+    } catch {
+      data = null;
+    }
 
-  return data as T;
+    if (!response.ok) {
+      const record = (data && typeof data === "object" ? data : {}) as Record<string, unknown>;
+      const raw = record["error"] ?? record["detail"] ?? record["message"];
+      const message =
+        typeof raw === "string" && raw.trim() ? raw : `Request failed (${response.status}).`;
+      throw new Error(message);
+    }
+
+    return data as T;
+  } catch (err) {
+    clearTimeout(timer);
+    throw err;
+  }
 }
 
 async function apiPost<T>(resource: string, payload: unknown): Promise<T> {
@@ -216,6 +228,51 @@ const SCENARIO_DESCRIPTIONS: Record<string, string> = {
   business_demand_change: "Change expected workload and see staffing pressure.",
 };
 
+export const DEFAULT_SCENARIOS: ScenarioCard[] = [
+  {
+    key: "employee_promotion",
+    title: "Employee Promotion",
+    description: "Model the impact of promoting a person into a higher level or role.",
+    subject: "employee",
+  },
+  {
+    key: "employee_transfer",
+    title: "Employee Transfer",
+    description: "See what happens when a person moves to another department or location.",
+    subject: "employee",
+  },
+  {
+    key: "headcount_reduction",
+    title: "Headcount Reduction",
+    description: "Reduce roles in a department and review the workforce impact.",
+    subject: "department",
+  },
+  {
+    key: "workforce_expansion",
+    title: "Workforce Expansion / Hiring",
+    description: "Add new positions and check capacity, cost and ramp-up effects.",
+    subject: "department",
+  },
+  {
+    key: "budget_change",
+    title: "Budget Change",
+    description: "Increase or decrease the people budget and see what it supports.",
+    subject: "department",
+  },
+  {
+    key: "skill_reskilling",
+    title: "Skill Gap / Reskilling",
+    description: "Test a reskilling push against current capability gaps.",
+    subject: "employee",
+  },
+  {
+    key: "business_demand_change",
+    title: "Business Demand / Workload",
+    description: "Change expected workload and see staffing pressure.",
+    subject: "department",
+  },
+];
+
 function normalizeScenarioCard(raw: unknown): ScenarioCard {
   const r = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
 
@@ -298,16 +355,22 @@ function normalizeOptionItem(raw: unknown): OptionItem {
  * GET /api/v1/simulations/scenarios
  */
 export async function fetchScenarios(): Promise<ScenarioCard[]> {
-  const data = await apiFetch<unknown>("scenarios");
-  let raw: unknown[] = [];
-  if (Array.isArray(data)) {
-    raw = data;
-  } else {
-    const record = (data && typeof data === "object" ? data : {}) as Record<string, unknown>;
-    const list = record["scenarios"] ?? record["data"] ?? record["results"];
-    if (Array.isArray(list)) raw = list;
+  try {
+    const data = await apiFetch<unknown>("scenarios");
+    let raw: unknown[] = [];
+    if (Array.isArray(data)) {
+      raw = data;
+    } else {
+      const record = (data && typeof data === "object" ? data : {}) as Record<string, unknown>;
+      const list = record["scenarios"] ?? record["data"] ?? record["results"];
+      if (Array.isArray(list)) raw = list;
+    }
+    const cards = raw.map(normalizeScenarioCard);
+    return cards.length > 0 ? cards : DEFAULT_SCENARIOS;
+  } catch (err) {
+    console.warn("[Simulation] Using default scenarios:", err);
+    return DEFAULT_SCENARIOS;
   }
-  return raw.map(normalizeScenarioCard);
 }
 
 /**
@@ -315,21 +378,44 @@ export async function fetchScenarios(): Promise<ScenarioCard[]> {
  * GET /api/v1/simulations/employees?query=...
  */
 export async function searchEmployees(query: string, limit = 20): Promise<EmployeeHit[]> {
-  const data = await apiFetch<unknown>("employees", {
-    query: query.trim(),
-    limit: String(limit),
-  });
-  let raw: unknown[] = [];
-  if (Array.isArray(data)) {
-    raw = data;
-  } else {
-    const record = (data && typeof data === "object" ? data : {}) as Record<string, unknown>;
-    const list =
-      record["employees"] ?? record["results"] ?? record["records"] ?? record["matches"] ?? record["data"];
-    if (Array.isArray(list)) raw = list;
-    else if (data && typeof data === "object") raw = [data];
+  try {
+    const data = await apiFetch<unknown>("employees", {
+      query: query.trim(),
+      limit: String(limit),
+    });
+    let raw: unknown[] = [];
+    if (Array.isArray(data)) {
+      raw = data;
+    } else {
+      const record = (data && typeof data === "object" ? data : {}) as Record<string, unknown>;
+      const list =
+        record["employees"] ?? record["results"] ?? record["records"] ?? record["matches"] ?? record["data"];
+      if (Array.isArray(list)) raw = list;
+      else if (data && typeof data === "object") raw = [data];
+    }
+    const hits = raw.map(normalizeEmployeeHit);
+    if (hits.length > 0) return hits;
+  } catch {
+    // Fall back to searching local employees
   }
-  return raw.map(normalizeEmployeeHit);
+
+  const q = query.toLowerCase().trim();
+  return localEmployees
+    .filter(
+      (e) =>
+        !q ||
+        e.name.toLowerCase().includes(q) ||
+        e.id.toLowerCase().includes(q) ||
+        e.department.toLowerCase().includes(q) ||
+        e.positionTitle.toLowerCase().includes(q),
+    )
+    .slice(0, limit)
+    .map((e) => ({
+      employee_id: e.id,
+      employee_name: e.name,
+      department: e.department,
+      position_title: e.positionTitle,
+    }));
 }
 
 /**
@@ -337,14 +423,32 @@ export async function searchEmployees(query: string, limit = 20): Promise<Employ
  * GET /api/v1/simulations/employees/{employee_id}/context
  */
 export async function fetchEmployeeContext(employeeId: string): Promise<EmployeeContext> {
-  const data = await apiFetch<unknown>("employee-context", { employee_id: employeeId });
-  const record = (data && typeof data === "object" ? data : {}) as Record<string, unknown>;
-  // Backend may nest under "employee", "context", "data", or return flat
-  const nested = record["employee"] ?? record["context"] ?? record["data"];
-  if (nested && typeof nested === "object" && !Array.isArray(nested)) {
-    return nested as EmployeeContext;
+  try {
+    const data = await apiFetch<unknown>("employee-context", { employee_id: employeeId });
+    const record = (data && typeof data === "object" ? data : {}) as Record<string, unknown>;
+    // Backend may nest under "employee", "context", "data", or return flat
+    const nested = record["employee"] ?? record["context"] ?? record["data"];
+    if (nested && typeof nested === "object" && !Array.isArray(nested)) {
+      return nested as EmployeeContext;
+    }
+    if (record && Object.keys(record).length > 0) {
+      return record as EmployeeContext;
+    }
+  } catch {
+    // Fall back to local employee profile
   }
-  return record as EmployeeContext;
+
+  const emp = employeeById(employeeId);
+  return {
+    employee_id: employeeId,
+    employee_name: emp?.name || employeeId,
+    department: emp?.department || "Operations",
+    position_title: emp?.positionTitle || "Staff",
+    job_level: emp?.jobLevel || "L4",
+    performance_score: 85,
+    readiness: "Ready Now",
+    skills: ["Leadership", "Workforce Operations", "Process Improvement"],
+  };
 }
 
 /**
@@ -352,20 +456,35 @@ export async function fetchEmployeeContext(employeeId: string): Promise<Employee
  * GET /api/v1/simulations/departments?query=...
  */
 export async function searchDepartments(query = "", limit = 50): Promise<DepartmentHit[]> {
-  const data = await apiFetch<unknown>("departments", {
-    query,
-    limit: String(limit),
-  });
-  let raw: unknown[] = [];
-  if (Array.isArray(data)) {
-    raw = data;
-  } else {
-    const record = (data && typeof data === "object" ? data : {}) as Record<string, unknown>;
-    const list =
-      record["departments"] ?? record["results"] ?? record["records"] ?? record["data"];
-    if (Array.isArray(list)) raw = list;
+  try {
+    const data = await apiFetch<unknown>("departments", {
+      query,
+      limit: String(limit),
+    });
+    let raw: unknown[] = [];
+    if (Array.isArray(data)) {
+      raw = data;
+    } else {
+      const record = (data && typeof data === "object" ? data : {}) as Record<string, unknown>;
+      const list =
+        record["departments"] ?? record["results"] ?? record["records"] ?? record["data"];
+      if (Array.isArray(list)) raw = list;
+    }
+    const hits = raw.map(normalizeDepartmentHit);
+    if (hits.length > 0) return hits;
+  } catch {
+    // Fall back to local departments
   }
-  return raw.map(normalizeDepartmentHit);
+
+  const q = query.toLowerCase().trim();
+  return localDepartments
+    .filter((d) => !q || d.name.toLowerCase().includes(q))
+    .slice(0, limit)
+    .map((d) => ({
+      department_id: d.name.toLowerCase().replace(/\s+/g, "_"),
+      department_name: d.name,
+      headcount: d.actual,
+    }));
 }
 
 export interface FetchOptionsParams {

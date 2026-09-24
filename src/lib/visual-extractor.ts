@@ -223,7 +223,7 @@ export function analyzeDataStructure(items: Record<string, any>[]): {
  */
 export function extractVisualDataFromResponse(
   reply: string,
-  existingData: unknown,
+  existingData?: unknown,
   existingType?: string | null,
   existingReason?: string | null,
 ): {

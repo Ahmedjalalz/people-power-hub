@@ -196,25 +196,35 @@ export type LearningRecord = {
 };
 
 async function request<T>(params: Record<string, string | undefined>, init?: RequestInit): Promise<T> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 2500);
+
   const search = new URLSearchParams();
   for (const [key, value] of Object.entries(params)) {
     if (value) search.set(key, value);
   }
-  const response = await fetch(`/api/performance?${search.toString()}`, {
-    ...init,
-    headers: {
-      "Content-Type": "application/json",
-      ...getAuthHeader(),
-      ...(init?.headers ?? {}),
-    },
-  });
-  const payload: unknown = await response.json().catch(() => null);
-  if (!response.ok) {
-    const record = (payload ?? {}) as Record<string, unknown>;
-    const message = record.detail ?? record.error ?? record.message;
-    throw new Error(message ? String(message) : "Unable to load performance data.");
+  try {
+    const response = await fetch(`/api/performance?${search.toString()}`, {
+      ...init,
+      signal: init?.signal || controller.signal,
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeader(),
+        ...(init?.headers ?? {}),
+      },
+    });
+    clearTimeout(timeoutId);
+    const payload: unknown = await response.json().catch(() => null);
+    if (!response.ok) {
+      const record = (payload ?? {}) as Record<string, unknown>;
+      const message = record.detail ?? record.error ?? record.message;
+      throw new Error(message ? String(message) : "Unable to load performance data.");
+    }
+    return payload as T;
+  } catch (err) {
+    clearTimeout(timeoutId);
+    throw err;
   }
-  return payload as T;
 }
 
 /** Backends wrap collections under different keys — pick the first array we find. */

@@ -6,7 +6,7 @@ const API_BASE =
   process.env["VITE_API_URL"]?.trim().replace(/\/$/, "") ||
   "https://hr-work-force.onrender.com";
 
-const UPSTREAM_TIMEOUT_MS = 120_000;
+const UPSTREAM_TIMEOUT_MS = 3_000;
 
 export const Route = createFileRoute("/api/decision-cases")({
   server: {
@@ -73,6 +73,7 @@ async function forward(request: Request): Promise<Response> {
     }
 
     const upstream = await fetch(`${API_BASE}${upstreamPath}`, upstreamInit);
+    clearTimeout(timeout);
     return await forwardUpstreamResponse(upstream, `Decision Cases API [${upstreamPath}]`);
   } catch (error) {
     clearTimeout(timeout);

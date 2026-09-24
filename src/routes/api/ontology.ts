@@ -29,7 +29,14 @@ async function forward(request: Request): Promise<Response> {
   }
 
   // Security check: only allow approved prefix paths
-  const allowedPrefixes = ["/ontology-studio", "/organization-onboarding", "/tenant-management"];
+  const allowedPrefixes = [
+    "/ontology-studio",
+    "/organization-onboarding",
+    "/tenant-management",
+    "/tenant-graph",
+    "/ontology",
+    "/mapping",
+  ];
   const isAllowed = allowedPrefixes.some((prefix) => targetPath.startsWith(prefix));
   if (!isAllowed) {
     return Response.json({ error: "Path not permitted." }, { status: 403 });
@@ -44,7 +51,37 @@ async function forward(request: Request): Promise<Response> {
     }
   }
 
+  // Extract tenantId from search params or headers
+  const tenantId =
+    upstreamUrl.searchParams.get("tenant_id") ||
+    url.searchParams.get("tenant_id") ||
+    request.headers.get("X-Organization-ID") ||
+    request.headers.get("x-organization-id") ||
+    request.headers.get("X-Tenant-ID") ||
+    request.headers.get("x-tenant-id");
+
+  if (tenantId && !upstreamUrl.searchParams.has("tenant_id")) {
+    if (
+      upstreamUrl.pathname.includes("/dashboard") ||
+      upstreamUrl.pathname.includes("/live-graph")
+    ) {
+      upstreamUrl.searchParams.set("tenant_id", tenantId);
+    }
+  }
+
   const authorization = request.headers.get("Authorization");
+  const headers: Record<string, string> = {
+    Accept: "application/json",
+    "Content-Type": "application/json",
+  };
+  if (authorization) {
+    headers["Authorization"] = authorization;
+  }
+  if (tenantId) {
+    headers["X-Organization-ID"] = tenantId;
+    headers["X-Tenant-ID"] = tenantId;
+  }
+
   const body =
     request.method === "GET" || request.method === "HEAD"
       ? undefined
@@ -56,15 +93,12 @@ async function forward(request: Request): Promise<Response> {
   try {
     const upstream = await fetch(upstreamUrl, {
       method: request.method,
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        ...(authorization ? { Authorization: authorization } : {}),
-      },
+      headers,
       body,
       signal: controller.signal,
     });
 
+    clearTimeout(timeout);
     return await forwardUpstreamResponse(upstream, `Ontology API [${targetPath}]`);
   } catch (error) {
     clearTimeout(timeout);

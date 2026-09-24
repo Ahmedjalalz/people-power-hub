@@ -6,8 +6,7 @@ const API_BASE =
   process.env["VITE_API_URL"]?.trim().replace(/\/$/, "") ||
   "https://hr-work-force.onrender.com";
 
-/** Render cold-starts can take ~60 s. Give the upstream plenty of runway. */
-const UPSTREAM_TIMEOUT_MS = 120_000;
+const UPSTREAM_TIMEOUT_MS = 3_000;
 
 // ─── Route mapping ────────────────────────────────────────────────────────────
 // Maps the `resource` query param to a function that builds the upstream path.
@@ -112,6 +111,9 @@ async function proxyRequest({ request }: { request: Request }): Promise<Response
       upstreamInit.body = await request.text();
     }
 
+    const upstreamUrl = new URL(`${API_BASE}${upstreamPath}`);
+    const upstream = await fetch(upstreamUrl, upstreamInit);
+    clearTimeout(timeout);
     return await forwardUpstreamResponse(upstream, `Simulation API [${upstreamPath}]`);
   } catch (error) {
     clearTimeout(timeout);

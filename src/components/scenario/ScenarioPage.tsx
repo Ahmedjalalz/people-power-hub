@@ -31,6 +31,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import {
+  DEFAULT_SCENARIOS,
   fetchEmployeeContext,
   fetchOptions,
   fetchScenarios,
@@ -161,22 +162,23 @@ const NUMERIC_PARAMS: Record<string, ParamField[]> = {
 };
 
 export function ScenarioPage() {
-  const [activeKey, setActiveKey] = useState<string | null>(null);
+  const [activeKey, setActiveKey] = useState<string | null>(() => DEFAULT_SCENARIOS[0].key);
   const tabsRef = useRef<HTMLDivElement>(null);
 
   const { data: scenariosData, isLoading, error } = useQuery({
     queryKey: ["simulation-scenarios"],
     queryFn: fetchScenarios,
+    placeholderData: DEFAULT_SCENARIOS,
     staleTime: 5 * 60 * 1000,
   });
 
-  const scenarios = scenariosData ?? [];
+  const scenarios = scenariosData ?? DEFAULT_SCENARIOS;
 
   useEffect(() => {
     if (scenarios.length > 0 && !activeKey) setActiveKey(scenarios[0].key);
   }, [scenarios, activeKey]);
 
-  const active = scenarios.find((s) => s.key === activeKey) ?? null;
+  const active = scenarios.find((s) => s.key === activeKey) ?? scenarios[0];
   const meta = active ? getMeta(active.key) : DEFAULT_META;
 
   const scrollTabs = (dir: "left" | "right") => {

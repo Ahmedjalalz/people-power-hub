@@ -148,17 +148,17 @@ export function HeadcountPanel({
     if (!movementQuery.data?.records) return [];
     const monthMap = new Map<string, { month: string; joiners: number; leavers: number; promotions: number; transfers: number }>();
     
-    for (const r of movementQuery.data.records) {
-      const monthKey = r.month ? r.month.substring(0, 7) : "Unknown";
+    for (const r of movementQuery.data.records as any[]) {
+      const monthKey = r.month ? String(r.month).substring(0, 7) : "Unknown";
       if (!monthMap.has(monthKey)) {
         monthMap.set(monthKey, { month: monthKey, joiners: 0, leavers: 0, promotions: 0, transfers: 0 });
       }
       const item = monthMap.get(monthKey)!;
-      const type = (r.Movement_Type || "").toLowerCase();
-      if (type === "join") item.joiners += r.movement_count || 0;
-      else if (type === "leave") item.leavers += r.movement_count || 0;
-      else if (type === "promotion") item.promotions += r.movement_count || 0;
-      else if (type === "transfer") item.transfers += r.movement_count || 0;
+      const type = String(r.Movement_Type || "").toLowerCase();
+      if (type === "join") item.joiners += Number(r.movement_count || 0);
+      else if (type === "leave") item.leavers += Number(r.movement_count || 0);
+      else if (type === "promotion") item.promotions += Number(r.movement_count || 0);
+      else if (type === "transfer") item.transfers += Number(r.movement_count || 0);
     }
 
     return Array.from(monthMap.values()).sort((a, b) => a.month.localeCompare(b.month));
@@ -184,8 +184,8 @@ export function HeadcountPanel({
       { label: "61–90 days", color: "#d97706", value: 0 },
       { label: "90+ days", color: "#e11d48", value: 0 },
     ];
-    for (const r of vacancyAgeingQuery.data.records) {
-      const days = r.vacancy_age_in_days || 0;
+    for (const r of vacancyAgeingQuery.data.records as any[]) {
+      const days = Number(r.vacancy_age_in_days || 0);
       if (days <= 30) buckets[0].value++;
       else if (days <= 60) buckets[1].value++;
       else if (days <= 90) buckets[2].value++;

@@ -21,7 +21,7 @@ export interface DecisionCaseRecord {
   display_rank: number;
   title: string;
   reason: string;
-  evidence: Record<string, any>;
+  evidence: Record<string, unknown>;
   suggested_action: string;
   data_as_of?: string | null;
   status: DecisionCaseStatus;
@@ -152,21 +152,41 @@ export async function fetchDecisionCases(
     if (params.limit !== undefined) url.searchParams.set("limit", String(params.limit));
   }
 
-  const res = await fetch(url.toString(), {
-    method: "GET",
-    headers: {
-      Accept: "application/json",
-      ...getAuthHeader(),
-    },
-    signal,
-  });
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort("client_timeout"), 2500);
 
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(`Failed to fetch decision cases (${res.status}): ${text || res.statusText}`);
+  // Link caller signal if provided
+  if (signal) {
+    signal.addEventListener("abort", () => controller.abort());
   }
 
-  return res.json();
+  try {
+    const res = await fetch(url.toString(), {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        ...getAuthHeader(),
+      },
+      signal: controller.signal,
+    });
+    clearTimeout(timer);
+
+    if (!res.ok) {
+      const text = await res.text().catch(() => "");
+      throw new Error(`Failed to fetch decision cases (${res.status}): ${text || res.statusText}`);
+    }
+
+    return await res.json();
+  } catch (err) {
+    clearTimeout(timer);
+    console.warn("[DecisionCases] Fetch failed or timed out, returning fallback:", err);
+    return {
+      status: "success",
+      count: 0,
+      total_matching: 0,
+      cases: [],
+    };
+  }
 }
 
 /**

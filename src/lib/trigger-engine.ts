@@ -387,7 +387,7 @@ export function adaptBackendCaseToTriggerCase(
   localStore?: Record<string, CaseUserMetadata>
 ): TriggerCase {
   const local = (localStore && localStore[c.id]) || (typeof window !== "undefined" ? loadAllCaseUserMetadata()[c.id] : undefined) || {};
-  const ev = c.evidence || {};
+  const ev: Record<string, any> = (c.evidence as any) || {};
 
   let category: CaseCategory = "Retention & Succession";
   let scenarioType = "employee_promotion";
@@ -530,15 +530,22 @@ export function adaptBackendCaseToTriggerCase(
     });
   }
 
-  const subjectName =
+  const subjectName = String(
     ev.employee_name ||
     (c.subject_type === "Organization"
       ? "Organization-wide"
-      : c.department || c.subject_id);
+      : c.department || c.subject_id || "")
+  );
 
-  const role = ev.position_title || c.case_type;
-  const dept = c.department || ev.department || "Cross-Department";
-  const employeeId = c.employee_id || ev.employee_id || (c.subject_type === "Employee" ? c.subject_id : undefined);
+  const role = String(ev.position_title || c.case_type || "");
+  const dept = String(c.department || ev.department || "Cross-Department");
+  const employeeId = c.employee_id
+    ? String(c.employee_id)
+    : ev.employee_id
+      ? String(ev.employee_id)
+      : c.subject_type === "Employee" && c.subject_id
+        ? String(c.subject_id)
+        : undefined;
 
   return {
     id: c.id,

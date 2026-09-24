@@ -18,8 +18,8 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { employees as localEmployees, initials, type Employee } from "@/lib/employees";
-import { getPeopleAtRisk, getDepartmentRisk, type AtRiskEmployee } from "@/services/attrition";
-import { getHeadcountByDepartment } from "@/services/headcount";
+import { getPeopleAtRisk, getDepartmentRisk, defaultDepartmentRisk, defaultPeopleAtRisk, type AtRiskEmployee } from "@/services/attrition";
+import { getHeadcountByDepartment, getHeadcountFallback } from "@/services/headcount";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -64,16 +64,19 @@ function EmployeesPage() {
   const peopleRiskQuery = useQuery({
     queryKey: ["attrition", "people-at-risk"],
     queryFn: () => getPeopleAtRisk(200),
+    placeholderData: defaultPeopleAtRisk,
   });
 
   const departmentRiskQuery = useQuery({
     queryKey: ["attrition", "department-risk"],
     queryFn: getDepartmentRisk,
+    placeholderData: defaultDepartmentRisk,
   });
 
   const headcountDeptQuery = useQuery({
     queryKey: ["headcount", "dept"],
     queryFn: () => getHeadcountByDepartment(),
+    placeholderData: () => getHeadcountFallback({ analysis_type: "by_department" }),
   });
 
   // Combine and deduplicate employees from local mock + live API
@@ -150,9 +153,10 @@ function EmployeesPage() {
     }
 
     if (headcountDeptQuery.data?.records) {
-      for (const r of headcountDeptQuery.data.records) {
-        if (r.department && !(r.department in counts)) {
-          counts[r.department] = r.actual_employee_count || 0;
+      for (const r of headcountDeptQuery.data.records as any[]) {
+        const deptName = String(r.department ?? "");
+        if (deptName && !(deptName in counts)) {
+          counts[deptName] = Number(r.actual_employee_count || 0);
         }
       }
     }
