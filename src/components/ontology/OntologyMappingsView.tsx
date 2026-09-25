@@ -11,6 +11,7 @@ type Props = {
   selectedDetail: DatasetDetail | null;
   onSelectDataset: (filename: string) => void;
   isLoadingDetail?: boolean;
+  isLoadingDatasets?: boolean;
 };
 
 export function OntologyMappingsView({
@@ -18,6 +19,7 @@ export function OntologyMappingsView({
   selectedDetail,
   onSelectDataset,
   isLoadingDetail = false,
+  isLoadingDatasets = false,
 }: Props) {
   const [datasetSearch, setDatasetSearch] = useState("");
   const [columnSearch, setColumnSearch] = useState("");
@@ -58,47 +60,71 @@ export function OntologyMappingsView({
         </div>
 
         <ScrollArea className="h-[520px] p-2">
-          <div className="space-y-1.5">
-            {filteredDatasets.map((d) => {
-              const isSelected = selectedDetail?.source_file === d.source_file;
-              return (
-                <button
-                  key={d.source_file}
-                  type="button"
-                  onClick={() => onSelectDataset(d.source_file)}
-                  className={cn(
-                    "flex w-full flex-col rounded-lg p-3 text-left transition-all border",
-                    isSelected
-                      ? "border-primary/50 bg-primary/10 text-foreground"
-                      : "border-transparent bg-background/50 hover:border-border hover:bg-muted/50 text-muted-foreground",
-                  )}
-                >
-                  <div className="flex items-center gap-2">
-                    <FileText className={cn("size-4 shrink-0", isSelected ? "text-primary" : "text-muted-foreground")} />
-                    <span className="truncate font-semibold text-xs text-foreground">{d.source_file}</span>
-                  </div>
-                  <div className="mt-2 flex items-center justify-between text-[11px]">
-                    <span>{d.column_count} columns · {d.ontology_path_count} mapped</span>
-                    {d.attention_count > 0 ? (
-                      <Badge variant="destructive" className="h-4 px-1 text-[9px]">
-                        {d.attention_count} attention
-                      </Badge>
-                    ) : (
-                      <Badge variant="secondary" className="h-4 px-1 text-[9px]">
-                        verified
-                      </Badge>
+          {isLoadingDatasets ? (
+            <div className="space-y-2 p-1">
+              {Array.from({ length: 5 }).map((_, idx) => (
+                <div key={idx} className="h-16 w-full rounded-lg bg-muted/60 p-3 animate-pulse" />
+              ))}
+            </div>
+          ) : filteredDatasets.length === 0 ? (
+            <div className="p-6 text-center text-xs text-muted-foreground">
+              No registered datasets found.
+            </div>
+          ) : (
+            <div className="space-y-1.5">
+              {filteredDatasets.map((d) => {
+                const isSelected = selectedDetail?.source_file === d.source_file;
+                return (
+                  <button
+                    key={d.source_file}
+                    type="button"
+                    onClick={() => onSelectDataset(d.source_file)}
+                    className={cn(
+                      "flex w-full flex-col rounded-lg p-3 text-left transition-all border",
+                      isSelected
+                        ? "border-primary/50 bg-primary/10 text-foreground"
+                        : "border-transparent bg-background/50 hover:border-border hover:bg-muted/50 text-muted-foreground",
                     )}
-                  </div>
-                </button>
-              );
-            })}
-          </div>
+                  >
+                    <div className="flex items-center gap-2">
+                      <FileText className={cn("size-4 shrink-0", isSelected ? "text-primary" : "text-muted-foreground")} />
+                      <span className="truncate font-semibold text-xs text-foreground">{d.source_file}</span>
+                    </div>
+                    <div className="mt-2 flex items-center justify-between text-[11px]">
+                      <span>{d.column_count} columns · {d.ontology_path_count} mapped</span>
+                      {d.attention_count > 0 ? (
+                        <Badge variant="destructive" className="h-4 px-1 text-[9px]">
+                          {d.attention_count} attention
+                        </Badge>
+                      ) : (
+                        <Badge variant="secondary" className="h-4 px-1 text-[9px]">
+                          verified
+                        </Badge>
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </ScrollArea>
       </div>
 
       {/* Right Column: Dataset Column Mappings Table */}
       <div className="flex flex-col rounded-xl border border-border bg-card shadow-sm">
-        {selectedDetail ? (
+        {isLoadingDetail ? (
+          <div className="p-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="h-6 w-48 rounded bg-muted animate-pulse" />
+              <div className="h-6 w-20 rounded bg-muted animate-pulse" />
+            </div>
+            <div className="space-y-2 pt-4">
+              {Array.from({ length: 6 }).map((_, idx) => (
+                <div key={idx} className="h-10 w-full rounded bg-muted/60 animate-pulse" />
+              ))}
+            </div>
+          </div>
+        ) : selectedDetail ? (
           <>
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4">
               <div>

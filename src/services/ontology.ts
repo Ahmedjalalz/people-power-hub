@@ -295,73 +295,21 @@ const LOCAL_STORAGE_KEY_REVIEWS = "pph_ontology_mapping_reviews";
 const LOCAL_STORAGE_KEY_CHANGES = "pph_ontology_change_requests";
 const LOCAL_STORAGE_KEY_ORGS = "pph_ontology_custom_tenants";
 
-export const defaultTenants: TenantItem[] = [
-  { tenant_id: "ORGANIZATION-001", name: "Current Organization", status: "active", country: "United Kingdom", currency: "GBP" },
-  { tenant_id: "NEXACORE-HR-001", name: "NexaCore Technologies Pvt Ltd", status: "draft", country: "Pakistan", currency: "PKR" },
-  { tenant_id: "ACME-HR-001", name: "Acme Workforce Group", status: "active", country: "United States", currency: "USD" },
-];
+export const defaultTenants: TenantItem[] = [];
 
-export const defaultNexaLiveNodes: LiveGraphNode[] = [
-  { graph_id: "03344b72-cbbb-5bb5-8251-265163fbd2ed", entity_type: "Employee", label: "Talha Shah", center: true },
-  { graph_id: "0ce1e113-99a2-5e89-8805-33f3082fd8ba", entity_type: "Department", label: "Finance" },
-  { graph_id: "050150e0-dd08-51b7-8d9c-391f550aebcf", entity_type: "BusinessUnit", label: "Corporate Services" },
-  { graph_id: "055b1766-7917-5f2f-861a-5891cfaeb61d", entity_type: "Position", label: "Senior Financial Analyst" },
-  { graph_id: "02e7dec2-c510-51e0-bc4f-915f4c2a05d2", entity_type: "AttendanceRecord", label: "Attendance NC023" },
-  { graph_id: "043198ea-d855-5346-b16d-ca3631284634", entity_type: "CompensationRecord", label: "Comp Band Grade-8" },
-  { graph_id: "2df5515e-3df0-5def-8d1d-0f62a7175662", entity_type: "Organization", label: "NexaCore Technologies" },
-];
-
-export const defaultNexaLiveEdges: LiveGraphEdge[] = [
-  { source_graph_id: "2df5515e-3df0-5def-8d1d-0f62a7175662", target_graph_id: "050150e0-dd08-51b7-8d9c-391f550aebcf", source_entity_type: "Organization", target_entity_type: "BusinessUnit", relation_type: "HAS_BUSINESS_UNIT" },
-  { source_graph_id: "050150e0-dd08-51b7-8d9c-391f550aebcf", target_graph_id: "0ce1e113-99a2-5e89-8805-33f3082fd8ba", source_entity_type: "BusinessUnit", target_entity_type: "Department", relation_type: "HAS_DEPARTMENT" },
-  { source_graph_id: "03344b72-cbbb-5bb5-8251-265163fbd2ed", target_graph_id: "0ce1e113-99a2-5e89-8805-33f3082fd8ba", source_entity_type: "Employee", target_entity_type: "Department", relation_type: "MEMBER_OF" },
-  { source_graph_id: "03344b72-cbbb-5bb5-8251-265163fbd2ed", target_graph_id: "055b1766-7917-5f2f-861a-5891cfaeb61d", source_entity_type: "Employee", target_entity_type: "Position", relation_type: "HOLDS_POSITION" },
-  { source_graph_id: "03344b72-cbbb-5bb5-8251-265163fbd2ed", target_graph_id: "02e7dec2-c510-51e0-bc4f-915f4c2a05d2", source_entity_type: "Employee", target_entity_type: "AttendanceRecord", relation_type: "HAS_ATTENDANCE" },
-  { source_graph_id: "03344b72-cbbb-5bb5-8251-265163fbd2ed", target_graph_id: "043198ea-d855-5346-b16d-ca3631284634", source_entity_type: "Employee", target_entity_type: "CompensationRecord", relation_type: "HAS_COMPENSATION" },
-  { source_graph_id: "055b1766-7917-5f2f-861a-5891cfaeb61d", target_graph_id: "2df5515e-3df0-5def-8d1d-0f62a7175662", source_entity_type: "Position", target_entity_type: "Organization", relation_type: "WORKS_FOR" },
-];
-
-export const defaultNexaDatasets: DatasetSummary[] = [
-  { source_file: "NexaCore_Raw_Employee_Feed.csv", column_count: 30, ontology_path_count: 28, attention_count: 0 },
-  { source_file: "Business_Unit_Master.csv", column_count: 7, ontology_path_count: 6, attention_count: 0 },
-  { source_file: "Cost_Center_Master.csv", column_count: 10, ontology_path_count: 9, attention_count: 0 },
-  { source_file: "Current_Headcount_Summary.csv", column_count: 18, ontology_path_count: 14, attention_count: 0 },
-  { source_file: "Department_Master.csv", column_count: 15, ontology_path_count: 11, attention_count: 0 },
-];
-
-export function getDefaultDatasets(tenantId?: string): DatasetSummary[] {
-  if (tenantId === "NEXACORE-HR-001") {
-    return defaultNexaDatasets;
-  }
-  return defaultDatasets;
+export function getDefaultDatasets(_tenantId?: string): DatasetSummary[] {
+  return [];
 }
 
-export function getDefaultLiveGraph(tenantId: string = "ORGANIZATION-001"): LiveGraphData {
-  if (tenantId === "NEXACORE-HR-001") {
-    return {
-      tenant_id: "NEXACORE-HR-001",
-      node_count_total: 527,
-      relationship_count_total: 615,
-      displayed_node_count: defaultNexaLiveNodes.length,
-      entity_types: [
-        "AttendanceRecord",
-        "BusinessUnit",
-        "CompensationRecord",
-        "Department",
-        "Employee",
-        "Organization",
-        "Position",
-      ],
-      nodes: defaultNexaLiveNodes,
-      edges: defaultNexaLiveEdges,
-      outgoing_count: 4,
-      incoming_count: 0,
-      neighbor_count: 4,
-    };
-  }
+export function getDefaultLiveGraph(tenantId: string = ""): LiveGraphData {
   return {
-    ...defaultLiveGraph,
-    tenant_id: tenantId || "ORGANIZATION-001",
+    tenant_id: tenantId,
+    node_count_total: 0,
+    relationship_count_total: 0,
+    displayed_node_count: 0,
+    entity_types: [],
+    nodes: [],
+    edges: [],
   };
 }
 
@@ -515,73 +463,16 @@ export const defaultSchemaGraph: SchemaGraphData = {
 };
 
 export const defaultLiveGraph: LiveGraphData = {
-  tenant_id: "ORGANIZATION-001",
-  node_count_total: 1248,
-  relationship_count_total: 3410,
-  displayed_node_count: 14,
-  entity_types: ["Employee", "Department", "Position", "Skill", "PerformanceRecord", "HeadcountPlan"],
-  nodes: [
-    { graph_id: "emp_101", entity_type: "Employee", label: "Sarah Jenkins (Lead Engineer)", center: true },
-    { graph_id: "dept_eng", entity_type: "Department", label: "Engineering & Platform" },
-    { graph_id: "pos_lead_swe", entity_type: "Position", label: "Lead Software Engineer" },
-    { graph_id: "skill_ts", entity_type: "Skill", label: "TypeScript & Distributed Systems" },
-    { graph_id: "skill_arch", entity_type: "Skill", label: "Cloud Architecture" },
-    { graph_id: "perf_2025_q4", entity_type: "PerformanceRecord", label: "Q4 Review · Exceptional (4.8)" },
-    { graph_id: "emp_102", entity_type: "Employee", label: "Marcus Vance (Senior Backend)" },
-    { graph_id: "emp_103", entity_type: "Employee", label: "Amina Noor (Product Eng)" },
-    { graph_id: "plan_h2", entity_type: "HeadcountPlan", label: "Engineering FY25 H2 Plan" },
-    { graph_id: "pos_snr_swe", entity_type: "Position", label: "Senior Software Engineer" },
-    { graph_id: "risk_101", entity_type: "AttritionRiskAssessment", label: "Flight Risk: Low (0.12)" },
-    { graph_id: "band_l5", entity_type: "CompensationBand", label: "Band IC-5 (Principal Staff)" },
-    { graph_id: "dept_prod", entity_type: "Department", label: "Product Operations" },
-    { graph_id: "emp_100", entity_type: "Employee", label: "David Chen (VP Engineering)" },
-  ],
-  edges: [
-    { source_graph_id: "emp_101", target_graph_id: "dept_eng", source_entity_type: "Employee", target_entity_type: "Department", relation_type: "MEMBER_OF" },
-    { source_graph_id: "emp_101", target_graph_id: "pos_lead_swe", source_entity_type: "Employee", target_entity_type: "Position", relation_type: "HOLDS_POSITION" },
-    { source_graph_id: "emp_101", target_graph_id: "skill_ts", source_entity_type: "Employee", target_entity_type: "Skill", relation_type: "DEMONSTRATES_SKILL" },
-    { source_graph_id: "emp_101", target_graph_id: "skill_arch", source_entity_type: "Employee", target_entity_type: "Skill", relation_type: "DEMONSTRATES_SKILL" },
-    { source_graph_id: "emp_101", target_graph_id: "perf_2025_q4", source_entity_type: "Employee", target_entity_type: "PerformanceRecord", relation_type: "HAS_PERFORMANCE_RECORD" },
-    { source_graph_id: "emp_101", target_graph_id: "risk_101", source_entity_type: "Employee", target_entity_type: "AttritionRiskAssessment", relation_type: "EVALUATED_BY" },
-    { source_graph_id: "emp_101", target_graph_id: "emp_100", source_entity_type: "Employee", target_entity_type: "Employee", relation_type: "REPORTS_TO" },
-    { source_graph_id: "emp_102", target_graph_id: "emp_101", source_entity_type: "Employee", target_entity_type: "Employee", relation_type: "REPORTS_TO" },
-    { source_graph_id: "emp_103", target_graph_id: "emp_101", source_entity_type: "Employee", target_entity_type: "Employee", relation_type: "REPORTS_TO" },
-    { source_graph_id: "pos_lead_swe", target_graph_id: "dept_eng", source_entity_type: "Position", target_entity_type: "Department", relation_type: "BELONGS_TO" },
-    { source_graph_id: "pos_lead_swe", target_graph_id: "band_l5", source_entity_type: "Position", target_entity_type: "CompensationBand", relation_type: "ASSIGNED_BAND" },
-    { source_graph_id: "dept_eng", target_graph_id: "plan_h2", source_entity_type: "Department", target_entity_type: "HeadcountPlan", relation_type: "TARGETED_BY_PLAN" },
-  ],
-  node_detail: {
-    graph_id: "emp_101",
-    entity_type: "Employee",
-    label: "Sarah Jenkins",
-    properties: {
-      fullName: "Sarah Jenkins",
-      workEmail: "sarah.jenkins@peoplelens.internal",
-      department: "Engineering & Platform",
-      role: "Lead Software Engineer",
-      tenureYears: 4.3,
-      performanceScore: 4.8,
-      attritionRiskTier: "Low (0.12)",
-      employmentType: "Full-Time Regular",
-      location: "London HQ",
-    },
-    provenance: [
-      { source_system: "nexacore_hr", source_object: "employees_current.csv", source_record_key: "EMP-90211" },
-      { source_system: "workforce_pulse", source_object: "performance_eval_q4.json", source_record_key: "EVAL-2025-09" },
-    ],
-  },
-  outgoing_count: 5,
-  incoming_count: 2,
-  neighbor_count: 7,
+  tenant_id: "",
+  node_count_total: 0,
+  relationship_count_total: 0,
+  displayed_node_count: 0,
+  entity_types: [],
+  nodes: [],
+  edges: [],
 };
 
-export const defaultDatasets: DatasetSummary[] = [
-  { source_file: "employees_master_2025.csv", column_count: 24, ontology_path_count: 22, attention_count: 1 },
-  { source_file: "performance_reviews_h2.json", column_count: 16, ontology_path_count: 15, attention_count: 0 },
-  { source_file: "headcount_allocations_fy25.xlsx", column_count: 18, ontology_path_count: 16, attention_count: 2 },
-  { source_file: "skill_matrix_inventory.csv", column_count: 10, ontology_path_count: 10, attention_count: 0 },
-  { source_file: "attrition_risk_predictions.csv", column_count: 12, ontology_path_count: 11, attention_count: 1 },
-];
+export const defaultDatasets: DatasetSummary[] = [];
 
 export const defaultReviews: MappingReview[] = [
   {
@@ -706,10 +597,10 @@ export async function fetchTenants(): Promise<TenantItem[]> {
       return res.tenants;
     }
   } catch (e) {
-    console.warn("Using default tenants fallback:", e);
+    console.warn("Failed to fetch tenants from upstream:", e);
   }
   const custom = getStored<TenantItem[]>(LOCAL_STORAGE_KEY_ORGS, []);
-  return [...defaultTenants, ...custom];
+  return custom;
 }
 
 export function getDefaultDashboard(tenantId: string = "ORGANIZATION-001"): DashboardData {

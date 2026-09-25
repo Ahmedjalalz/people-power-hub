@@ -9,9 +9,10 @@ import { cn } from "@/lib/utils";
 type Props = {
   entities: OntologyEntity[];
   onSelectEntity?: (entityName: string) => void;
+  isLoading?: boolean;
 };
 
-export function OntologyEntitiesView({ entities, onSelectEntity }: Props) {
+export function OntologyEntitiesView({ entities, onSelectEntity, isLoading = false }: Props) {
   const [search, setSearch] = useState("");
   const [selectedModule, setSelectedModule] = useState<string>("all");
 
@@ -65,7 +66,39 @@ export function OntologyEntitiesView({ entities, onSelectEntity }: Props) {
       </div>
 
       {/* Grid of Entity Cards */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+      {isLoading ? (
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, idx) => (
+            <div
+              key={idx}
+              className="flex h-56 flex-col justify-between rounded-xl border border-border bg-card p-5 shadow-sm animate-pulse"
+            >
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="h-5 w-28 rounded bg-muted" />
+                  <div className="h-4 w-16 rounded bg-muted" />
+                </div>
+                <div className="h-3 w-3/4 rounded bg-muted" />
+                <div className="h-3 w-1/2 rounded bg-muted" />
+                <div className="pt-2 flex gap-2">
+                  <div className="h-4 w-20 rounded bg-muted" />
+                  <div className="h-4 w-24 rounded bg-muted" />
+                </div>
+              </div>
+              <div className="h-8 w-full rounded bg-muted" />
+            </div>
+          ))}
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="rounded-xl border border-border bg-card p-12 text-center">
+          <Layers className="size-10 text-muted-foreground/40 mx-auto mb-3" />
+          <h4 className="text-sm font-semibold text-foreground">No entities found</h4>
+          <p className="mt-1 text-xs text-muted-foreground">
+            No entities match the selected filters.
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
         {filtered.map((entity) => (
           <div
             key={entity.name}
@@ -151,6 +184,7 @@ export function OntologyEntitiesView({ entities, onSelectEntity }: Props) {
           </div>
         ))}
       </div>
-    </div>
-  );
+    )}
+  </div>
+);
 }

@@ -34,17 +34,10 @@ import {
   fetchChangeRequests,
   createChangeRequest,
   decideChangeRequest,
-  defaultTenants,
   defaultEntities,
   defaultSchemaGraph,
-  defaultLiveGraph,
-  defaultDatasets,
   defaultReviews,
   defaultChanges,
-  getDefaultDashboard,
-  getDefaultLiveGraph,
-  getDefaultDatasets,
-  buildLiveNodeDetail,
   type LiveNodeDetail,
 } from "@/services/ontology";
 import { OntologyGraphCanvas } from "./OntologyGraphCanvas";
@@ -56,6 +49,46 @@ import { OntologyGovernanceView } from "./OntologyGovernanceView";
 import { cn } from "@/lib/utils";
 
 type StudioSubTab = "overview" | "graph" | "entities" | "mappings" | "coverage" | "governance";
+
+function OverviewLoadingSkeleton({ tenantId }: { tenantId: string }) {
+  return (
+    <div className="space-y-6">
+      {/* Loading banner */}
+      <div className="flex items-center gap-3 rounded-xl border border-primary/20 bg-primary/5 p-4 text-xs">
+        <RotateCcw className="size-4 animate-spin text-primary shrink-0" />
+        <span className="font-semibold text-foreground">
+          Loading ontology telemetry and knowledge graph metrics for <code className="font-mono text-primary">{tenantId}</code>...
+        </span>
+      </div>
+
+      {/* Key Metrics Skeleton Grid */}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="h-24 rounded-xl border border-border bg-card p-4 shadow-sm animate-pulse space-y-2">
+            <div className="h-3 w-20 rounded bg-muted" />
+            <div className="h-6 w-14 rounded bg-muted" />
+            <div className="h-2 w-16 rounded bg-muted" />
+          </div>
+        ))}
+      </div>
+
+      {/* 2x2 Feature Overview Cards Skeleton */}
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="h-56 rounded-xl border border-border bg-card p-5 shadow-sm animate-pulse space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="h-4 w-40 rounded bg-muted" />
+              <div className="h-4 w-16 rounded bg-muted" />
+            </div>
+            <div className="h-3 w-3/4 rounded bg-muted" />
+            <div className="h-16 w-full rounded bg-muted/50" />
+            <div className="h-8 w-32 rounded bg-muted" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export function OntologyStudioPage() {
   const queryClient = useQueryClient();
@@ -95,18 +128,16 @@ export function OntologyStudioPage() {
   // Selected dataset for Mappings view
   const [selectedDatasetFile, setSelectedDatasetFile] = useState<string>("employees_master_2025.csv");
 
-  // Queries with instant default placeholderData
+  // Live queries without fake placeholderData
   const tenantsQuery = useQuery({
     queryKey: ["ontology", "tenants"],
     queryFn: fetchTenants,
-    placeholderData: defaultTenants,
     staleTime: 5 * 60 * 1000,
   });
 
   const dashboardQuery = useQuery({
     queryKey: ["ontology", "dashboard", tenantId],
     queryFn: () => fetchOntologyDashboard(tenantId),
-    placeholderData: (prev) => prev ?? getDefaultDashboard(tenantId),
     staleTime: 60 * 1000,
   });
 
@@ -120,14 +151,12 @@ export function OntologyStudioPage() {
   const liveGraphQuery = useQuery({
     queryKey: ["ontology", "liveGraph", tenantId],
     queryFn: () => fetchLiveGraph({ tenantId }),
-    placeholderData: (prev) => prev ?? getDefaultLiveGraph(tenantId),
     staleTime: 60 * 1000,
   });
 
   const liveNodeDetailQuery = useQuery({
     queryKey: ["ontology", "liveNode", selectedNodeId, tenantId],
     queryFn: () => (selectedNodeId ? fetchLiveNode(selectedNodeId, tenantId, liveGraphQuery.data) : null),
-    placeholderData: (prev) => prev ?? (selectedNodeId ? buildLiveNodeDetail(selectedNodeId, tenantId, liveGraphQuery.data) : null),
     enabled: Boolean(selectedNodeId) && graphMode === "live",
     staleTime: 60 * 1000,
   });
@@ -135,14 +164,12 @@ export function OntologyStudioPage() {
   const entitiesQuery = useQuery({
     queryKey: ["ontology", "entities"],
     queryFn: fetchEntities,
-    placeholderData: defaultEntities,
     staleTime: 5 * 60 * 1000,
   });
 
   const datasetsQuery = useQuery({
     queryKey: ["ontology", "datasets", tenantId],
     queryFn: () => fetchDatasets(tenantId),
-    placeholderData: (prev) => prev ?? getDefaultDatasets(tenantId),
     staleTime: 60 * 1000,
   });
 
@@ -210,15 +237,22 @@ export function OntologyStudioPage() {
   };
 
   const dashboard = dashboardQuery.data;
-  const tenants = tenantsQuery.data || defaultTenants;
+  const tenants = tenantsQuery.data || [];
 
-  const tenantOptions = React.useMemo(() => {
-    const list = [...tenants];
-    if (tenantId && !list.some((t) => t.tenant_id === tenantId)) {
-      list.unshift({ tenant_id: tenantId, name: tenantId, status: "active" });
+  // Adaptable: when tenants are fetched from endpoint, ensure tenantId points to an existing organization
+  useEffect(() => {
+    if (tenants.length > 0) {
+      const exists = tenants.some((t) => t.tenant_id === tenantId);
+      if (!exists) {
+        handleTenantChange(tenants[0].tenant_id);
+      }
     }
-    return list;
   }, [tenants, tenantId]);
+
+  // Strictly only show organizations that exist in the fetched list
+  const tenantOptions = React.useMemo(() => {
+    return tenants;
+  }, [tenants]);
 
   // Schema node matching selectedNodeId
   const selectedSchemaNode = schemaGraphQuery.data?.nodes.find((n) => n.id === selectedNodeId) || null;
@@ -229,7 +263,7 @@ export function OntologyStudioPage() {
     if (liveNodeDetailQuery.data?.node_detail?.graph_id === selectedNodeId) {
       return liveNodeDetailQuery.data.node_detail;
     }
-    const allLiveNodes = liveGraphQuery.data?.nodes || getDefaultLiveGraph(tenantId).nodes;
+    const allLiveNodes = liveGraphQuery.data?.nodes || [];
     const target = allLiveNodes.find((n) => n.graph_id === selectedNodeId);
     if (!target) return null;
 
@@ -240,7 +274,7 @@ export function OntologyStudioPage() {
       properties: {
         recordKey: target.graph_id,
         classification: target.entity_type,
-        tenantScope: tenantId || "ORGANIZATION-001",
+        tenantScope: tenantId || "",
         verifiedSemanticModel: true,
         lastSynchronized: new Date().toISOString().split("T")[0],
       },
@@ -277,21 +311,34 @@ export function OntologyStudioPage() {
 
         {/* Top actions: Tenant selector & refresh */}
         <div className="flex items-center gap-2.5">
-          <div className="flex items-center gap-1.5 rounded-lg border border-border bg-background px-3 py-1.5 text-xs">
-            <Building className="size-3.5 text-muted-foreground" />
-            <span className="font-semibold text-muted-foreground">Tenant:</span>
-            <select
-              value={tenantId}
-              onChange={(e) => handleTenantChange(e.target.value)}
-              className="bg-transparent font-bold text-foreground focus:outline-none cursor-pointer"
-            >
-              {tenantOptions.map((t) => (
-                <option key={t.tenant_id} value={t.tenant_id}>
-                  {t.name ? `${t.name} (${t.tenant_id})` : t.tenant_id}
-                </option>
-              ))}
-            </select>
-          </div>
+          {tenantsQuery.isLoading ? (
+            <div className="flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-1.5 text-xs text-muted-foreground animate-pulse">
+              <Building className="size-3.5 text-muted-foreground" />
+              <span className="font-semibold">Loading organizations...</span>
+              <RotateCcw className="size-3 animate-spin text-primary ml-1" />
+            </div>
+          ) : (
+            <div className="flex items-center gap-1.5 rounded-lg border border-border bg-background px-3 py-1.5 text-xs">
+              <Building className="size-3.5 text-muted-foreground" />
+              <span className="font-semibold text-muted-foreground">Tenant:</span>
+              <select
+                value={tenantId}
+                onChange={(e) => handleTenantChange(e.target.value)}
+                className="bg-transparent font-bold text-foreground focus:outline-none cursor-pointer"
+                disabled={tenantOptions.length === 0}
+              >
+                {tenantOptions.length === 0 ? (
+                  <option value="" disabled>No organizations found</option>
+                ) : (
+                  tenantOptions.map((t) => (
+                    <option key={t.tenant_id} value={t.tenant_id}>
+                      {t.name ? `${t.name} (${t.tenant_id})` : t.tenant_id}
+                    </option>
+                  ))
+                )}
+              </select>
+            </div>
+          )}
 
           <Button
             variant="outline"
@@ -300,7 +347,7 @@ export function OntologyStudioPage() {
             className="h-9"
             title="Refresh All Ontology Data"
           >
-            <RotateCcw className="size-3.5 mr-1.5" /> Refresh
+            <RotateCcw className={cn("size-3.5 mr-1.5", (dashboardQuery.isFetching || tenantsQuery.isFetching) && "animate-spin")} /> Refresh
           </Button>
         </div>
       </div>
@@ -385,7 +432,25 @@ export function OntologyStudioPage() {
 
       {/* Sub-view Content */}
       <div className={subTab === "overview" ? "space-y-6" : "hidden"}>
-        {dashboard && (
+        {dashboardQuery.isLoading ? (
+          <OverviewLoadingSkeleton tenantId={tenantId} />
+        ) : dashboardQuery.isError && !dashboard ? (
+          <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-8 text-center">
+            <AlertTriangle className="size-10 text-destructive mx-auto mb-3" />
+            <h4 className="text-base font-bold text-foreground">Failed to Load Dashboard Data</h4>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Unable to retrieve ontology metrics for tenant <code className="font-mono text-destructive">{tenantId}</code>.
+            </p>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => dashboardQuery.refetch()}
+              className="mt-4"
+            >
+              <RotateCcw className="size-3.5 mr-1.5" /> Try Again
+            </Button>
+          </div>
+        ) : dashboard ? (
           <div className="space-y-6">
           {/* Key Metrics Grid */}
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
@@ -539,7 +604,7 @@ export function OntologyStudioPage() {
             </div>
           </div>
           </div>
-        )}
+        ) : null}
       </div>
 
       {/* Sub-view: Knowledge Graph Canvas & Inspector */}
@@ -549,11 +614,11 @@ export function OntologyStudioPage() {
           onModeChange={setGraphMode}
           tenantId={tenantId}
           schemaData={schemaGraphQuery.data || defaultSchemaGraph}
-          liveData={liveGraphQuery.data || getDefaultLiveGraph(tenantId)}
+          liveData={liveGraphQuery.data || null}
           selectedNodeId={selectedNodeId}
           onSelectNode={handleSelectNode}
           onRefreshLive={() => liveGraphQuery.refetch()}
-          isLoading={liveGraphQuery.isFetching}
+          isLoading={liveGraphQuery.isLoading || liveGraphQuery.isFetching}
         />
 
         <OntologyNodeDetailPanel
@@ -573,6 +638,7 @@ export function OntologyStudioPage() {
       <div className={subTab === "entities" ? "block" : "hidden"}>
         <OntologyEntitiesView
           entities={entitiesQuery.data || defaultEntities}
+          isLoading={entitiesQuery.isLoading}
           onSelectEntity={(name) => {
             setSelectedNodeId(name);
             setGraphMode("schema");
@@ -584,16 +650,20 @@ export function OntologyStudioPage() {
       {/* Sub-view: Source Mappings */}
       <div className={subTab === "mappings" ? "block" : "hidden"}>
         <OntologyMappingsView
-          datasets={datasetsQuery.data || defaultDatasets}
+          datasets={datasetsQuery.data || []}
           selectedDetail={datasetDetailQuery.data || null}
           onSelectDataset={setSelectedDatasetFile}
-          isLoadingDetail={datasetDetailQuery.isFetching}
+          isLoadingDatasets={datasetsQuery.isLoading}
+          isLoadingDetail={datasetDetailQuery.isLoading || datasetDetailQuery.isFetching}
         />
       </div>
 
       {/* Sub-view: AI Contract Coverage */}
       <div className={subTab === "coverage" ? "block" : "hidden"}>
-        <OntologyCoverageView coverage={dashboard?.service_coverage || {}} />
+        <OntologyCoverageView
+          coverage={dashboard?.service_coverage || {}}
+          isLoading={dashboardQuery.isLoading}
+        />
       </div>
 
       {/* Sub-view: Governance & Reviews */}
@@ -602,7 +672,7 @@ export function OntologyStudioPage() {
           reviews={reviewsQuery.data || defaultReviews}
           changeRequests={changesQuery.data || defaultChanges}
           reviewOptions={reviewOptionsQuery.data || null}
-          datasets={datasetsQuery.data || defaultDatasets}
+          datasets={datasetsQuery.data || []}
           onCreateReview={async (payload) => {
             await createMappingReview(payload);
             reviewsQuery.refetch();

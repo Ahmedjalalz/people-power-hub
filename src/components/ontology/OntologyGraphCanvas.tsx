@@ -1254,6 +1254,31 @@ export function OntologyGraphCanvas({
               );
             })()}
 
+            {/* Loading Overlay */}
+            {isLoading && (
+              <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-background/60 backdrop-blur-[2px]">
+                <div className="flex items-center gap-2.5 rounded-lg border border-border bg-card px-4 py-2.5 shadow-md">
+                  <RotateCcw className="size-4 animate-spin text-primary" />
+                  <span className="text-xs font-semibold text-foreground">
+                    {mode === "schema" ? "Loading ontology schema..." : `Loading knowledge graph for ${tenantId || "tenant"}...`}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Empty State */}
+            {!isLoading && positionedNodes.length === 0 && (
+              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center p-6 text-center">
+                <Network className="size-10 text-muted-foreground/40 mb-3" />
+                <h4 className="text-sm font-semibold text-foreground">No graph nodes found</h4>
+                <p className="mt-1 max-w-sm text-xs text-muted-foreground">
+                  {mode === "schema"
+                    ? "No schema entities match the current filters."
+                    : `No live knowledge graph nodes available for tenant ${tenantId || "selected"}.`}
+                </p>
+              </div>
+            )}
+
             {/* Floating Legend */}
             <div className="pointer-events-none absolute bottom-4 left-4 rounded-lg border border-border bg-card/95 p-2.5 shadow-md backdrop-blur-md">
               <p className="mb-1 text-[8.5px] font-bold uppercase tracking-wider text-muted-foreground">Domain Families</p>

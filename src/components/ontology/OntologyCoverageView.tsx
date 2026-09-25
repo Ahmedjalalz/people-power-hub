@@ -7,9 +7,10 @@ import { cn } from "@/lib/utils";
 
 type Props = {
   coverage: Record<string, ServiceCoverageItem>;
+  isLoading?: boolean;
 };
 
-export function OntologyCoverageView({ coverage }: Props) {
+export function OntologyCoverageView({ coverage, isLoading = false }: Props) {
   const entries = Object.entries(coverage);
 
   return (
@@ -32,7 +33,32 @@ export function OntologyCoverageView({ coverage }: Props) {
       </div>
 
       {/* Grid of Service Coverage Cards */}
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+      {isLoading ? (
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+          {Array.from({ length: 4 }).map((_, idx) => (
+            <div key={idx} className="flex h-44 flex-col justify-between rounded-xl border border-border bg-card p-5 shadow-sm animate-pulse">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="h-5 w-40 rounded bg-muted" />
+                  <div className="h-5 w-16 rounded bg-muted" />
+                </div>
+                <div className="h-3 w-48 rounded bg-muted" />
+                <div className="h-2 w-full rounded bg-muted pt-2" />
+              </div>
+              <div className="h-4 w-32 rounded bg-muted" />
+            </div>
+          ))}
+        </div>
+      ) : entries.length === 0 ? (
+        <div className="rounded-xl border border-border bg-card p-12 text-center">
+          <ShieldCheck className="size-10 text-muted-foreground/40 mx-auto mb-3" />
+          <h4 className="text-sm font-semibold text-foreground">No Contract Coverage Data</h4>
+          <p className="mt-1 text-xs text-muted-foreground">
+            No pipeline coverage telemetry reported for the current tenant.
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
         {entries.map(([serviceName, item]) => {
           const anyItem = item as Record<string, any>;
           const covered =
@@ -122,6 +148,7 @@ export function OntologyCoverageView({ coverage }: Props) {
           );
         })}
       </div>
-    </div>
-  );
+    )}
+  </div>
+);
 }

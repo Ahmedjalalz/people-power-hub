@@ -45,7 +45,6 @@ export function TenantDataSyncPage() {
   const tenantsQuery = useQuery({
     queryKey: ["ontology", "tenants"],
     queryFn: fetchTenants,
-    placeholderData: defaultTenants,
   });
 
   const organizationQuery = useQuery({
@@ -53,11 +52,7 @@ export function TenantDataSyncPage() {
     queryFn: () => fetchOrganization(tenantId),
   });
 
-  const tenants: TenantItem[] = tenantsQuery.data || [
-    { tenant_id: "ORGANIZATION-001", name: "PeopleLens Global Enterprise", status: "active", country: "United Kingdom", currency: "GBP" },
-    { tenant_id: "ACME-HR-001", name: "Acme Workforce Group", status: "active", country: "United States", currency: "USD" },
-    { tenant_id: "NEXA-RETAIL-002", name: "Nexa Retail International", status: "staged", country: "Germany", currency: "EUR" },
-  ];
+  const tenants: TenantItem[] = tenantsQuery.data || [];
 
   const orgDetail: OrganizationDetail | null = organizationQuery.data || null;
 
